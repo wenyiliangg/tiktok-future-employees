@@ -50,7 +50,7 @@ wired into the evaluator-facing agent until conversation-state integration is
 owned by the designated integrator.
 
 The deterministic Boundary/empty-intent fallback generator, profile-evidence
-adapter, diversity configuration, and temporary shared-candidate adapter are
+adapter, diversity configuration, and Issue 2B-compatible candidate adapter are
 documented in [`docs/fallback_candidates.md`](docs/fallback_candidates.md). The
 generator is also intentionally route-agnostic and is not wired into the
 evaluator-facing agent by this issue.

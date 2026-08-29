@@ -18,6 +18,19 @@ from typing import Literal, TypeVar
 from .conversation_state import ConversationStateManager
 from .lexical_retriever import CatalogDocument, CatalogDocumentBuilder, tokenize
 
+try:
+    from .hybrid_retrieval import Candidate as _Issue2BCandidate
+except ModuleNotFoundError as error:
+    # Issue 3B was explicitly allowed to develop in parallel with Issue 2B.
+    # Keep the generator importable on a pre-2B branch, but use the real shared
+    # base automatically as soon as hybrid_retrieval is present.
+    if not (error.name or "").endswith(".hybrid_retrieval"):
+        raise
+
+    @dataclass(slots=True)
+    class _Issue2BCandidate:  # type: ignore[no-redef]
+        parent_asin: str
+
 
 FALLBACK_SOURCE: Literal["fallback"] = "fallback"
 DIVERSITY_DIMENSIONS = frozenset(
@@ -54,14 +67,36 @@ DEFAULT_DIVERSITY_PENALTIES = {
 }
 
 
-@dataclass(frozen=True)
-class FallbackCandidate:
-    """Temporary candidate contract until Issue 2B's shared type is merged."""
+@dataclass(slots=True, init=False)
+class FallbackCandidate(_Issue2BCandidate):
+    """Issue 2B-compatible candidate carrying inspectable fallback fields.
 
-    parent_asin: str
+    On current main this is a subtype of ``hybrid_retrieval.Candidate`` and its
+    shared ``sources`` set contains ``"fallback"``.  The small local base above
+    preserves Issue 3B's documented parallel-development behavior on older
+    branches where Issue 2B is not present yet.
+    """
+
     fallback_score: float
     rank: int
-    source: Literal["fallback"] = FALLBACK_SOURCE
+    source: Literal["fallback"]
+
+    def __init__(
+        self,
+        parent_asin: str,
+        fallback_score: float,
+        rank: int,
+        source: Literal["fallback"] = FALLBACK_SOURCE,
+    ) -> None:
+        if source != FALLBACK_SOURCE:
+            raise ValueError('fallback candidate source must be "fallback"')
+        _Issue2BCandidate.__init__(self, parent_asin=parent_asin)
+        shared_sources = getattr(self, "sources", None)
+        if isinstance(shared_sources, set):
+            shared_sources.add(FALLBACK_SOURCE)
+        self.fallback_score = fallback_score
+        self.rank = rank
+        self.source = source
 
     def as_shared_payload(self) -> dict[str, str | float | int]:
         """Return only the fields promised to the shared candidate adapter."""
@@ -81,16 +116,24 @@ def adapt_fallback_candidates(
     candidates: Iterable[FallbackCandidate],
     candidate_factory: Callable[..., SharedCandidate] | None = None,
 ) -> list[dict[str, str | float | int] | SharedCandidate]:
-    """Adapt fallback candidates to dictionaries or an Issue 2B constructor.
+    """Adapt fallback candidates to dictionaries or a shared candidate type.
 
-    Passing no factory produces inspectable dictionaries.  Once the shared
-    candidate class exists, pass that class (or another keyword constructor) as
-    ``candidate_factory`` without changing the generator.
+    Passing no factory produces inspectable dictionaries.  Passing Issue 2B's
+    shared class returns the already-compatible subclass instances.  Other
+    keyword factories continue to receive the four fallback payload fields.
     """
 
-    payloads = [candidate.as_shared_payload() for candidate in candidates]
+    candidate_list = list(candidates)
+    payloads = [candidate.as_shared_payload() for candidate in candidate_list]
     if candidate_factory is None:
         return payloads
+    if isinstance(candidate_factory, type):
+        return [
+            candidate
+            if isinstance(candidate, candidate_factory)
+            else candidate_factory(**payload)
+            for candidate, payload in zip(candidate_list, payloads)
+        ]
     return [candidate_factory(**payload) for payload in payloads]
 
 

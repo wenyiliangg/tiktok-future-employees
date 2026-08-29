@@ -51,10 +51,16 @@ Each `FallbackCandidate` contains:
 - `source="fallback"`
 - one-based `rank`
 
-Until Issue 2B's shared candidate class is merged,
-`adapt_fallback_candidates(candidates)` returns dictionaries with those fields.
-After merge, pass the shared class as the second argument and the adapter will
-construct it with keyword arguments.
+On current main, `FallbackCandidate` subclasses Issue 2B's shared `Candidate`
+and adds `"fallback"` to its `sources` set. It therefore retains the shared
+lexical/dense/fusion fields while exposing the fallback-specific fields above.
+The module uses a minimal local base only when imported from a pre-2B branch,
+which preserves the issues' parallel-development contract.
+
+`adapt_fallback_candidates(candidates)` returns dictionaries containing the
+four fallback fields. Passing Issue 2B's `Candidate` class as the second
+argument returns the already-compatible fallback candidate objects without
+discarding their fallback score or rank.
 
 ## Configuration
 

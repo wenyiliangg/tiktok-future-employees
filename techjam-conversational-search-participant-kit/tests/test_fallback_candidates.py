@@ -14,6 +14,11 @@ from starter.fallback_candidates import (
 )
 from starter.search_models import Constraint, SearchQuery
 
+try:
+    from starter.hybrid_retrieval import Candidate as Issue2BCandidate
+except ModuleNotFoundError:
+    Issue2BCandidate = None  # type: ignore[assignment,misc]
+
 
 def explicit_constraint(value: str) -> Constraint:
     return Constraint(
@@ -290,15 +295,24 @@ class FallbackCandidateGeneratorTest(unittest.TestCase):
             ],
         )
 
-        @dataclass(frozen=True)
-        class SharedCandidate:
-            parent_asin: str
-            fallback_score: float
-            source: str
-            rank: int
+        if Issue2BCandidate is None:
+            @dataclass(frozen=True)
+            class TemporarySharedCandidate:
+                parent_asin: str
+                fallback_score: float
+                source: str
+                rank: int
 
-        adapted = adapt_fallback_candidates(results, SharedCandidate)
-        self.assertEqual(adapted[0].parent_asin, "A")
+            adapted = adapt_fallback_candidates(results, TemporarySharedCandidate)
+            self.assertEqual(adapted[0].parent_asin, "A")
+        else:
+            adapted = adapt_fallback_candidates(results, Issue2BCandidate)
+            self.assertIs(adapted[0], results[0])
+            self.assertIsInstance(adapted[0], Issue2BCandidate)
+            self.assertIn("fallback", adapted[0].sources)
+            self.assertEqual(adapted[0].fallback_score, 0.0)
+            self.assertEqual(adapted[0].rank, 1)
+            self.assertEqual(adapted[0].source, "fallback")
 
 
 if __name__ == "__main__":
