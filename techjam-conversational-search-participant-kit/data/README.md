@@ -8,6 +8,10 @@ Each session contains a safe aggregate `user_profile` and public labels for loca
 
 ## `catalog.jsonl`
 
-Download `catalog.jsonl.gz` from the GitHub Release and decompress it as `catalog.jsonl` in this directory. Expected row count: 50,000.
+The intended distribution is `catalog.jsonl.gz` plus `SHA256SUMS` in a GitHub
+Release. No release was published as of 2026-08-29. When an organizer-authorized
+archive is available, verify its checksum and decompress it as `catalog.jsonl`
+in this directory. Expected row count: 50,000. See the root README and
+`docs/reproduction.md` for validation commands.
 
 Never place API keys, private evaluation data, or participant outputs in this directory.
