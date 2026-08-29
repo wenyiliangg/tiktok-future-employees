@@ -79,19 +79,17 @@ results = retriever.retrieve(
 Call `close()` when the index is no longer needed, or use the retriever as a
 context manager.
 
-## Issue 1A handoff test
+## Issue 1A integration
 
 `tests/test_search_query_integration.py` is the executable boundary between the
-parallel issues. It checks the exact shared dataclass fields, passes a fully
-structured 1A-style query directly into retrieval, and proves that sending a new
-active query after an override changes ranking without the retriever retaining
-old conversation state. The fixtures are manual until Issue 1A lands; at that
-point, replace their construction with the real state manager's query producer
-and keep the retrieval assertions unchanged.
+components. It checks the shared dataclass fields, passes a fully structured
+query directly into retrieval, and uses the real Issue 1A state manager to prove
+that an override changes ranking without the retriever retaining old
+conversation state. `starter.agent.Agent` now sends the active query to this
+retriever in lexical and hybrid modes.
 
 The retriever validates query objects structurally rather than requiring exact
-Python class identity. This supports the original Issue 1A commit, which defined
-equivalent dataclasses in `starter.conversation_state` and added an optional
-`updated_turn` field to `PriceConstraint`. The permanent integration should move
-both modules onto one canonical model definition; structural compatibility keeps
-the handoff functional before that cleanup.
+Python class identity. The conversation-state and search-model modules still
+define structurally compatible dataclasses, including the optional
+`PriceConstraint.updated_turn`; consolidating them into one canonical model
+definition remains future cleanup.
