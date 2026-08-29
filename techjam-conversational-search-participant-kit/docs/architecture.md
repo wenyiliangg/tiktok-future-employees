@@ -10,21 +10,21 @@ The evaluator constructs one `starter.agent.Agent`, then calls `reset` once per
 session and `respond` once per turn. `Agent.reset` initializes a clean
 `ConversationStateManager` session. `Agent.respond` follows this path:
 
-1. `ConversationStateManager.update(session_id, message, turn)` deterministically
-   updates the active `SessionState` and returns a `SearchQuery`.
-2. `Agent._retrieve` dispatches that active query to lexical, dense, or hybrid
-   retrieval according to `HybridRetrievalConfig.mode`.
-3. Results are filtered to identifiers found in the loaded catalog and reduced
-   to the configured reranking pool (100 candidates by default).
-4. `FeatureReranker.rerank` applies active-query and retrieval features, filters
-   known hard/exclusion violations, and returns
-   `min(top_k, final_candidate_count)` candidates.
+1. Explicit negative feedback marks the prior recommendations as known-negative;
+   an intent-override cue clears that set.
+2. `ConversationStateManager.update(session_id, message, turn)` preserves the
+   raw turn, updates active `SessionState`, and returns a `SearchQuery`.
+3. `Agent._retrieve` dispatches according to `HybridRetrievalConfig.mode`.
+   The contextual default retrieves exact raw-turn BM25 candidates, removes
+   known negatives, and protects the first eight remaining BM25 positions.
+4. `IntentRouter` uses active state plus preserved raw intent. Only Browsing
+   permits dense evidence to compete for the final two positions. Ranking and
+   identity tie-breaks are deterministic.
 5. The agent returns the identifiers with a fixed message, no clarification
    attribute, and zero model-token usage.
 
-Raw turns are not concatenated into retrieval text. This prevents removed or
-overridden preferences from remaining active merely because they occurred
-earlier in the transcript.
+Raw turns are retained separately from structured state. They are never
+concatenated blindly; an active raw intent is replaced on intent override.
 
 ## Conversation state
 
@@ -94,14 +94,16 @@ rank/source/identifier tie break.
 
 ## Intent routing
 
-`starter.intent_router.IntentRouter` is implemented but not called by `Agent`.
+`starter.intent_router.IntentRouter` is called by contextual retrieval to decide
+whether dense evidence is allowed, and by the explicit route-aware mode.
 It deterministically classifies `SessionState` plus `SearchQuery` as Buying,
 Browsing, Boundary, or Uncertain. `RoutingDecision` includes confidence,
 inspectable reasons, and a configurable policy identifier. Profile-only
 evidence cannot produce Buying, and current explicit evidence has precedence.
 
-Because it is not orchestrated, route policy identifiers currently do not select
-retrieval modes or scoring behavior.
+The promoted policy uses only the Buying/Browsing decision to activate dense
+retrieval. Full route-specific filtering/fusion remains isolated behind the
+explicit `route-aware` mode.
 
 ## Fallback behavior
 
@@ -111,20 +113,19 @@ There are two distinct mechanisms:
    or query failures and continues with lexical candidates. An empty dense list
    also leaves the lexical side of RRF intact. Dense-only mode deliberately
    reports its failure.
-2. **Standalone Boundary fallback:**
+2. **Explicit Boundary fallback:**
    `starter.fallback_candidates.FallbackCandidateGenerator` can produce valid,
    unique, deterministic candidates from weak active/profile evidence, catalog
-   quality priors, exclusions, and diversity caps. It is route-agnostic and is
-   not called by `Agent`.
+   quality priors, exclusions, and diversity caps. `Agent` calls it only in
+   explicit route-aware mode with `enable_boundary_fallback=True`.
 
-The second mechanism therefore does not improve Boundary evaluator behavior in
-the current system.
+The second mechanism is disabled in the promoted contextual configuration.
 
 ## Reranking
 
-`starter.feature_reranker.FeatureReranker` is integrated after lexical, dense,
-and hybrid retrieval. It reranks a bounded pool without retrieving or scanning
-the catalog. Its configurable features include normalized source scores and
+`starter.feature_reranker.FeatureReranker` is available after lexical, dense,
+and hybrid retrieval only when `enable_feature_reranker=True`. It is disabled
+by default and never touches the contextual BM25 prefix. Its configurable features include normalized source scores and
 ranks, fusion score, category match, active-attribute coverage, price
 compatibility, individual color/style/material/use-case matches, and soft
 profile affinity.
@@ -163,8 +164,10 @@ and evaluator integration do not exist. The current response always returns
 
 ## Configuration boundaries
 
-- `HybridRetrievalConfig`: mode, source/reranking/final pool sizes, weights, and
-  RRF constant.
+- `HybridRetrievalConfig`: explicit mode, opt-in risky components,
+  source/reranking/final pool sizes, weights, and RRF constant.
+- `ContextualRetrievalPolicy`: protected BM25 prefix, candidate depth,
+  state/dense weights, eligible dense routes, and deterministic RRF constant.
 - Lexical configuration: field weights, boosts, filtering and pool behavior.
 - Dense configuration: model/revision, cache path, encoding batch/device.
 - `RerankerConfig`: feature weights, mismatch/filter penalties and policies,
@@ -176,5 +179,5 @@ and evaluator integration do not exist. The current response always returns
 - `AmbiguityConfig`: eligible attributes, metadata/pool thresholds, reduction
   threshold, dominance limit, price buckets, and deterministic priority.
 
-Changing standalone module configuration has no evaluator effect until that
-module is connected to `starter.agent.Agent`.
+Clarification configuration has no evaluator effect until it is connected to
+`starter.agent.Agent`; route-aware fallback and reranking require explicit flags.

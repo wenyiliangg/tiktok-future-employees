@@ -190,10 +190,12 @@ class AgentIntegrationTest(unittest.TestCase):
                 self.assertTrue(set(ids) <= {"A", "B", "C"})
 
     def test_agent_reranks_a_bounded_pool_before_applying_top_k(self) -> None:
-        lexical = FakeRetriever(
-            [FakeResult("A", 10.0, 1), FakeResult("C", 1.0, 2)]
+        lexical = FakeRetriever([FakeResult("A", 10.0, 1), FakeResult("C", 1.0, 2)])
+        agent = Agent(
+            self.catalog,
+            config=HybridRetrievalConfig(mode="lexical", enable_feature_reranker=True),
+            lexical_retriever=lexical,
         )
-        agent = self.make_agent("lexical", lexical)
         agent.reset("rerank", {})
         response = agent.respond("rerank", "red sneakers", 1, 1)
         self.assertEqual(response["recommendations"], [{"parent_asin": "C"}])

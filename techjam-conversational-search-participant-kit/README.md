@@ -13,52 +13,54 @@ organizer's additional 800-session set is private and is not in this repository.
 
 ## Current implementation status
 
-The evaluator-facing `Agent` currently uses structured conversation state,
-supports lexical, dense, or fixed-hybrid retrieval, and feature-reranks the
-bounded candidate pool. Several later-stage components exist as deterministic,
-tested modules but are not yet connected to `Agent.respond`.
+The evaluator-facing `Agent` uses exact raw-turn BM25 as its lexical foundation.
+The promoted default is `contextual.browsing-dense.v1`: it rotates products the
+shopper explicitly rejected, clears that history on intent override, and lets
+dense evidence fill only two unprotected positions on Browsing turns.
 
 | Capability | Status on this branch |
 | --- | --- |
-| Structured conversation state and active query | Integrated |
-| Field-aware lexical retrieval | Integrated; default mode |
-| Dense retrieval and validated embedding cache | Integrated; optional mode |
+| Exact weak BM25 | Integrated; protected lexical foundation and explicit `bm25` mode |
+| Multi-turn active state and intent override | Integrated |
+| Known-negative recommendation exclusion | Integrated in the contextual default |
+| Dense retrieval and validated embedding cache | Selective Browsing-only evidence in the contextual default |
+| Field-aware lexical retrieval | Integrated as an explicit experiment; rejected from the selected contextual policy |
 | Fixed reciprocal-rank hybrid fusion | Integrated; optional mode |
 | Hybrid dense-failure fallback to lexical | Integrated |
-| Intent routing | Implemented and tested, not connected to retrieval policy |
-| Boundary/empty-intent fallback candidates | Implemented and tested, not connected to `Agent` |
+| Intent routing | Integrated for selective dense activation; full route-aware mode remains explicit |
+| Boundary/empty-intent fallback candidates | Explicit route-aware mode only; disabled by default |
 | Candidate-pool ambiguity analysis | Implemented and tested, not connected to `Agent` |
-| Deterministic feature reranking | Integrated after every retrieval mode |
+| Deterministic feature reranking | Explicit opt-in only; disabled by default |
 | User-facing clarification questions/history | Not implemented; `ask_attribute` is always `null` |
 
-Consequently, the standalone routing, fallback, and ambiguity modules do not
-affect the recorded evaluator results below. See
-[`docs/architecture.md`](docs/architecture.md) for component contracts,
-precedence rules, and the exact runtime path.
+See [`docs/contextual_retrieval_recovery.md`](docs/contextual_retrieval_recovery.md)
+for the promotion evidence and [`docs/architecture.md`](docs/architecture.md)
+for the component contracts.
 
 ## Architecture at a glance
 
 ```mermaid
 flowchart LR
     E[Local evaluator] --> A[Agent]
-    A --> S[ConversationStateManager]
-    S --> Q[Active SearchQuery]
-    Q --> L[Lexical FTS5]
-    Q --> D[Dense MiniLM]
-    L --> F[Mode selection or fixed RRF]
-    D --> F
-    F --> X[Feature reranker]
-    X --> R[Top-10 recommendations]
-
-    Q -. standalone .-> I[IntentRouter]
-    Q -. standalone .-> B[FallbackCandidateGenerator]
-    F -. standalone .-> C[AmbiguityAnalyzer]
+    A --> S[Active state + known negatives]
+    A --> B[Exact raw-turn BM25]
+    S --> O[Override clears negatives]
+    S --> I[Buying/Browsing router]
+    I -->|Browsing only| D[Dense MiniLM]
+    B --> R[Protected deterministic ranking]
+    D --> R
+    R --> T[Top-10 recommendations]
 ```
 
-Every turn is parsed into active slots rather than appended to raw conversation
-text. Current-turn values override conversation history, which overrides
-profile-derived values. The agent then retrieves with the configured mode:
+Every turn preserves its raw text alongside structured active slots. Current
+turn values override conversation history, which overrides profile-derived
+values. The agent then retrieves with the configured mode:
 
+- **Contextual (default):** exact BM25, explicit negative-feedback rotation,
+  override-safe history, and Browsing-only dense evidence below an eight-item
+  protected BM25 prefix.
+- **BM25:** exact stateless raw-turn BM25 with the official fields and weights.
+- **Anchored:** protected BM25 with vacancy-only structured/dense backfill.
 - **Lexical:** SQLite FTS5 candidate generation with field weights, structured
   filters, soft boosts, exclusions, and deterministic `parent_asin` ties.
 - **Dense:** normalized `all-MiniLM-L6-v2` embeddings over deterministic catalog
@@ -66,13 +68,14 @@ profile-derived values. The agent then retrieves with the configured mode:
 - **Hybrid:** lexical and dense candidates combined by weighted reciprocal-rank
   fusion: `lexical_weight / (rrf_k + lexical_rank) + dense_weight /
   (rrf_k + dense_rank)`.
-- **Reranking:** a deterministic feature model scores up to 100 retrieved
+- **Route-aware:** the earlier 3C policy remains available explicitly for
+  diagnostics; Boundary fallback and feature reranking require separate flags.
+- **Reranking:** an opt-in deterministic feature model scores up to 100 retrieved
   candidates using retrieval evidence plus active category, attribute, price,
   profile, hard-constraint, and exclusion signals before returning the Top 10.
 
-Hybrid catches dense initialization/query failures and continues with lexical
-candidates. Dense-only mode surfaces dense failures. This is different from the
-standalone Boundary fallback generator, which is not yet in the runtime path.
+Contextual and hybrid modes catch dense initialization/query failures and
+continue with lexical candidates. Dense-only mode surfaces dense failures.
 
 ## Setup
 
@@ -168,13 +171,16 @@ between sessions, simulate at most ten turns, and write aggregate plus
 per-session results.
 
 ```bash
-# Default/current safe mode
-python -m evaluator.local_evaluator --catalog data/catalog.jsonl --dataset data/public_set.jsonl --retrieval-mode lexical --output results.json
+# Promoted contextual default
+python -m evaluator.local_evaluator --catalog data/catalog.jsonl --dataset data/public_set.jsonl --output results.json
+
+# Exact BM25 control
+python -m evaluator.local_evaluator --catalog data/catalog.jsonl --dataset data/public_set.jsonl --retrieval-mode bm25 --output results.json
 
 # Dense mode
 python -m evaluator.local_evaluator --catalog data/catalog.jsonl --dataset data/public_set.jsonl --retrieval-mode dense --dense-cache data/.dense-retrieval/catalog-minilm.npz --output results.json
 
-# Current hybrid mode (Issue 2B retrieval settings; current reranker also runs)
+# Historical fixed hybrid mode
 python -m evaluator.local_evaluator --catalog data/catalog.jsonl --dataset data/public_set.jsonl --retrieval-mode hybrid --lexical-candidates 200 --dense-candidates 200 --final-candidates 10 --lexical-weight 1.0 --dense-weight 1.0 --rrf-k 60 --dense-cache data/.dense-retrieval/catalog-minilm.npz --output results.json
 ```
 
@@ -202,7 +208,23 @@ These are the frozen weak-BM25 public-set metrics recorded in
 | ---: | ---: | ---: | ---: | ---: |
 | 0.125 | 0.068034 | 9.81 | 0.119 | 0.106710 |
 
-### Latest recorded retrieval-mode comparison
+### Contextual recovery result
+
+The selected policy passed every retention gate and was confirmed with the full
+public evaluator:
+
+| Mode | HR@10 | MRR | MTTC | Efficiency | TechnicalScore |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Exact BM25 | 0.125 | 0.068034 | 9.810 | 0.1190 | 0.106710 |
+| Contextual Browsing-dense | **0.140** | **0.070423** | **9.780** | **0.1220** | **0.115527** |
+
+It retains all 25 BM25-success sessions and gains three. State-aware lexical
+variants were rejected because they lost `public_0143`; they are not enabled in
+the selected policy. See the
+[`recovery report`](docs/contextual_retrieval_recovery.md) and
+[`machine-readable selection summary`](docs/results/recovery/contextual_policy_selection.json).
+
+### Historical Issue 2B retrieval comparison
 
 These Issue 2B measurements are a preliminary mode ablation, not final tuned
 submission results. They predate the integrated feature reranker. They used the
@@ -217,26 +239,17 @@ were tested.
 | Dense, compatible cache | 0.025 | 0.008798 | 10.775 | 0.0225 | 0.019639 |
 | Fixed hybrid | 0.020 | 0.007270 | 10.815 | 0.0185 | 0.015881 |
 
-None of the recorded experimental modes improves on the fixed baseline. Dense
-was the best recorded experimental mode, while lexical remains the default
-because it has no model/cache/network dependency. Scenario metrics, raw output,
-environment details, and interpretation are in
+None of these historical Issue 2B modes improved on the fixed baseline. They
+remain useful regression evidence but are not the current default. Scenario
+metrics, raw output, environment details, and interpretation are in
 [`docs/issue_2b_results.md`](docs/issue_2b_results.md) and
 [`docs/results/issue_2b/`](docs/results/issue_2b/).
 
-### Final and ablation status
+### Remaining downstream work
 
-Issues 6A and 6B have not deposited final or full ablation result artifacts in
-this branch. Therefore no final improvement is claimed and no number above
-should be presented as the final submission score. The only recorded ablation
-is the pre-reranker retrieval-mode comparison above. State, routing, fallback,
-reranker-effect, clarification, and alternative fusion-weight ablations remain
-unrecorded.
-
-When a final configuration exists, record the exact command, commit SHA,
-catalog hash, environment, raw JSON, and metrics before replacing this pending
-status. The evaluator command must use a supported current `--retrieval-mode`;
-do not invent a `final` mode.
+This result promotes the retrieval foundation only. Proactive clarification,
+personalization, adaptive orchestration, final robustness, and submission
+evaluation remain separate downstream work.
 
 ## Runtime and memory
 
