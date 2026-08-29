@@ -13,6 +13,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from starter.agent import Agent
+from starter.contextual_retrieval import contextual_policy_candidates, policy_by_id
 from starter.hybrid_retrieval import HybridRetrievalConfig, RetrievalMode
 
 try:
@@ -374,7 +375,12 @@ def main() -> None:
     parser.add_argument(
         "--retrieval-mode",
         choices=[mode.value for mode in RetrievalMode],
-        default=RetrievalMode.LEXICAL.value,
+        default=RetrievalMode.CONTEXTUAL.value,
+    )
+    parser.add_argument(
+        "--contextual-policy",
+        choices=[policy.policy_id for policy in contextual_policy_candidates()],
+        default="contextual.browsing-dense.v1",
     )
     parser.add_argument("--lexical-candidates", type=int, default=200)
     parser.add_argument("--dense-candidates", type=int, default=200)
@@ -396,7 +402,12 @@ def main() -> None:
         rrf_k=args.rrf_k,
     )
     startup_started = time.perf_counter()
-    agent = Agent(args.catalog, config=config, dense_cache_path=args.dense_cache)
+    agent = Agent(
+        args.catalog,
+        config=config,
+        dense_cache_path=args.dense_cache,
+        contextual_policy=policy_by_id(args.contextual_policy),
+    )
     agent_startup_seconds = time.perf_counter() - startup_started
     result = evaluate(agent, samples, catalog_ids, categories, products)
     result["performance"] = {
@@ -407,6 +418,14 @@ def main() -> None:
             "sentence-transformer model loading remains lazy until the first dense query"
         ),
         "latency_scope": "wall-clock time inside Agent.respond, including first-query model loading",
+    }
+    result["retrieval_configuration"] = {
+        "mode": config.mode.value,
+        "contextual_policy": (
+            args.contextual_policy
+            if config.mode is RetrievalMode.CONTEXTUAL
+            else None
+        ),
     }
     Path(args.output).write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({key: value for key, value in result.items() if key != "sessions"}, indent=2))

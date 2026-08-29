@@ -5,7 +5,6 @@ import re
 from dataclasses import dataclass, field, fields
 from typing import Literal
 
-
 Strength = Literal["hard", "soft"]
 Source = Literal["current_turn", "conversation", "profile"]
 
@@ -49,6 +48,7 @@ class SessionState:
     price: PriceConstraint | None = None
     exclusions: dict[str, set[str]] = field(default_factory=dict)
     removed_constraints: set[str] = field(default_factory=set)
+    raw_current_turn_text: str = ""
 
 
 SLOT_NAMES = ("category", "color", "style", "material", "use_case")
@@ -446,6 +446,7 @@ class ConversationStateManager:
         if turn < 1:
             raise ValueError("turn must be at least 1")
         state = self._require_session(session_id)
+        state.raw_current_turn_text = user_message
         text = _normalise_message(user_message)
         _demote_previous_turn(state)
         _remove_named_slots(state, text)

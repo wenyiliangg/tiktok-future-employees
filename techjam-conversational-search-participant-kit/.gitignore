@@ -6,6 +6,9 @@ results.json
 data/catalog.jsonl
 data/releases/
 data/.dense-retrieval/
+# Reproducible raw retrieval traces; commit concise summaries instead.
+diagnostics/retrieval_regression/official_bm25_hits.json
+diagnostics/retrieval_regression/contextual_full_200.json
 # Organizer-only code, private evaluation data, manifests, and build reports.
 organizer/
 secure/
