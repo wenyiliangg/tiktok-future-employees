@@ -64,6 +64,11 @@ policies, and integration example are documented in
 wired into the evaluator-facing agent until conversation-state integration is
 owned by the designated integrator.
 
+The evaluator-facing agent also applies deterministic feature reranking to its
+bounded retrieval pool. Feature definitions, weights, constraint policies,
+diagnostics, and fallback behavior are documented in
+[`docs/feature_reranking.md`](docs/feature_reranking.md).
+
 The included weak BM25 starter scores Hit Rate@10 `0.125`, MRR `0.068034`, and
 MTTC `9.81` on the released public set. See `docs/baseline_results.json`.
 

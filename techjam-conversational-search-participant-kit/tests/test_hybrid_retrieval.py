@@ -128,7 +128,7 @@ class AgentIntegrationTest(unittest.TestCase):
         rows = [
             {"parent_asin": "A", "title": "white sneakers", "categories": ["shoes"]},
             {"parent_asin": "B", "title": "black sneakers", "categories": ["shoes"]},
-            {"parent_asin": "C", "title": "blue sneakers", "categories": ["shoes"]},
+            {"parent_asin": "C", "title": "red sneakers", "categories": ["shoes"]},
         ]
         self.catalog.write_text(
             "".join(json.dumps(row) + "\n" for row in rows), encoding="utf-8"
@@ -188,6 +188,15 @@ class AgentIntegrationTest(unittest.TestCase):
                 ids = [item["parent_asin"] for item in response["recommendations"]]
                 self.assertEqual(len(ids), len(set(ids)))
                 self.assertTrue(set(ids) <= {"A", "B", "C"})
+
+    def test_agent_reranks_a_bounded_pool_before_applying_top_k(self) -> None:
+        lexical = FakeRetriever(
+            [FakeResult("A", 10.0, 1), FakeResult("C", 1.0, 2)]
+        )
+        agent = self.make_agent("lexical", lexical)
+        agent.reset("rerank", {})
+        response = agent.respond("rerank", "red sneakers", 1, 1)
+        self.assertEqual(response["recommendations"], [{"parent_asin": "C"}])
 
     def test_both_retrievers_receive_same_overridden_active_state(self) -> None:
         lexical = FakeRetriever([FakeResult("A", 1.0, 1)])
