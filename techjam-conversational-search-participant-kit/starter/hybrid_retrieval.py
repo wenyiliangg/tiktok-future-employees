@@ -8,7 +8,7 @@ compares the raw score scales.
 from __future__ import annotations
 
 import math
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Protocol
@@ -18,6 +18,7 @@ class RetrievalMode(str, Enum):
     LEXICAL = "lexical"
     DENSE = "dense"
     HYBRID = "hybrid"
+    ROUTE_AWARE = "route-aware"
 
     @classmethod
     def parse(cls, value: str | RetrievalMode) -> RetrievalMode:
@@ -33,6 +34,98 @@ class RetrievalMode(str, Enum):
 
 
 @dataclass(frozen=True, slots=True)
+class RouteRetrievalPolicy:
+    """All candidate-generation behavior for one deterministic intent route."""
+
+    policy_id: str
+    lexical_weight: float
+    dense_weight: float
+    fallback_weight: float = 0.0
+    lexical_candidate_count: int = 200
+    dense_candidate_count: int = 200
+    fallback_candidate_count: int = 0
+    final_candidate_count: int = 10
+    rrf_k: float = 60.0
+    apply_hard_filters: bool = False
+    apply_exclusions: bool = True
+    always_attempt_fallback: bool = False
+    fallback_trigger_count: int = 10
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.policy_id, str) or not self.policy_id.strip():
+            raise ValueError("policy_id must not be empty")
+        for name in (
+            "lexical_candidate_count",
+            "dense_candidate_count",
+            "final_candidate_count",
+            "fallback_trigger_count",
+        ):
+            value = getattr(self, name)
+            if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
+                raise ValueError(f"{name} must be a positive integer")
+        if (
+            not isinstance(self.fallback_candidate_count, int)
+            or isinstance(self.fallback_candidate_count, bool)
+            or self.fallback_candidate_count < 0
+        ):
+            raise ValueError("fallback_candidate_count must be a non-negative integer")
+        for name in ("lexical_weight", "dense_weight", "fallback_weight", "rrf_k"):
+            value = getattr(self, name)
+            if (
+                isinstance(value, bool)
+                or not math.isfinite(float(value))
+                or float(value) < 0
+            ):
+                raise ValueError(f"{name} must be finite and non-negative")
+
+
+def default_route_policies() -> dict[str, RouteRetrievalPolicy]:
+    """Return independent, validated defaults for every supported route."""
+
+    return {
+        "buying": RouteRetrievalPolicy(
+            policy_id="retrieval.buying.v1",
+            lexical_weight=2.0,
+            dense_weight=1.0,
+            lexical_candidate_count=250,
+            dense_candidate_count=200,
+            apply_hard_filters=True,
+            apply_exclusions=True,
+        ),
+        "browsing": RouteRetrievalPolicy(
+            policy_id="retrieval.browsing.v1",
+            lexical_weight=0.75,
+            dense_weight=1.5,
+            lexical_candidate_count=250,
+            dense_candidate_count=400,
+            apply_hard_filters=False,
+            apply_exclusions=True,
+        ),
+        "boundary": RouteRetrievalPolicy(
+            policy_id="retrieval.boundary.v1",
+            lexical_weight=0.5,
+            dense_weight=0.5,
+            fallback_weight=1.5,
+            lexical_candidate_count=100,
+            dense_candidate_count=200,
+            fallback_candidate_count=50,
+            apply_hard_filters=False,
+            apply_exclusions=True,
+            always_attempt_fallback=True,
+        ),
+        "uncertain": RouteRetrievalPolicy(
+            policy_id="retrieval.safe-default.v1",
+            lexical_weight=1.0,
+            dense_weight=1.0,
+            lexical_candidate_count=200,
+            dense_candidate_count=200,
+            apply_hard_filters=False,
+            apply_exclusions=True,
+        ),
+    }
+
+
+@dataclass(frozen=True, slots=True)
 class HybridRetrievalConfig:
     mode: RetrievalMode | str = RetrievalMode.LEXICAL
     lexical_candidate_count: int = 200
@@ -42,6 +135,9 @@ class HybridRetrievalConfig:
     lexical_weight: float = 1.0
     dense_weight: float = 1.0
     rrf_k: float = 60.0
+    route_policies: Mapping[str, RouteRetrievalPolicy] = field(
+        default_factory=default_route_policies
+    )
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "mode", RetrievalMode.parse(self.mode))
@@ -68,6 +164,19 @@ class HybridRetrievalConfig:
             or float(self.rrf_k) < 0
         ):
             raise ValueError("rrf_k must be finite and non-negative")
+        required_routes = {"buying", "browsing", "boundary", "uncertain"}
+        if set(self.route_policies) != required_routes:
+            raise ValueError(
+                "route_policies must define exactly: buying, browsing, boundary, uncertain"
+            )
+        for route, policy in self.route_policies.items():
+            if not isinstance(policy, RouteRetrievalPolicy):
+                raise TypeError(f"route policy {route!r} must be RouteRetrievalPolicy")
+
+    def policy_for(self, route: str) -> RouteRetrievalPolicy:
+        """Resolve malformed or unsupported labels to the conservative policy."""
+
+        return self.route_policies.get(route, self.route_policies["uncertain"])
 
 
 @dataclass(slots=True)
@@ -79,6 +188,10 @@ class Candidate:
     dense_rank: int | None = None
     sources: set[str] = field(default_factory=set)
     fusion_score: float = 0.0
+    component_scores: dict[str, float] = field(default_factory=dict)
+    fallback_score: float = 0.0
+    fallback_rank: int | None = None
+    filter_diagnostics: dict[str, object] | None = None
     original_position: int | None = None
     rerank_score: float | None = None
     rerank_diagnostics: dict[str, object] | None = None
@@ -122,25 +235,47 @@ def merge_candidates(
     """Merge exact catalog identities, filtering non-catalog results."""
 
     merged: dict[str, Candidate] = {}
-    for result in lexical_results:
-        candidate = lexical_candidate(result)
+
+    def merge_source(result: RankedResult, source: str) -> None:
+        raw_asin = getattr(result, "parent_asin", None)
+        raw_score = getattr(result, "score", None)
+        raw_rank = getattr(result, "rank", None)
         if (
-            candidate.parent_asin not in valid_catalog_ids
-            or candidate.parent_asin in merged
+            not isinstance(raw_asin, str)
+            or not raw_asin
+            or raw_asin not in valid_catalog_ids
         ):
-            continue
-        merged[candidate.parent_asin] = candidate
-    for result in dense_results:
-        incoming = dense_candidate(result)
-        if incoming.parent_asin not in valid_catalog_ids:
-            continue
-        existing = merged.get(incoming.parent_asin)
+            return
+        if isinstance(raw_score, bool) or not isinstance(raw_score, (int, float, str)):
+            return
+        try:
+            score = float(raw_score)
+            rank = _validated_rank(raw_rank, source)
+        except (TypeError, ValueError):
+            return
+        if not math.isfinite(score):
+            return
+
+        existing = merged.get(raw_asin)
         if existing is None:
-            merged[incoming.parent_asin] = incoming
-            continue
-        existing.dense_score = incoming.dense_score
-        existing.dense_rank = incoming.dense_rank
-        existing.sources.add("dense")
+            existing = Candidate(parent_asin=raw_asin)
+            merged[raw_asin] = existing
+        rank_name = f"{source}_rank"
+        score_name = f"{source}_score"
+        current_rank = getattr(existing, rank_name)
+        if current_rank is None or rank < current_rank:
+            setattr(existing, rank_name, rank)
+            setattr(existing, score_name, score)
+        elif rank == current_rank:
+            setattr(
+                existing, score_name, max(float(getattr(existing, score_name)), score)
+            )
+        existing.sources.add(source)
+
+    for result in lexical_results:
+        merge_source(result, "lexical")
+    for result in dense_results:
+        merge_source(result, "dense")
     return list(merged.values())
 
 
@@ -170,6 +305,7 @@ def reciprocal_rank_fusion(
             if candidate.dense_rank is not None
             else 0.0
         )
+        candidate.component_scores = {"lexical": lexical, "dense": dense}
         candidate.fusion_score = lexical + dense
 
     sentinel = 2**63 - 1

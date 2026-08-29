@@ -77,9 +77,8 @@ class FallbackCandidate(_Issue2BCandidate):
     branches where Issue 2B is not present yet.
     """
 
-    fallback_score: float
-    rank: int
-    source: Literal["fallback"]
+    rank: int = 0
+    source: Literal["fallback"] = FALLBACK_SOURCE
 
     def __init__(
         self,
@@ -95,6 +94,8 @@ class FallbackCandidate(_Issue2BCandidate):
         if isinstance(shared_sources, set):
             shared_sources.add(FALLBACK_SOURCE)
         self.fallback_score = fallback_score
+        if hasattr(self, "fallback_rank"):
+            self.fallback_rank = rank
         self.rank = rank
         self.source = source
 

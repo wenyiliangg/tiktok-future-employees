@@ -48,12 +48,18 @@ python3 -m evaluator.local_evaluator --retrieval-mode dense
 python3 -m evaluator.local_evaluator --retrieval-mode hybrid \
   --lexical-candidates 200 --dense-candidates 200 --final-candidates 10 \
   --lexical-weight 1.0 --dense-weight 1.0 --rrf-k 60
+python3 -m evaluator.local_evaluator --retrieval-mode route-aware
 ```
 
 `lexical` is the safe default. Dense and hybrid modes use
 `data/.dense-retrieval/catalog-minilm.npz` unless `--dense-cache` supplies a
 different compatible Issue 2A cache. Hybrid falls back to the improved lexical
 retriever when dense initialization or retrieval fails.
+
+`route-aware` composes the deterministic intent router with lexical, dense, and
+Boundary fallback candidate generation. Route policies and diagnostics are
+documented in [`docs/route_aware_retrieval.md`](docs/route_aware_retrieval.md).
+It remains an explicitly selected experimental mode rather than the default.
 
 Edit `starter/agent.py` to implement your system. Do not edit the evaluator or public labels when reporting your local score.
 The command writes per-session results and aggregate metrics to `results.json`.
