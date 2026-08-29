@@ -10,20 +10,32 @@ import re
 import statistics
 import time
 from collections import Counter
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import replace
 from pathlib import Path
 from typing import Any, cast
 
 from dense_retrieval import DEFAULT_MODEL_NAME, DEFAULT_MODEL_REVISION, DenseRetriever
 
+from .ambiguity_analysis import AmbiguityAnalyzer
 from .bm25_anchor import BM25AnchorRetriever
+from .clarification_controller import (
+    ClarificationController,
+    compose_clarification_response,
+    is_explicit_no_preference,
+    normalize_attribute,
+)
 from .contextual_retrieval import (
     ContextualRetrievalPolicy,
     policy_by_id,
     rank_contextual_candidates,
 )
-from .conversation_state import OVERRIDE_CUE_RE, ConversationStateManager, SearchQuery
+from .conversation_state import (
+    OVERRIDE_CUE_RE,
+    ConversationStateManager,
+    SearchQuery,
+    explicit_attribute_mentions,
+)
 from .fallback_candidates import FallbackCandidateGenerator
 from .feature_reranker import (
     CatalogView,
@@ -47,6 +59,7 @@ from .route_aware_retrieval import (
     merge_fallback_candidates,
     route_reciprocal_rank_fusion,
 )
+from .selective_clarification import SelectiveClarificationConfig
 
 LOGGER = logging.getLogger(__name__)
 NEGATIVE_FEEDBACK_RE = re.compile(
@@ -77,6 +90,9 @@ class Agent:
         fallback_generator: Any | None = None,
         anchor_retriever: Any | None = None,
         contextual_policy: ContextualRetrievalPolicy | None = None,
+        clarification_config: SelectiveClarificationConfig | None = None,
+        ambiguity_analyzer: Any | None = None,
+        clarification_controller: Any | None = None,
     ) -> None:
         self.catalog_path = Path(catalog_path)
         self.config = config or HybridRetrievalConfig()
@@ -90,6 +106,13 @@ class Agent:
         self._anchor: Any | None = anchor_retriever
         self._contextual_policy = contextual_policy or policy_by_id(
             "contextual.browsing-dense.v1"
+        )
+        self._clarification_config = (
+            clarification_config or SelectiveClarificationConfig()
+        )
+        self._ambiguity_analyzer = ambiguity_analyzer or AmbiguityAnalyzer()
+        self._clarification_controller = (
+            clarification_controller or ClarificationController()
         )
         self._known_negative_ids: dict[str, set[str]] = {}
         self._last_recommended_ids: dict[str, tuple[str, ...]] = {}
@@ -107,6 +130,13 @@ class Agent:
         self._fallback_success_count = 0
         self._routing_latencies_ms: list[float] = []
         self._retrieval_latencies_ms: list[float] = []
+        self._clarification_candidates: dict[str, list[Candidate]] = {}
+        self._contextual_routes: dict[str, str] = {}
+        self._clarification_disabled_sessions: set[str] = set()
+        self._clarification_question_counts: Counter[str] = Counter()
+        self._clarification_route_counts: Counter[str] = Counter()
+        self._clarification_resolution_counts: Counter[str] = Counter()
+        self._clarification_failure_count = 0
 
         self._catalog_ids = self._load_catalog_ids(self.catalog_path)
         self._catalog_view = catalog_view or InMemoryCatalogView.from_jsonl(
@@ -197,6 +227,17 @@ class Agent:
         self._known_negative_ids[session_id] = set()
         self._last_recommended_ids[session_id] = ()
         self._active_raw_intent[session_id] = ""
+        self._clarification_candidates[session_id] = []
+        self._contextual_routes.pop(session_id, None)
+        self._clarification_disabled_sessions.discard(session_id)
+        if self._clarification_config.enabled:
+            try:
+                self._clarification_controller.reset(session_id)
+            except Exception as error:  # noqa: BLE001 - clarification-only boundary
+                self._clarification_disabled_sessions.add(session_id)
+                self._record_clarification_failure(
+                    session_id, "controller_reset", error
+                )
 
     def respond(
         self,
@@ -205,6 +246,9 @@ class Agent:
         turn: int,
         top_k: int,
     ) -> dict:
+        if self._clarification_config.enabled:
+            self._resolve_pending_clarification(session_id, user_message)
+
         if self.config.mode is RetrievalMode.CONTEXTUAL:
             if OVERRIDE_CUE_RE.search(user_message):
                 self._known_negative_ids.setdefault(session_id, set()).clear()
@@ -219,12 +263,14 @@ class Agent:
 
         query = self._state.update(session_id, user_message, turn)
         limit = min(max(0, top_k), self.config.final_candidate_count)
+        if self._clarification_config.enabled and not limit:
+            self._clarification_candidates[session_id] = []
         candidates = self._retrieve(query, limit, session_id, turn) if limit else []
         self._last_candidates[session_id] = copy.deepcopy(candidates)
         self._last_recommended_ids[session_id] = tuple(
             candidate.parent_asin for candidate in candidates
         )
-        return {
+        response: dict[str, object] = {
             "message": "Here are the closest matches I found.",
             "ask_attribute": None,
             "recommendations": [
@@ -232,6 +278,117 @@ class Agent:
             ],
             "usage": {"prompt_tokens": 0, "completion_tokens": 0},
         }
+        if not self._clarification_config.enabled:
+            return response
+        return self._attach_clarification(response, session_id=session_id, turn=turn)
+
+    def _resolve_pending_clarification(
+        self, session_id: str, user_message: str
+    ) -> None:
+        """Resolve only an explicit parser-recognized answer or explicit decline."""
+
+        if session_id in self._clarification_disabled_sessions:
+            return
+        try:
+            clarification_state = self._clarification_controller.state_for(session_id)
+            pending = getattr(clarification_state, "pending_attribute", None)
+            if pending is None:
+                return
+            if is_explicit_no_preference(user_message):
+                if self._clarification_controller.record_resolution(
+                    session_id, pending, "no_preference"
+                ):
+                    self._clarification_resolution_counts["declined"] += 1
+                return
+            recognized = {
+                normalize_attribute(attribute)
+                for attribute in explicit_attribute_mentions(user_message)
+            }
+            if (
+                pending in recognized
+                and self._clarification_controller.record_resolution(
+                    session_id, pending, "answered"
+                )
+            ):
+                self._clarification_resolution_counts["answered"] += 1
+        except Exception as error:  # noqa: BLE001 - clarification-only boundary
+            self._record_clarification_failure(session_id, "resolve_pending", error)
+
+    def _attach_clarification(
+        self,
+        response: Mapping[str, object],
+        *,
+        session_id: str,
+        turn: int,
+    ) -> dict[str, object]:
+        """Fail closed while composing one post-retrieval clarification."""
+
+        config = self._clarification_config
+        if (
+            session_id in self._clarification_disabled_sessions
+            or self.config.mode is not RetrievalMode.CONTEXTUAL
+            or self._contextual_policy.policy_id != config.required_retrieval_policy_id
+        ):
+            return dict(response)
+        try:
+            candidates = self._clarification_candidates.get(session_id, [])[
+                : config.analysis_candidate_limit
+            ]
+            catalog = self._clarification_catalog(candidates)
+            active_state = self._state.state_for(session_id)
+            opportunity = self._ambiguity_analyzer.analyze(
+                candidates, catalog, active_state
+            )
+            route = self._contextual_routes.get(session_id, "uncertain")
+            if not config.is_eligible(route, len(candidates), opportunity):
+                return dict(response)
+            prompt = self._clarification_controller.build_prompt(
+                session_id, opportunity.attribute, active_state, turn
+            )
+            if prompt is None:
+                return dict(response)
+            composed = compose_clarification_response(response, prompt)
+            attribute = str(prompt.ask_attribute)
+            self._clarification_question_counts[attribute] += 1
+            self._clarification_route_counts[route] += 1
+            return composed
+        except Exception as error:  # noqa: BLE001 - clarification-only boundary
+            self._record_clarification_failure(session_id, "attach_question", error)
+            return dict(response)
+
+    def _clarification_catalog(
+        self, candidates: list[Candidate]
+    ) -> dict[str, Mapping[Any, object]]:
+        """Adapt metadata already held by the bounded in-memory catalog view."""
+
+        catalog: dict[str, Mapping[Any, object]] = {}
+        for candidate in candidates:
+            document = self._catalog_view.get(candidate.parent_asin)
+            if document is None:
+                continue
+            if isinstance(document, Mapping):
+                catalog[candidate.parent_asin] = document
+                continue
+            metadata = getattr(document, "metadata", None)
+            product: dict[str, object] = (
+                dict(metadata) if isinstance(metadata, Mapping) else {}
+            )
+            price = getattr(document, "price", None)
+            if price is not None:
+                product["price"] = price
+            catalog[candidate.parent_asin] = product
+        return catalog
+
+    def _record_clarification_failure(
+        self, session_id: str, operation: str, error: Exception
+    ) -> None:
+        self._clarification_failure_count += 1
+        LOGGER.warning(
+            "clarification %s failed for session %s; returning recommendations only: %s",
+            operation,
+            session_id,
+            error,
+        )
 
     def _retrieve(
         self,
@@ -382,18 +539,30 @@ class Agent:
             ).route
         except Exception:  # noqa: BLE001 - router component boundary
             route = "uncertain"
+        self._contextual_routes[session_id] = route
         dense_results: list[RankedResult] = []
         if policy.dense_weight > 0 and route in policy.dense_routes:
             dense_results = self._safe_dense_results(active_text)
-        return rank_contextual_candidates(
+        ranking_limit = limit
+        if self._clarification_config.enabled:
+            ranking_limit = min(
+                policy.candidate_count,
+                max(limit, self._clarification_config.analysis_candidate_limit),
+            )
+        ranked = rank_contextual_candidates(
             anchor,
             state_results,
             dense_results,
             self._catalog_ids,
             self._known_negative_ids.get(session_id, set()),
             policy,
-            limit=limit,
+            limit=ranking_limit,
         )
+        if self._clarification_config.enabled:
+            self._clarification_candidates[session_id] = copy.deepcopy(
+                ranked[: self._clarification_config.analysis_candidate_limit]
+            )
+        return ranked[:limit]
 
     def _retrieve_route_aware(
         self,
@@ -693,6 +862,27 @@ class Agent:
         """Expose copied candidate provenance for debugging and later reranking."""
 
         return copy.deepcopy(self._last_candidates.get(session_id, []))
+
+    def clarification_diagnostics_snapshot(self) -> dict[str, object]:
+        """Return aggregate feature-only diagnostics for benchmark reporting."""
+
+        return {
+            "enabled": self._clarification_config.enabled,
+            "question_count": sum(self._clarification_question_counts.values()),
+            "question_counts_by_attribute": dict(
+                sorted(self._clarification_question_counts.items())
+            ),
+            "question_counts_by_observable_route": dict(
+                sorted(self._clarification_route_counts.items())
+            ),
+            "resolution_counts": dict(
+                sorted(self._clarification_resolution_counts.items())
+            ),
+            "clarification_failure_count": self._clarification_failure_count,
+            "analysis_candidate_limit": (
+                self._clarification_config.analysis_candidate_limit
+            ),
+        }
 
     def _require_lexical(self) -> Any:
         if self._lexical is None:

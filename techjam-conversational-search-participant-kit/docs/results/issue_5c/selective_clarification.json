@@ -1,0 +1,220 @@
+{
+  "schema_version": 1,
+  "issue": "5C",
+  "date": "2026-08-30",
+  "git": {
+    "starting_main_head": "eae4cda1c6bf6303049e2a7ddebb773ee562f551",
+    "branch": "feature/issue-5c-selective-clarification",
+    "final_commit": "the commit containing this artifact"
+  },
+  "decision": "completed_but_disabled",
+  "champion": {
+    "policy_id": "contextual.browsing-dense.v1",
+    "configuration_fingerprint_sha256": "972158c9e3905e4d0bb5390eb7224fe3fe00b9f5444337099b3422960bf0448a",
+    "fingerprint_origin": "Derived deterministically from the exact stored policy and documented evaluator defaults; the legacy recovery artifacts contain no fingerprint field.",
+    "metrics": {
+      "sample_count": 200,
+      "hit_rate_at_10": 0.14,
+      "mrr": 0.070423,
+      "mttc": 9.78,
+      "efficiency": 0.122,
+      "recommended_technical_score": 0.115527
+    },
+    "scenario_metrics": null,
+    "scenario_metrics_note": "Exact champion per-scenario metrics are absent from the committed recovery artifacts and the intentionally uncommitted raw trace was not available. They were not recomputed or approximated.",
+    "stored_selector_elapsed_seconds": 43.117254,
+    "hit_count": 28,
+    "hit_ids": [
+      "public_0010",
+      "public_0044",
+      "public_0046",
+      "public_0061",
+      "public_0067",
+      "public_0070",
+      "public_0081",
+      "public_0082",
+      "public_0085",
+      "public_0088",
+      "public_0090",
+      "public_0107",
+      "public_0119",
+      "public_0129",
+      "public_0134",
+      "public_0137",
+      "public_0142",
+      "public_0143",
+      "public_0148",
+      "public_0155",
+      "public_0156",
+      "public_0160",
+      "public_0166",
+      "public_0168",
+      "public_0185",
+      "public_0190",
+      "public_0193",
+      "public_0197"
+    ]
+  },
+  "experiment": {
+    "feature_flag": "SelectiveClarificationConfig.enabled",
+    "default_enabled": false,
+    "evaluated_enabled": true,
+    "retrieval_configuration_fingerprint_sha256": "972158c9e3905e4d0bb5390eb7224fe3fe00b9f5444337099b3422960bf0448a",
+    "configuration": {
+      "required_retrieval_policy_id": "contextual.browsing-dense.v1",
+      "analysis_candidate_limit": 50,
+      "browsing_min_candidates": 4,
+      "browsing_min_expected_reduction": 0.2,
+      "buying_min_candidates": 8,
+      "buying_min_expected_reduction": 0.5,
+      "eligible_routes": [
+        "browsing",
+        "buying"
+      ],
+      "max_questions_per_session": 1,
+      "turn_10_questions_allowed": false
+    },
+    "metrics": {
+      "sample_count": 200,
+      "hit_rate_at_10": 0.14,
+      "mrr": 0.074867,
+      "mttc": 9.74,
+      "efficiency": 0.126,
+      "recommended_technical_score": 0.11766
+    },
+    "scenario_metrics": {
+      "boundary": {
+        "sample_count": 10,
+        "hit_rate_at_10": 0.0,
+        "mrr": 0.0,
+        "mttc": 11.0
+      },
+      "browsing": {
+        "sample_count": 80,
+        "hit_rate_at_10": 0.0625,
+        "mrr": 0.021597,
+        "mttc": 10.575
+      },
+      "buying": {
+        "sample_count": 80,
+        "hit_rate_at_10": 0.2375,
+        "mrr": 0.126508,
+        "mttc": 8.625
+      },
+      "intent_override": {
+        "sample_count": 30,
+        "hit_rate_at_10": 0.133333,
+        "mrr": 0.104167,
+        "mttc": 10.066667
+      }
+    },
+    "performance": {
+      "agent_startup_seconds": 8.024318,
+      "average_response_latency_ms": 27.251815,
+      "p95_response_latency_ms": 25.694792,
+      "peak_process_rss_bytes": 1079312384
+    },
+    "hit_comparison": {
+      "retained_champion_hit_count": 27,
+      "lost_champion_hit_ids": [
+        "public_0070"
+      ],
+      "new_hit_ids": [
+        "public_0102"
+      ],
+      "new_hit_details": {
+        "public_0102": {
+          "first_hit_turn": 2,
+          "best_rank": 1
+        }
+      },
+      "regressions_against_25_stored_bm25_anchor_hits": {},
+      "exact_contextual_rank_turn_comparison_note": "The stored champion artifact does not include exact champion rank/turn details for all 28 hits. The lost hit makes the retention and no-regression gates fail regardless."
+    },
+    "questions": {
+      "total": 38,
+      "by_attribute": {
+        "category": 28,
+        "feature": 9,
+        "style": 1
+      },
+      "by_observable_route": {
+        "browsing": 13,
+        "buying": 25
+      },
+      "resolution_counts": {
+        "declined": 25
+      },
+      "repeated_question_count": 0
+    },
+    "failures": {
+      "clarification_failure_count": 0,
+      "response_exception_count": 0,
+      "invalid_ask_attribute_count": 0,
+      "invalid_asin_count": 0,
+      "duplicate_recommendation_count": 0
+    }
+  },
+  "verification": {
+    "focused_5c": "python3 -m unittest tests.test_selective_clarification -v: PASS (15 tests)",
+    "focused_5a_5b": "python3 -m unittest tests.test_ambiguity_analysis tests.test_clarification_controller -v: PASS (41 tests after the 5C decline-recognition assertion)",
+    "relevant_regression": "python3 -m unittest tests.test_conversation_state tests.test_bm25_anchor tests.test_contextual_retrieval tests.test_search_query_integration tests.test_evaluator -v: PASS (38 tests at the ordered checkpoint)",
+    "full_suite": "python3 -m unittest discover -s tests: PASS (202 tests)",
+    "ruff": "ruff format --check and ruff check on all changed Python files: PASS",
+    "focused_mypy": "python3 -m mypy --follow-imports=skip starter/selective_clarification.py starter/clarification_controller.py starter/conversation_state.py: PASS",
+    "broader_mypy": "NOT CLEAN: 24 pre-existing errors in ambiguity_analysis.py, feature_reranker.py, fallback_candidates.py, and legacy Agent typing paths; no new Issue 5C errors remained.",
+    "disabled_parity": "PASS: exact stored/runtime policy equality, unchanged fingerprint, exact response equality, and analyzer not invoked",
+    "enabled_evaluator_runs": 1,
+    "enabled_evaluator_command": "python3 -m evaluator.local_evaluator --retrieval-mode contextual --contextual-policy contextual.browsing-dense.v1 --enable-selective-clarification --output diagnostics/retrieval_regression/issue_5c_clarification_enabled_200.json"
+  },
+  "promotion_gates": {
+    "retains_all_28_champion_hits": {
+      "passed": false,
+      "evidence": "27/28 retained; public_0070 was lost"
+    },
+    "no_later_turn_or_worse_rank_on_champion_hits": {
+      "passed": false,
+      "evidence": "public_0070 changed from a champion hit to a miss; exact retained-hit champion trace is also absent from committed artifacts"
+    },
+    "hit_rate_at_10_at_least_0_140": {
+      "passed": true,
+      "evidence": "0.140"
+    },
+    "mrr_no_lower_than_0_070423": {
+      "passed": true,
+      "evidence": "0.074867"
+    },
+    "mttc_no_higher_than_9_780": {
+      "passed": true,
+      "evidence": "9.740"
+    },
+    "efficiency_does_not_regress": {
+      "passed": true,
+      "evidence": "0.126 versus 0.122"
+    },
+    "no_scenario_metric_regresses": {
+      "passed": false,
+      "evidence": "Cannot be demonstrated because exact champion scenario metrics are absent from committed recovery artifacts; no values were invented or recomputed"
+    },
+    "technical_score_strictly_greater_than_0_115527": {
+      "passed": true,
+      "evidence": "0.117660"
+    },
+    "produces_incremental_value": {
+      "passed": true,
+      "evidence": "new hit public_0102 at turn 2, rank 1"
+    },
+    "zero_repeated_questions": {
+      "passed": true,
+      "evidence": "0"
+    },
+    "zero_exceptions_invalid_asins_or_duplicates": {
+      "passed": true,
+      "evidence": "0 response exceptions, 0 invalid ASINs, 0 duplicates"
+    },
+    "no_runtime_benchmark_leakage": {
+      "passed": true,
+      "evidence": "Changed runtime files contain no target ASIN, public session, scenario, or ground-truth branching"
+    }
+  }
+}

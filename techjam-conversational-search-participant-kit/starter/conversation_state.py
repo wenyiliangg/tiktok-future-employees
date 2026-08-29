@@ -218,8 +218,12 @@ PRICE_REMOVAL_RE = re.compile(
     r"(?:no|without)\s+(?:a\s+)?(?:budget|price|cost)(?:\s+(?:limit|constraint))?",
     re.IGNORECASE,
 )
-SOFT_CUE_RE = re.compile(r"\b(?:prefer|preference|ideally|if possible|would like)\b", re.IGNORECASE)
-OVERRIDE_CUE_RE = re.compile(r"\b(?:actually|instead|rather|changed my mind|ignore my earlier)\b", re.IGNORECASE)
+SOFT_CUE_RE = re.compile(
+    r"\b(?:prefer|preference|ideally|if possible|would like)\b", re.IGNORECASE
+)
+OVERRIDE_CUE_RE = re.compile(
+    r"\b(?:actually|instead|rather|changed my mind|ignore my earlier)\b", re.IGNORECASE
+)
 GENERIC_REMOVAL_RE = re.compile(
     r"(?:don't|do not)\s+(?:need|want|care about)\s+([a-z][a-z0-9 -]{0,40}?)\s+anymore\b|"
     r"no longer\s+(?:need|want)\s+([a-z][a-z0-9 -]{0,40}?)(?:[.;,]|$)",
@@ -228,7 +232,11 @@ GENERIC_REMOVAL_RE = re.compile(
 
 
 def _normalise_message(message: str) -> str:
-    return re.sub(r"\s+", " ", message.lower().replace("’", "'").replace("—", " ").replace("–", " ")).strip()
+    return re.sub(
+        r"\s+",
+        " ",
+        message.lower().replace("’", "'").replace("—", " ").replace("–", " "),
+    ).strip()
 
 
 def _alias_pattern(alias: str) -> re.Pattern[str]:
@@ -249,13 +257,18 @@ def _find_slot_mentions(text: str, slot: str) -> list[tuple[int, int, str]]:
 
 
 def _is_directly_negated(text: str, start: int) -> bool:
-    prefix = text[max(0, start - 32):start]
-    return bool(re.search(r"(?:\bnot|\bno|\bwithout|\bexcept|\bavoid|\bdon't want|\bdo not want)\s+(?:any\s+)?$", prefix))
+    prefix = text[max(0, start - 32) : start]
+    return bool(
+        re.search(
+            r"(?:\bnot|\bno|\bwithout|\bexcept|\bavoid|\bdon't want|\bdo not want)\s+(?:any\s+)?$",
+            prefix,
+        )
+    )
 
 
 def _is_removed_value(text: str, start: int, end: int) -> bool:
-    prefix = text[max(0, start - 32):start]
-    suffix = text[end:min(len(text), end + 24)]
+    prefix = text[max(0, start - 32) : start]
+    suffix = text[end : min(len(text), end + 24)]
     if re.search(r"no longer (?:need|want|like)\s+$", prefix):
         return True
     return bool(
@@ -264,9 +277,15 @@ def _is_removed_value(text: str, start: int, end: int) -> bool:
     )
 
 
-def _constraint(value: str, source: Source, turn: int, strength: Strength | None = None) -> Constraint:
-    resolved_strength: Strength = strength or ("soft" if source == "profile" else "hard")
-    return Constraint(value=value, strength=resolved_strength, source=source, updated_turn=turn)
+def _constraint(
+    value: str, source: Source, turn: int, strength: Strength | None = None
+) -> Constraint:
+    resolved_strength: Strength = strength or (
+        "soft" if source == "profile" else "hard"
+    )
+    return Constraint(
+        value=value, strength=resolved_strength, source=source, updated_turn=turn
+    )
 
 
 def _price_constraint(
@@ -276,7 +295,9 @@ def _price_constraint(
     turn: int,
     strength: Strength | None = None,
 ) -> PriceConstraint:
-    resolved_strength: Strength = strength or ("soft" if source == "profile" else "hard")
+    resolved_strength: Strength = strength or (
+        "soft" if source == "profile" else "hard"
+    )
     return PriceConstraint(
         minimum=minimum,
         maximum=maximum,
@@ -286,11 +307,15 @@ def _price_constraint(
     )
 
 
-def _extract_price(text: str, source: Source, turn: int, strength: Strength | None) -> PriceConstraint | None:
+def _extract_price(
+    text: str, source: Source, turn: int, strength: Strength | None
+) -> PriceConstraint | None:
     range_match = PRICE_RANGE_RE.search(text)
     if range_match:
         first, second = (float(range_match.group(1)), float(range_match.group(2)))
-        return _price_constraint(min(first, second), max(first, second), source, turn, strength)
+        return _price_constraint(
+            min(first, second), max(first, second), source, turn, strength
+        )
     maximum_match = PRICE_MAX_RE.search(text)
     minimum_match = PRICE_MIN_RE.search(text)
     if maximum_match or minimum_match:
@@ -303,8 +328,36 @@ def _extract_price(text: str, source: Source, turn: int, strength: Strength | No
         )
     budget_match = PRICE_BUDGET_RE.search(text)
     if budget_match:
-        return _price_constraint(None, float(budget_match.group(1)), source, turn, strength)
+        return _price_constraint(
+            None, float(budget_match.group(1)), source, turn, strength
+        )
     return None
+
+
+def explicit_attribute_mentions(user_message: str) -> frozenset[str]:
+    """Return attributes explicitly recognized by the Issue 1A slot parser.
+
+    This read-only helper deliberately shares the finite aliases, negation rules,
+    and price parser used by :class:`ConversationStateManager`.  It lets callers
+    identify an explicit clarification answer before the authoritative state
+    update without creating a second preference store.
+    """
+
+    text = _normalise_message(user_message)
+    mentioned: set[str] = set()
+    for slot in SLOT_NAMES:
+        if any(
+            not _is_directly_negated(text, start)
+            and not _is_removed_value(text, start, end)
+            for start, end, _value in _find_slot_mentions(text, slot)
+        ):
+            mentioned.add(slot)
+    if (
+        not PRICE_REMOVAL_RE.search(text)
+        and _extract_price(text, "current_turn", 1, "hard") is not None
+    ):
+        mentioned.add("price")
+    return frozenset(mentioned)
 
 
 def _profile_text(user_profile: dict) -> str:
@@ -325,7 +378,9 @@ def _demote_previous_turn(state: SessionState) -> None:
             setattr(
                 state,
                 slot,
-                Constraint(value.value, value.strength, "conversation", value.updated_turn),
+                Constraint(
+                    value.value, value.strength, "conversation", value.updated_turn
+                ),
             )
     if state.price is not None and state.price.source == "current_turn":
         state.price = PriceConstraint(
@@ -409,7 +464,9 @@ def build_search_query(state: SessionState) -> SearchQuery:
             terms.append(f"under ${_format_amount(state.price.maximum)}")
         elif state.price.minimum is not None:
             terms.append(f"over ${_format_amount(state.price.minimum)}")
-    exclusions = {slot: set(values) for slot, values in state.exclusions.items() if values}
+    exclusions = {
+        slot: set(values) for slot, values in state.exclusions.items() if values
+    }
     return SearchQuery(
         text=" ".join(terms),
         category=state.category,
@@ -456,7 +513,9 @@ class ConversationStateManager:
                 state.removed_constraints.add("price")
             state.price = None
 
-        mentions_by_slot = {slot: _find_slot_mentions(text, slot) for slot in SLOT_NAMES}
+        mentions_by_slot = {
+            slot: _find_slot_mentions(text, slot) for slot in SLOT_NAMES
+        }
         positive_by_slot: dict[str, str] = {}
         exclusions_by_slot: dict[str, set[str]] = {}
         removed_supported_values: set[str] = set()
@@ -522,9 +581,15 @@ class ConversationStateManager:
         try:
             return self._sessions[session_id]
         except KeyError as error:
-            raise RuntimeError("reset must be called before updating or querying a session") from error
+            raise RuntimeError(
+                "reset must be called before updating or querying a session"
+            ) from error
 
 
 def slot_dict(state: SessionState) -> dict[str, Constraint | PriceConstraint | None]:
     """Return the active slot fields without mutable bookkeeping collections."""
-    return {item.name: getattr(state, item.name) for item in fields(state) if item.name in (*SLOT_NAMES, "price")}
+    return {
+        item.name: getattr(state, item.name)
+        for item in fields(state)
+        if item.name in (*SLOT_NAMES, "price")
+    }
