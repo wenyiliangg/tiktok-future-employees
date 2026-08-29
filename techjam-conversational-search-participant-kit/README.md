@@ -64,6 +64,10 @@ policies, and integration example are documented in
 wired into the evaluator-facing agent until conversation-state integration is
 owned by the designated integrator.
 
+The evaluator-facing agent also applies deterministic feature reranking to its
+bounded retrieval pool. Feature definitions, weights, constraint policies,
+diagnostics, and fallback behavior are documented in
+[`docs/feature_reranking.md`](docs/feature_reranking.md).
 The deterministic Boundary/empty-intent fallback generator, profile-evidence
 adapter, diversity configuration, and Issue 2B-compatible candidate adapter are
 documented in [`docs/fallback_candidates.md`](docs/fallback_candidates.md). The
