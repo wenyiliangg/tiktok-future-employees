@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import argparse
+import ctypes
 import json
 import random
 import re
-import resource
 import statistics
 import sys
 import time
@@ -14,6 +14,11 @@ from pathlib import Path
 
 from starter.agent import Agent
 from starter.hybrid_retrieval import HybridRetrievalConfig, RetrievalMode
+
+try:
+    import resource
+except ImportError:  # The resource module is unavailable on Windows.
+    resource = None  # type: ignore[assignment]
 
 MAX_TURNS = 10
 TOP_K = 10
@@ -25,6 +30,51 @@ MATERIALS = ("cotton", "polyester", "nylon", "leather", "wool", "spandex", "silk
 SEARCH_FIELDS = ("title", "features", "details", "description", "categories", "store")
 MATERIAL_RE = re.compile(r"\b(cotton|polyester|nylon|leather|wool|spandex|silk|rayon|fabric)\b", re.I)
 COLOR_RE = re.compile(r"\b(black|white|blue|red|pink|green|brown|gray|grey|purple|yellow|orange)\b", re.I)
+
+
+def peak_process_rss_bytes() -> int:
+    """Return peak process RSS in bytes on Unix and Windows."""
+    if resource is not None:
+        raw_peak_rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        return int(raw_peak_rss if sys.platform == "darwin" else raw_peak_rss * 1024)
+
+    if sys.platform == "win32":
+        class ProcessMemoryCounters(ctypes.Structure):
+            _fields_ = (
+                ("cb", ctypes.c_ulong),
+                ("page_fault_count", ctypes.c_ulong),
+                ("peak_working_set_size", ctypes.c_size_t),
+                ("working_set_size", ctypes.c_size_t),
+                ("quota_peak_paged_pool_usage", ctypes.c_size_t),
+                ("quota_paged_pool_usage", ctypes.c_size_t),
+                ("quota_peak_non_paged_pool_usage", ctypes.c_size_t),
+                ("quota_non_paged_pool_usage", ctypes.c_size_t),
+                ("pagefile_usage", ctypes.c_size_t),
+                ("peak_pagefile_usage", ctypes.c_size_t),
+            )
+
+        counters = ProcessMemoryCounters()
+        counters.cb = ctypes.sizeof(counters)
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        psapi = ctypes.WinDLL("psapi", use_last_error=True)
+        get_current_process = kernel32.GetCurrentProcess
+        get_current_process.restype = ctypes.c_void_p
+        get_process_memory_info = psapi.GetProcessMemoryInfo
+        get_process_memory_info.argtypes = (
+            ctypes.c_void_p,
+            ctypes.POINTER(ProcessMemoryCounters),
+            ctypes.c_ulong,
+        )
+        get_process_memory_info.restype = ctypes.c_int
+        succeeded = get_process_memory_info(
+            get_current_process(),
+            ctypes.byref(counters),
+            counters.cb,
+        )
+        if succeeded:
+            return int(counters.peak_working_set_size)
+
+    return 0
 
 
 def searchable_text(product: dict) -> str:
@@ -349,11 +399,9 @@ def main() -> None:
     agent = Agent(args.catalog, config=config, dense_cache_path=args.dense_cache)
     agent_startup_seconds = time.perf_counter() - startup_started
     result = evaluate(agent, samples, catalog_ids, categories, products)
-    raw_peak_rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-    peak_rss_bytes = int(raw_peak_rss if sys.platform == "darwin" else raw_peak_rss * 1024)
     result["performance"] = {
         "agent_startup_seconds": round(agent_startup_seconds, 6),
-        "peak_process_rss_bytes": peak_rss_bytes,
+        "peak_process_rss_bytes": peak_process_rss_bytes(),
         "startup_scope": (
             "Agent construction: catalog ID validation and mode-specific index/cache loading; "
             "sentence-transformer model loading remains lazy until the first dense query"

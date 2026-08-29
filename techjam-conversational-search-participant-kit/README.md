@@ -68,6 +68,11 @@ The evaluator-facing agent also applies deterministic feature reranking to its
 bounded retrieval pool. Feature definitions, weights, constraint policies,
 diagnostics, and fallback behavior are documented in
 [`docs/feature_reranking.md`](docs/feature_reranking.md).
+The deterministic Boundary/empty-intent fallback generator, profile-evidence
+adapter, diversity configuration, and Issue 2B-compatible candidate adapter are
+documented in [`docs/fallback_candidates.md`](docs/fallback_candidates.md). The
+generator is also intentionally route-agnostic and is not wired into the
+evaluator-facing agent by this issue.
 
 The included weak BM25 starter scores Hit Rate@10 `0.125`, MRR `0.068034`, and
 MTTC `9.81` on the released public set. See `docs/baseline_results.json`.
