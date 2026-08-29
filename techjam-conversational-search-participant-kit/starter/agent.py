@@ -11,6 +11,12 @@ from typing import Any, cast
 from dense_retrieval import DEFAULT_MODEL_NAME, DEFAULT_MODEL_REVISION, DenseRetriever
 
 from .conversation_state import ConversationStateManager, SearchQuery
+from .feature_reranker import (
+    CatalogView,
+    FeatureReranker,
+    InMemoryCatalogView,
+    RerankerConfig,
+)
 from .hybrid_retrieval import (
     Candidate,
     HybridRetrievalConfig,
@@ -42,6 +48,9 @@ class Agent:
         lexical_retriever: Any | None = None,
         dense_retriever: Any | None = None,
         dense_factory: DenseFactory | None = None,
+        reranker: FeatureReranker | None = None,
+        reranker_config: RerankerConfig | None = None,
+        catalog_view: CatalogView | None = None,
     ) -> None:
         self.catalog_path = Path(catalog_path)
         self.config = config or HybridRetrievalConfig()
@@ -53,6 +62,10 @@ class Agent:
 
         catalog_ids = self._load_catalog_ids(self.catalog_path)
         self._catalog_ids = catalog_ids
+        self._catalog_view = catalog_view or InMemoryCatalogView.from_jsonl(
+            self.catalog_path
+        )
+        self._reranker = reranker or FeatureReranker(reranker_config)
 
         if dense_factory is None:
             cache_path = Path(dense_cache_path)
@@ -119,6 +132,7 @@ class Agent:
 
     def _retrieve(self, query: SearchQuery, limit: int) -> list[Candidate]:
         mode = self.config.mode
+        pool_limit = max(limit, self.config.rerank_candidate_count)
         if mode is RetrievalMode.LEXICAL:
             lexical = cast(
                 list[RankedResult],
@@ -126,7 +140,10 @@ class Agent:
                     query, top_n=self.config.lexical_candidate_count
                 ),
             )
-            return rank_single_source(lexical, mode, self._catalog_ids, limit)
+            pool = rank_single_source(lexical, mode, self._catalog_ids, pool_limit)
+            return self._reranker.rerank(
+                query, pool, self._catalog_view, top_k=limit
+            )
 
         if mode is RetrievalMode.DENSE:
             if not query.text.strip():
@@ -137,7 +154,10 @@ class Agent:
                     query.text, top_n=self.config.dense_candidate_count
                 ),
             )
-            return rank_single_source(dense, mode, self._catalog_ids, limit)
+            pool = rank_single_source(dense, mode, self._catalog_ids, pool_limit)
+            return self._reranker.rerank(
+                query, pool, self._catalog_view, top_k=limit
+            )
 
         lexical = cast(
             list[RankedResult],
@@ -147,7 +167,10 @@ class Agent:
         )
         dense = self._safe_dense_results(query.text)
         merged = merge_candidates(lexical, dense, self._catalog_ids)
-        return reciprocal_rank_fusion(merged, self.config, limit=limit)
+        pool = reciprocal_rank_fusion(merged, self.config, limit=pool_limit)
+        return self._reranker.rerank(
+            query, pool, self._catalog_view, top_k=limit
+        )
 
     def _require_lexical(self) -> Any:
         if self._lexical is None:

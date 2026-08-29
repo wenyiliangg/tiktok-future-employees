@@ -109,7 +109,9 @@ result JSON instead of silently replacing the fixed reference.
 
 ## 5. Current retrieval evaluations
 
-Return to the current kit worktree and run:
+Return to the current kit worktree and run the current integrated agent. All
+three modes automatically feature-rerank a bounded pool before returning ten
+recommendations:
 
 ```bash
 python -m evaluator.local_evaluator --catalog data/catalog.jsonl --dataset data/public_set.jsonl --retrieval-mode lexical --output results.json
@@ -119,18 +121,30 @@ python -m evaluator.local_evaluator --catalog data/catalog.jsonl --dataset data/
 python -m evaluator.local_evaluator --catalog data/catalog.jsonl --dataset data/public_set.jsonl --retrieval-mode hybrid --lexical-candidates 200 --dense-candidates 200 --final-candidates 10 --lexical-weight 1.0 --dense-weight 1.0 --rrf-k 60 --dense-cache data/.dense-retrieval/catalog-minilm.npz --output results.json
 ```
 
-The versioned raw reference outputs are under `docs/results/issue_2b/`. The
-quality metrics should be deterministic for the same code, catalog, model
-revision, configuration, and dataset. Startup/latency/RSS are hardware- and
-cache-state-dependent. The default `results.json` is ignored; copy only a
+The versioned raw reference outputs under `docs/results/issue_2b/` predate the
+feature reranker and are not expected outputs for these current commands.
+Current quality metrics should be deterministic for the same code, catalog,
+model revision, configuration, and dataset. Startup/latency/RSS are hardware-
+and cache-state-dependent. The default `results.json` is ignored; copy only a
 reviewed, intentionally versioned result into a documented results directory.
+
+Run the catalog-independent synthetic reranker benchmark with:
+
+```bash
+python -m benchmarks.benchmark_feature_reranker --pool-size 100 --runs 1000
+```
+
+For an exact source checkout of the recorded pre-reranker Issue 2B comparison,
+create a separate worktree at commit `36a9974`, provide the same authorized
+catalog, and use the commands preserved in `docs/issue_2b_results.md` there.
 
 ## 6. Final and ablation evaluation
 
 No Issues 6A/6B final configuration or complete ablation artifacts are present
-on this branch. Do not label the Issue 2B rows as final results. The current
-evaluator only supports `lexical`, `dense`, and `hybrid`; there is no `final`
-mode.
+on this branch. No end-to-end result has been recorded after feature-reranker
+integration. Do not label the Issue 2B rows as current or final results. The
+current evaluator only supports `lexical`, `dense`, and `hybrid`; there is no
+`final` mode.
 
 After final integration, run the supported mode with every non-default setting
 spelled out, for example:
@@ -159,7 +173,8 @@ evaluator output.
 
 - `docs/baseline_results.json`: fixed weak-BM25 aggregate reference.
 - `docs/issue_2b_results.md`: environment, configuration, quality, scenario,
-  runtime, memory, and interpretation for the retrieval-mode comparison.
+  runtime, memory, and interpretation for the pre-reranker retrieval-mode
+  comparison.
 - `docs/results/issue_2b/lexical.json`: improved lexical raw output.
 - `docs/results/issue_2b/dense.json`: compatible-cache dense raw output.
 - `docs/results/issue_2b/hybrid.json`: fixed-hybrid raw output.
@@ -167,5 +182,6 @@ evaluator output.
   with the same dense quality results.
 
 Results must be read alongside the limitations in the main README: none of the
-recorded experimental modes beats the fixed baseline, and the later standalone
-router/fallback/ambiguity modules are not part of these evaluations.
+recorded experimental modes beats the fixed baseline, and the feature reranker
+plus later standalone router/fallback/ambiguity modules are not part of these
+evaluations.

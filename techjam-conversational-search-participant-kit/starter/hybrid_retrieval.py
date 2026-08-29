@@ -38,6 +38,7 @@ class HybridRetrievalConfig:
     lexical_candidate_count: int = 200
     dense_candidate_count: int = 200
     final_candidate_count: int = 10
+    rerank_candidate_count: int = 100
     lexical_weight: float = 1.0
     dense_weight: float = 1.0
     rrf_k: float = 60.0
@@ -48,6 +49,7 @@ class HybridRetrievalConfig:
             "lexical_candidate_count",
             "dense_candidate_count",
             "final_candidate_count",
+            "rerank_candidate_count",
         ):
             value = getattr(self, name)
             if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
@@ -77,6 +79,9 @@ class Candidate:
     dense_rank: int | None = None
     sources: set[str] = field(default_factory=set)
     fusion_score: float = 0.0
+    original_position: int | None = None
+    rerank_score: float | None = None
+    rerank_diagnostics: dict[str, object] | None = None
 
 
 class RankedResult(Protocol):

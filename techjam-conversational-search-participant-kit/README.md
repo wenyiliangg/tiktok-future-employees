@@ -13,10 +13,10 @@ organizer's additional 800-session set is private and is not in this repository.
 
 ## Current implementation status
 
-The evaluator-facing `Agent` currently uses structured conversation state and
-supports lexical, dense, or fixed-hybrid retrieval. Several later-stage
-components exist as deterministic, tested modules but are not yet connected to
-`Agent.respond`.
+The evaluator-facing `Agent` currently uses structured conversation state,
+supports lexical, dense, or fixed-hybrid retrieval, and feature-reranks the
+bounded candidate pool. Several later-stage components exist as deterministic,
+tested modules but are not yet connected to `Agent.respond`.
 
 | Capability | Status on this branch |
 | --- | --- |
@@ -28,7 +28,7 @@ components exist as deterministic, tested modules but are not yet connected to
 | Intent routing | Implemented and tested, not connected to retrieval policy |
 | Boundary/empty-intent fallback candidates | Implemented and tested, not connected to `Agent` |
 | Candidate-pool ambiguity analysis | Implemented and tested, not connected to `Agent` |
-| Reranking | Not implemented |
+| Deterministic feature reranking | Integrated after every retrieval mode |
 | User-facing clarification questions/history | Not implemented; `ask_attribute` is always `null` |
 
 Consequently, the standalone routing, fallback, and ambiguity modules do not
@@ -47,7 +47,8 @@ flowchart LR
     Q --> D[Dense MiniLM]
     L --> F[Mode selection or fixed RRF]
     D --> F
-    F --> R[Top-10 recommendations]
+    F --> X[Feature reranker]
+    X --> R[Top-10 recommendations]
 
     Q -. standalone .-> I[IntentRouter]
     Q -. standalone .-> B[FallbackCandidateGenerator]
@@ -65,6 +66,9 @@ profile-derived values. The agent then retrieves with the configured mode:
 - **Hybrid:** lexical and dense candidates combined by weighted reciprocal-rank
   fusion: `lexical_weight / (rrf_k + lexical_rank) + dense_weight /
   (rrf_k + dense_rank)`.
+- **Reranking:** a deterministic feature model scores up to 100 retrieved
+  candidates using retrieval evidence plus active category, attribute, price,
+  profile, hard-constraint, and exclusion signals before returning the Top 10.
 
 Hybrid catches dense initialization/query failures and continues with lexical
 candidates. Dense-only mode surfaces dense failures. This is different from the
@@ -170,7 +174,7 @@ python -m evaluator.local_evaluator --catalog data/catalog.jsonl --dataset data/
 # Dense mode
 python -m evaluator.local_evaluator --catalog data/catalog.jsonl --dataset data/public_set.jsonl --retrieval-mode dense --dense-cache data/.dense-retrieval/catalog-minilm.npz --output results.json
 
-# Fixed hybrid mode used for the recorded Issue 2B run
+# Current hybrid mode (Issue 2B retrieval settings; current reranker also runs)
 python -m evaluator.local_evaluator --catalog data/catalog.jsonl --dataset data/public_set.jsonl --retrieval-mode hybrid --lexical-candidates 200 --dense-candidates 200 --final-candidates 10 --lexical-weight 1.0 --dense-weight 1.0 --rrf-k 60 --dense-cache data/.dense-retrieval/catalog-minilm.npz --output results.json
 ```
 
@@ -201,9 +205,10 @@ These are the frozen weak-BM25 public-set metrics recorded in
 ### Latest recorded retrieval-mode comparison
 
 These Issue 2B measurements are a preliminary mode ablation, not final tuned
-submission results. They used the same 200 sessions, frozen catalog, active
-state, candidate sizes 200/200/10, and fixed hybrid weights 1.0/1.0 with
-`rrf_k=60`. No alternative fusion weights were tested.
+submission results. They predate the integrated feature reranker. They used the
+same 200 sessions, frozen catalog, active state, candidate sizes 200/200/10, and
+fixed hybrid weights 1.0/1.0 with `rrf_k=60`. No alternative fusion weights
+were tested.
 
 | Mode | HR@10 | MRR | MTTC | Efficiency | TechnicalScore |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -224,8 +229,9 @@ environment details, and interpretation are in
 Issues 6A and 6B have not deposited final or full ablation result artifacts in
 this branch. Therefore no final improvement is claimed and no number above
 should be presented as the final submission score. The only recorded ablation
-is the retrieval-mode comparison above. State, routing, fallback, reranking,
-clarification, and alternative fusion-weight ablations remain future work.
+is the pre-reranker retrieval-mode comparison above. State, routing, fallback,
+reranker-effect, clarification, and alternative fusion-weight ablations remain
+unrecorded.
 
 When a final configuration exists, record the exact command, commit SHA,
 catalog hash, environment, raw JSON, and metrics before replacing this pending
@@ -234,8 +240,9 @@ do not invent a `final` mode.
 
 ## Runtime and memory
 
-Recorded on 2026-08-29 on Apple arm64, macOS 26.5.2, Python 3.12.2, CPU
-inference. Times and peak process RSS are environment-specific.
+Recorded before feature-reranker integration on 2026-08-29 on Apple arm64,
+macOS 26.5.2, Python 3.12.2, CPU inference. Times and peak process RSS are
+environment-specific and are not measurements of the current end-to-end agent.
 
 | Mode | Startup (s) | Avg response (ms) | p95 response (ms) | Peak RSS (GB) |
 | --- | ---: | ---: | ---: | ---: |
@@ -271,8 +278,9 @@ deterministic agent returns zero prompt/completion tokens and calls no LLM.
   the recorded lexical result.
 - Routing, fallback generation, and ambiguity analysis are not orchestrated by
   the evaluator-facing agent.
-- No reranker or user-facing clarification strategy exists. The agent never
-  asks a question and cannot learn unsupported attributes through dialogue.
+- The integrated feature reranker has unit and synthetic benchmark coverage but
+  no recorded end-to-end public evaluation yet. The agent still never asks a
+  question and cannot learn unsupported attributes through dialogue.
 - Hybrid uses fixed RRF weights; they have not been tuned or ablated.
 - Dense retrieval requires local model files and a large generated cache. First
   use may require a model download and several minutes of CPU work.
@@ -281,13 +289,13 @@ deterministic agent returns zero prompt/completion tokens and calls no LLM.
 
 ## Team contributions
 
-Based on repository commit history through `c98f8ab`:
+Based on repository commit history through `f9d6689`:
 
 | Contributor | Implemented areas |
 | --- | --- |
 | Qingya (`he-qingya`) | Conversation state and active queries (1A), deterministic intent routing (3A), candidate ambiguity analysis (5A), final architecture/reproduction documentation (7A) |
 | Wen Yi Liang (`wenyiliangg`) | Repository/evaluator setup, field-aware lexical retrieval, deterministic Boundary/profile fallback candidates (3B) |
-| Naufal Rayhan (`imnarwhal`) | Starter/catalog setup, dense retrieval and cache (2A), fixed hybrid fusion and integration (2B) |
+| Naufal Rayhan (`imnarwhal`) | Starter/catalog setup, dense retrieval and cache (2A), fixed hybrid fusion and integration (2B), deterministic feature reranking (4A) |
 
 Contributors should update this table if ownership or naming differs from the
 commit record. Documentation and measurements must remain evidence-backed.
@@ -301,6 +309,7 @@ commit record. Documentation and measurements must remain evidence-backed.
 - [`docs/conversation_state.md`](docs/conversation_state.md)
 - [`docs/lexical_retrieval.md`](docs/lexical_retrieval.md)
 - [`docs/dense_retrieval.md`](docs/dense_retrieval.md)
+- [`docs/feature_reranking.md`](docs/feature_reranking.md)
 - [`docs/intent_router.md`](docs/intent_router.md)
 - [`docs/fallback_candidates.md`](docs/fallback_candidates.md)
 - [`docs/ambiguity_analysis.md`](docs/ambiguity_analysis.md)

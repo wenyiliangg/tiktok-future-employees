@@ -14,9 +14,12 @@ session and `respond` once per turn. `Agent.reset` initializes a clean
    updates the active `SessionState` and returns a `SearchQuery`.
 2. `Agent._retrieve` dispatches that active query to lexical, dense, or hybrid
    retrieval according to `HybridRetrievalConfig.mode`.
-3. Results are filtered to identifiers found in the loaded catalog, ranked, and
-   truncated to `min(top_k, final_candidate_count)`.
-4. The agent returns the identifiers with a fixed message, no clarification
+3. Results are filtered to identifiers found in the loaded catalog and reduced
+   to the configured reranking pool (100 candidates by default).
+4. `FeatureReranker.rerank` applies active-query and retrieval features, filters
+   known hard/exclusion violations, and returns
+   `min(top_k, final_candidate_count)` candidates.
+5. The agent returns the identifiers with a fixed message, no clarification
    attribute, and zero model-token usage.
 
 Raw turns are not concatenated into retrieval text. This prevents removed or
@@ -84,9 +87,10 @@ score(d) = lexical_weight / (rrf_k + lexical_rank(d))
          + dense_weight   / (rrf_k + dense_rank(d))
 ```
 
-A missing source contributes zero. The recorded configuration uses 200 lexical
-candidates, 200 dense candidates, ten final candidates, weights 1.0/1.0, and
-`rrf_k=60`. Equal scores have a deterministic rank/source/identifier tie break.
+A missing source contributes zero. The recorded pre-reranker configuration uses
+200 lexical candidates, 200 dense candidates, ten final candidates, weights
+1.0/1.0, and `rrf_k=60`. Equal scores have a deterministic
+rank/source/identifier tie break.
 
 ## Intent routing
 
@@ -118,10 +122,24 @@ the current system.
 
 ## Reranking
 
-There is no candidate reranking stage on this branch. Lexical and dense modes
-return their source order; hybrid returns fixed-RRF order. Any Issue 4C reranker
-is future work and must be documented only after its code and evaluation
-evidence are merged.
+`starter.feature_reranker.FeatureReranker` is integrated after lexical, dense,
+and hybrid retrieval. It reranks a bounded pool without retrieving or scanning
+the catalog. Its configurable features include normalized source scores and
+ranks, fusion score, category match, active-attribute coverage, price
+compatibility, individual color/style/material/use-case matches, and soft
+profile affinity.
+
+Known mismatches receive contradiction penalties. Known hard-constraint and
+explicit-exclusion violations are filtered by default; missing metadata is
+treated as unknown rather than a contradiction. Duplicates are merged by
+`parent_asin`, results remain a subset of the retrieved pool, caller objects are
+not mutated, and ties use score, original position, then identifier. If the
+catalog view is unavailable, the reranker preserves the unique input order and
+records the fallback reason in diagnostics.
+
+The implementation has unit and synthetic performance coverage, but no
+post-integration public-set result artifact has been recorded yet. The Issue 2B
+quality/runtime tables therefore describe the earlier pre-reranker agent.
 
 ## Clarification strategy
 
@@ -145,10 +163,12 @@ and evaluator integration do not exist. The current response always returns
 
 ## Configuration boundaries
 
-- `HybridRetrievalConfig`: mode, source/final pool sizes, weights, and RRF
-  constant.
+- `HybridRetrievalConfig`: mode, source/reranking/final pool sizes, weights, and
+  RRF constant.
 - Lexical configuration: field weights, boosts, filtering and pool behavior.
 - Dense configuration: model/revision, cache path, encoding batch/device.
+- `RerankerConfig`: feature weights, mismatch/filter penalties and policies,
+  missing-value handling, and deterministic tie behavior.
 - `RouterConfig`: thresholds, evidence weights, conflict margin, phrase lists,
   and policy identifiers.
 - `FallbackConfig`: evidence/source weights, quality priors, exclusion penalty,
