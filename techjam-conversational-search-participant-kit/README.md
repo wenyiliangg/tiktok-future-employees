@@ -43,6 +43,12 @@ python3 -m evaluator.local_evaluator
 Edit `starter/agent.py` to implement your system. Do not edit the evaluator or public labels when reporting your local score.
 The command writes per-session results and aggregate metrics to `results.json`.
 
+The standalone field-aware BM25 retriever, structured query contract, filtering
+policies, and integration example are documented in
+[`docs/lexical_retrieval.md`](docs/lexical_retrieval.md). It is intentionally not
+wired into the evaluator-facing agent until conversation-state integration is
+owned by the designated integrator.
+
 The included weak BM25 starter scores Hit Rate@10 `0.125`, MRR `0.068034`, and
 MTTC `9.81` on the released public set. See `docs/baseline_results.json`.
 
