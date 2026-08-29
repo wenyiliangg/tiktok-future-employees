@@ -14,6 +14,7 @@ from starter.clarification_controller import (
     ClarificationControllerConfig,
     ClarificationPrompt,
     compose_clarification_response,
+    is_explicit_no_preference,
     normalize_attribute,
 )
 from starter.conversation_state import (
@@ -149,6 +150,13 @@ class ClarificationControllerTest(unittest.TestCase):
         self.assertEqual(state.declined_attributes, frozenset({"style"}))
         self.assertEqual(state.no_preference_attributes, frozenset({"style"}))
         self.assertIsNone(state.pending_attribute)
+
+    def test_evaluator_decline_phrase_is_explicitly_recognized(self) -> None:
+        self.assertTrue(
+            is_explicit_no_preference(
+                "I don't have an additional preference for material."
+            )
+        )
 
     def test_unrelated_activity_is_not_automatically_an_answer(self) -> None:
         self.controller.build_prompt("session", "color", SessionState(), 1)

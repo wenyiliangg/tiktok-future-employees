@@ -9,6 +9,7 @@ one contract-compatible question.
 from __future__ import annotations
 
 import copy
+import re
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Literal, TypeAlias, cast
@@ -68,6 +69,14 @@ PROMPT_TEMPLATES: dict[ClarificationAttribute, str] = {
     "use_case": "What will you mainly use it for?",
     "other": "What matters most to you when choosing?",
 }
+
+NO_PREFERENCE_RE = re.compile(
+    r"\b(?:no preference|don['’]?t have (?:an? )?(?:additional )?preference|"
+    r"anything is fine|anything works|any(?:thing)? will do|"
+    r"either is fine|doesn['’]?t matter|does not matter|don['’]?t care|do not care|"
+    r"use your judg(?:e)?ment|no additional preference)\b",
+    re.IGNORECASE,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -141,6 +150,12 @@ def normalize_attribute(value: object) -> ClarificationAttribute | None:
     if normalized in OFFICIAL_ATTRIBUTES:
         return cast(ClarificationAttribute, normalized)
     return None
+
+
+def is_explicit_no_preference(user_message: object) -> bool:
+    """Recognize only finite, explicit decline/no-preference expressions."""
+
+    return isinstance(user_message, str) and bool(NO_PREFERENCE_RE.search(user_message))
 
 
 def _active_value(active_state: ActiveState, attribute: str) -> object | None:
