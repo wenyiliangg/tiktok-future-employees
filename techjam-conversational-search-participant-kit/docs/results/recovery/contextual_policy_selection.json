@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "baseline_mode": "bm25",
+  "baseline_metrics": {
+    "sample_count": 200,
+    "hit_rate_at_10": 0.125,
+    "mrr": 0.068034,
+    "mttc": 9.81,
+    "efficiency": 0.119,
+    "recommended_technical_score": 0.10671
+  },
+  "promotion_rule": "zero response exceptions; retain every BM25 hit; no later/worse BM25 hit; gain at least one session; improve TechnicalScore",
+  "challengers": [
+    {
+      "policy": {
+        "policy_id": "contextual.negative-rotation.v1",
+        "protected_lexical_count": 10,
+        "candidate_count": 100,
+        "state_lexical_weight": 0.0,
+        "dense_weight": 0.0,
+        "dense_routes": [],
+        "rrf_k": 60.0
+      },
+      "metrics": {
+        "sample_count": 200,
+        "hit_rate_at_10": 0.135,
+        "mrr": 0.069867,
+        "mttc": 9.785,
+        "efficiency": 0.1215,
+        "recommended_technical_score": 0.11276
+      },
+      "elapsed_seconds": 30.690564,
+      "passed": true,
+      "gates": {
+        "zero_response_exceptions": true,
+        "retains_all_bm25_successes": true,
+        "no_bm25_hit_turn_or_rank_regression": true,
+        "gains_at_least_one_session": true,
+        "technical_score_improves": true
+      },
+      "lost_session_ids": [],
+      "gained_session_ids": [
+        "public_0085",
+        "public_0137"
+      ],
+      "baseline_hit_regressions": {}
+    },
+    {
+      "policy": {
+        "policy_id": "contextual.state-aware.v1",
+        "protected_lexical_count": 8,
+        "candidate_count": 100,
+        "state_lexical_weight": 0.35,
+        "dense_weight": 0.0,
+        "dense_routes": [],
+        "rrf_k": 60.0
+      },
+      "metrics": {
+        "sample_count": 200,
+        "hit_rate_at_10": 0.135,
+        "mrr": 0.069812,
+        "mttc": 9.785,
+        "efficiency": 0.1215,
+        "recommended_technical_score": 0.112744
+      },
+      "elapsed_seconds": 73.058618,
+      "passed": false,
+      "gates": {
+        "zero_response_exceptions": true,
+        "retains_all_bm25_successes": false,
+        "no_bm25_hit_turn_or_rank_regression": true,
+        "gains_at_least_one_session": true,
+        "technical_score_improves": true
+      },
+      "lost_session_ids": [
+        "public_0143"
+      ],
+      "gained_session_ids": [
+        "public_0085",
+        "public_0137",
+        "public_0157"
+      ],
+      "baseline_hit_regressions": {}
+    },
+    {
+      "policy": {
+        "policy_id": "contextual.browsing-dense.v1",
+        "protected_lexical_count": 8,
+        "candidate_count": 100,
+        "state_lexical_weight": 0.0,
+        "dense_weight": 0.5,
+        "dense_routes": [
+          "browsing"
+        ],
+        "rrf_k": 60.0
+      },
+      "metrics": {
+        "sample_count": 200,
+        "hit_rate_at_10": 0.14,
+        "mrr": 0.070423,
+        "mttc": 9.78,
+        "efficiency": 0.122,
+        "recommended_technical_score": 0.115527
+      },
+      "elapsed_seconds": 43.117254,
+      "passed": true,
+      "gates": {
+        "zero_response_exceptions": true,
+        "retains_all_bm25_successes": true,
+        "no_bm25_hit_turn_or_rank_regression": true,
+        "gains_at_least_one_session": true,
+        "technical_score_improves": true
+      },
+      "lost_session_ids": [],
+      "gained_session_ids": [
+        "public_0070",
+        "public_0085",
+        "public_0137"
+      ],
+      "baseline_hit_regressions": {}
+    },
+    {
+      "policy": {
+        "policy_id": "contextual.combined.v1",
+        "protected_lexical_count": 8,
+        "candidate_count": 100,
+        "state_lexical_weight": 0.25,
+        "dense_weight": 0.5,
+        "dense_routes": [
+          "browsing"
+        ],
+        "rrf_k": 60.0
+      },
+      "metrics": {
+        "sample_count": 200,
+        "hit_rate_at_10": 0.14,
+        "mrr": 0.070367,
+        "mttc": 9.76,
+        "efficiency": 0.124,
+        "recommended_technical_score": 0.11591
+      },
+      "elapsed_seconds": 79.250684,
+      "passed": false,
+      "gates": {
+        "zero_response_exceptions": true,
+        "retains_all_bm25_successes": false,
+        "no_bm25_hit_turn_or_rank_regression": true,
+        "gains_at_least_one_session": true,
+        "technical_score_improves": true
+      },
+      "lost_session_ids": [
+        "public_0143"
+      ],
+      "gained_session_ids": [
+        "public_0070",
+        "public_0085",
+        "public_0137",
+        "public_0157"
+      ],
+      "baseline_hit_regressions": {}
+    }
+  ],
+  "selected_policy_id": "contextual.browsing-dense.v1",
+  "promotion_passed": true,
+  "default_mode_after_selection": "contextual",
+  "baseline_elapsed_seconds": 29.428517,
+  "dataset": "data/public_set.jsonl",
+  "catalog": "data/catalog.jsonl",
+  "dense_cache": "data/.dense-retrieval/catalog-minilm.npz"
+}
