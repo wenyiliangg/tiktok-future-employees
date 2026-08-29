@@ -40,6 +40,21 @@ Python 3.10 or later is recommended. The starter uses only the Python standard l
 python3 -m evaluator.local_evaluator
 ```
 
+Issue 2B retrieval modes use the same stateful agent and evaluator contract:
+
+```bash
+python3 -m evaluator.local_evaluator --retrieval-mode lexical
+python3 -m evaluator.local_evaluator --retrieval-mode dense
+python3 -m evaluator.local_evaluator --retrieval-mode hybrid \
+  --lexical-candidates 200 --dense-candidates 200 --final-candidates 10 \
+  --lexical-weight 1.0 --dense-weight 1.0 --rrf-k 60
+```
+
+`lexical` is the safe default. Dense and hybrid modes use
+`data/.dense-retrieval/catalog-minilm.npz` unless `--dense-cache` supplies a
+different compatible Issue 2A cache. Hybrid falls back to the improved lexical
+retriever when dense initialization or retrieval fails.
+
 Edit `starter/agent.py` to implement your system. Do not edit the evaluator or public labels when reporting your local score.
 The command writes per-session results and aggregate metrics to `results.json`.
 

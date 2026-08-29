@@ -4,13 +4,16 @@ import argparse
 import json
 import random
 import re
+import resource
 import statistics
+import sys
+import time
 import uuid
 from collections import defaultdict
 from pathlib import Path
 
 from starter.agent import Agent
-
+from starter.hybrid_retrieval import HybridRetrievalConfig, RetrievalMode
 
 MAX_TURNS = 10
 TOP_K = 10
@@ -221,6 +224,8 @@ def evaluate(
     products: dict[str, dict],
 ) -> dict:
     sessions: list[dict] = []
+    response_latencies_ms: list[float] = []
+    response_exception_count = 0
     total_prompt_tokens = 0
     total_completion_tokens = 0
     for sample in samples:
@@ -236,10 +241,14 @@ def evaluate(
         hit_turn: int | None = None
         best_rank: int | None = None
         for turn in range(1, MAX_TURNS + 1):
+            response_started = time.perf_counter()
             try:
                 response = agent.respond(session_id, user_message, turn, TOP_K)
             except Exception:
+                response_exception_count += 1
                 response = {"message": "", "ask_attribute": None, "recommendations": []}
+            finally:
+                response_latencies_ms.append((time.perf_counter() - response_started) * 1000.0)
             if not isinstance(response, dict) or not isinstance(response.get("message"), str):
                 response = {"message": "", "ask_attribute": None, "recommendations": []}
             usage = response.get("usage")
@@ -281,6 +290,11 @@ def evaluate(
     grouped: dict[str, list[dict]] = defaultdict(list)
     for session in sessions:
         grouped[session["scenario_type"]].append(session)
+    ordered_latencies = sorted(response_latencies_ms)
+    p95_index = max(0, min(
+        len(ordered_latencies) - 1,
+        int(0.95 * len(ordered_latencies) + 0.999999) - 1,
+    ))
     return {
         **overall,
         "efficiency": round(efficiency, 6),
@@ -289,6 +303,13 @@ def evaluate(
             "prompt_tokens": total_prompt_tokens,
             "completion_tokens": total_completion_tokens,
             "total_tokens": total_prompt_tokens + total_completion_tokens,
+        },
+        "evaluation_diagnostics": {
+            "completed_session_count": len(sessions),
+            "response_count": len(response_latencies_ms),
+            "response_exception_count": response_exception_count,
+            "average_response_latency_ms": round(statistics.fmean(response_latencies_ms), 6),
+            "p95_response_latency_ms": round(ordered_latencies[p95_index], 6),
         },
         "scenario_metrics": {name: metric_summary(grouped[name]) for name in sorted(grouped)},
         "sessions": sessions,
@@ -300,10 +321,45 @@ def main() -> None:
     parser.add_argument("--catalog", default="data/catalog.jsonl")
     parser.add_argument("--dataset", default="data/public_set.jsonl")
     parser.add_argument("--output", default="results.json")
+    parser.add_argument(
+        "--retrieval-mode",
+        choices=[mode.value for mode in RetrievalMode],
+        default=RetrievalMode.LEXICAL.value,
+    )
+    parser.add_argument("--lexical-candidates", type=int, default=200)
+    parser.add_argument("--dense-candidates", type=int, default=200)
+    parser.add_argument("--final-candidates", type=int, default=10)
+    parser.add_argument("--lexical-weight", type=float, default=1.0)
+    parser.add_argument("--dense-weight", type=float, default=1.0)
+    parser.add_argument("--rrf-k", type=float, default=60.0)
+    parser.add_argument("--dense-cache", default="data/.dense-retrieval/catalog-minilm.npz")
     args = parser.parse_args()
     samples = load_jsonl(args.dataset)
     catalog_ids, categories, products = catalog_index(args.catalog)
-    result = evaluate(Agent(args.catalog), samples, catalog_ids, categories, products)
+    config = HybridRetrievalConfig(
+        mode=args.retrieval_mode,
+        lexical_candidate_count=args.lexical_candidates,
+        dense_candidate_count=args.dense_candidates,
+        final_candidate_count=args.final_candidates,
+        lexical_weight=args.lexical_weight,
+        dense_weight=args.dense_weight,
+        rrf_k=args.rrf_k,
+    )
+    startup_started = time.perf_counter()
+    agent = Agent(args.catalog, config=config, dense_cache_path=args.dense_cache)
+    agent_startup_seconds = time.perf_counter() - startup_started
+    result = evaluate(agent, samples, catalog_ids, categories, products)
+    raw_peak_rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    peak_rss_bytes = int(raw_peak_rss if sys.platform == "darwin" else raw_peak_rss * 1024)
+    result["performance"] = {
+        "agent_startup_seconds": round(agent_startup_seconds, 6),
+        "peak_process_rss_bytes": peak_rss_bytes,
+        "startup_scope": (
+            "Agent construction: catalog ID validation and mode-specific index/cache loading; "
+            "sentence-transformer model loading remains lazy until the first dense query"
+        ),
+        "latency_scope": "wall-clock time inside Agent.respond, including first-query model loading",
+    }
     Path(args.output).write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({key: value for key, value in result.items() if key != "sessions"}, indent=2))
 
