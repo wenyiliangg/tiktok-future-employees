@@ -77,6 +77,7 @@ class Candidate:
     dense_rank: int | None = None
     sources: set[str] = field(default_factory=set)
     fusion_score: float = 0.0
+    semantic_score: float | None = None
 
 
 class RankedResult(Protocol):

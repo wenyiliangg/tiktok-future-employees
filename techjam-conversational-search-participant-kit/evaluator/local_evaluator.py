@@ -14,6 +14,11 @@ from pathlib import Path
 
 from starter.agent import Agent
 from starter.hybrid_retrieval import HybridRetrievalConfig, RetrievalMode
+from starter.semantic_reranker import (
+    DEFAULT_RERANKER_MAX_LENGTH,
+    DEFAULT_RERANKER_MODEL,
+    SemanticRerankerConfig,
+)
 
 try:
     import resource
@@ -23,13 +28,35 @@ except ImportError:  # The resource module is unavailable on Windows.
 MAX_TURNS = 10
 TOP_K = 10
 ALLOWED_ATTRIBUTES = {
-    "category", "material", "color", "size", "style", "brand",
-    "budget", "feature", "use_case", "other",
+    "category",
+    "material",
+    "color",
+    "size",
+    "style",
+    "brand",
+    "budget",
+    "feature",
+    "use_case",
+    "other",
 }
-MATERIALS = ("cotton", "polyester", "nylon", "leather", "wool", "spandex", "silk", "rayon", "fabric")
+MATERIALS = (
+    "cotton",
+    "polyester",
+    "nylon",
+    "leather",
+    "wool",
+    "spandex",
+    "silk",
+    "rayon",
+    "fabric",
+)
 SEARCH_FIELDS = ("title", "features", "details", "description", "categories", "store")
-MATERIAL_RE = re.compile(r"\b(cotton|polyester|nylon|leather|wool|spandex|silk|rayon|fabric)\b", re.I)
-COLOR_RE = re.compile(r"\b(black|white|blue|red|pink|green|brown|gray|grey|purple|yellow|orange)\b", re.I)
+MATERIAL_RE = re.compile(
+    r"\b(cotton|polyester|nylon|leather|wool|spandex|silk|rayon|fabric)\b", re.I
+)
+COLOR_RE = re.compile(
+    r"\b(black|white|blue|red|pink|green|brown|gray|grey|purple|yellow|orange)\b", re.I
+)
 
 
 def peak_process_rss_bytes() -> int:
@@ -39,6 +66,7 @@ def peak_process_rss_bytes() -> int:
         return int(raw_peak_rss if sys.platform == "darwin" else raw_peak_rss * 1024)
 
     if sys.platform == "win32":
+
         class ProcessMemoryCounters(ctypes.Structure):
             _fields_ = (
                 ("cb", ctypes.c_ulong),
@@ -92,7 +120,11 @@ def searchable_text(product: dict) -> str:
 
 def _flatten_values(value: object) -> list[str]:
     if isinstance(value, dict):
-        return [f"{key}: {item}" for key, item in value.items() if item not in (None, "", [])]
+        return [
+            f"{key}: {item}"
+            for key, item in value.items()
+            if item not in (None, "", [])
+        ]
     if isinstance(value, list):
         return [str(item) for item in value if item not in (None, "")]
     return [str(value)] if value not in (None, "") else []
@@ -104,7 +136,10 @@ def _clean_constraint(value: str, limit: int) -> str:
 
 def intent_card(product: dict, limit: int = 180) -> dict:
     title = _clean_constraint(str(product.get("title") or "product"), limit)
-    candidates = [*_flatten_values(product.get("features")), *_flatten_values(product.get("details"))]
+    candidates = [
+        *_flatten_values(product.get("features")),
+        *_flatten_values(product.get("details")),
+    ]
     corpus = searchable_text(product)
     material = MATERIAL_RE.search(corpus)
     color = COLOR_RE.search(corpus)
@@ -114,7 +149,13 @@ def intent_card(product: dict, limit: int = 180) -> dict:
         candidates.insert(1, f"color: {color.group(1).lower()}")
     if product.get("price") not in (None, ""):
         candidates.append(f"budget around ${product['price']}")
-    cleaned = list(dict.fromkeys(_clean_constraint(item, limit) for item in candidates if _clean_constraint(item, limit)))
+    cleaned = list(
+        dict.fromkeys(
+            _clean_constraint(item, limit)
+            for item in candidates
+            if _clean_constraint(item, limit)
+        )
+    )
     if not cleaned:
         cleaned = [title]
     return {
@@ -162,7 +203,9 @@ def normalize_recommendations(payload: object, catalog_ids: set[str]) -> list[st
     return result
 
 
-def catalog_index(catalog_path: str | Path) -> tuple[set[str], dict[str, list[str]], dict[str, dict]]:
+def catalog_index(
+    catalog_path: str | Path,
+) -> tuple[set[str], dict[str, list[str]], dict[str, dict]]:
     identifiers: set[str] = set()
     categories: dict[str, list[str]] = {}
     products: dict[str, dict] = {}
@@ -171,7 +214,9 @@ def catalog_index(catalog_path: str | Path) -> tuple[set[str], dict[str, list[st
             product = json.loads(line)
             parent_asin = str(product["parent_asin"])
             identifiers.add(parent_asin)
-            categories[parent_asin] = [str(value) for value in product.get("categories") or []]
+            categories[parent_asin] = [
+                str(value) for value in product.get("categories") or []
+            ]
             products[parent_asin] = product
     return identifiers, categories, products
 
@@ -193,13 +238,21 @@ def classify_constraint(value: str) -> str:
         return "budget"
     if any(material in lowered for material in MATERIALS):
         return "material"
-    if any(word in lowered for word in ("color", "black", "white", "blue", "red", "pink", "green")):
+    if any(
+        word in lowered
+        for word in ("color", "black", "white", "blue", "red", "pink", "green")
+    ):
         return "color"
     if any(word in lowered for word in ("size", "sizing", "width", "wide", "narrow")):
         return "size"
-    if any(word in lowered for word in ("department", "style", "fit", "sleeve", "neck")):
+    if any(
+        word in lowered for word in ("department", "style", "fit", "sleeve", "neck")
+    ):
         return "style"
-    if any(word in lowered for word in ("hiking", "running", "gym", "winter", "outdoor", "work")):
+    if any(
+        word in lowered
+        for word in ("hiking", "running", "gym", "winter", "outdoor", "work")
+    ):
         return "use_case"
     return "feature"
 
@@ -216,12 +269,20 @@ def initial_message(sample: dict, category: str, disclosed: set[str]) -> str:
     return f"I'm looking for {category}, but I'm still exploring."
 
 
-def customer_reply(sample: dict, ask_attribute: object, disclosed: set[str], boundary_used: bool) -> tuple[str, bool]:
+def customer_reply(
+    sample: dict, ask_attribute: object, disclosed: set[str], boundary_used: bool
+) -> tuple[str, bool]:
     attribute = ask_attribute if isinstance(ask_attribute, str) else None
     if sample["scenario_type"] == "boundary" and not boundary_used and attribute:
-        return f"I don't have a preference for {attribute}; please use your judgment.", True
+        return (
+            f"I don't have a preference for {attribute}; please use your judgment.",
+            True,
+        )
     if not attribute:
-        return "Those options are not quite right yet. Ask me about one specific attribute.", boundary_used
+        return (
+            "Those options are not quite right yet. Ask me about one specific attribute.",
+            boundary_used,
+        )
     if attribute not in ALLOWED_ATTRIBUTES:
         attribute = "other"
     constraints = [
@@ -229,8 +290,10 @@ def customer_reply(sample: dict, ask_attribute: object, disclosed: set[str], bou
         *[str(value) for value in sample["intent_card"].get("soft_preferences", [])],
     ]
     matches = [
-        value for value in constraints
-        if value not in disclosed and (attribute == "other" or classify_constraint(value) == attribute)
+        value
+        for value in constraints
+        if value not in disclosed
+        and (attribute == "other" or classify_constraint(value) == attribute)
     ][:2]
     if not matches:
         return f"I don't have an additional preference for {attribute}.", boundary_used
@@ -244,7 +307,8 @@ def metric_summary(sessions: list[dict]) -> dict:
     hit_rate = sum(int(item["hit"]) for item in sessions) / len(sessions)
     mrr = statistics.fmean(item["reciprocal_rank"] for item in sessions)
     mttc = statistics.fmean(
-        item["first_hit_turn"] if item["first_hit_turn"] is not None else MAX_TURNS + 1 for item in sessions
+        item["first_hit_turn"] if item["first_hit_turn"] is not None else MAX_TURNS + 1
+        for item in sessions
     )
     return {
         "sample_count": len(sessions),
@@ -254,7 +318,9 @@ def metric_summary(sessions: list[dict]) -> dict:
     }
 
 
-def materialize_hidden_fields(sample: dict, products: dict[str, dict]) -> tuple[dict, dict]:
+def materialize_hidden_fields(
+    sample: dict, products: dict[str, dict]
+) -> tuple[dict, dict]:
     if "intent_card" in sample and "behavior" in sample:
         return sample["intent_card"], sample["behavior"]
     target = str(sample["ground_truth"]["parent_asin"])
@@ -282,12 +348,20 @@ def evaluate(
         session_id = f"public_{uuid.uuid4().hex}"
         agent.reset(session_id, sample["user_profile"])
         target = str(sample["ground_truth"]["parent_asin"])
-        effective_intent_card, effective_behavior = materialize_hidden_fields(sample, products)
-        effective_sample = {**sample, "intent_card": effective_intent_card, "behavior": effective_behavior}
+        effective_intent_card, effective_behavior = materialize_hidden_fields(
+            sample, products
+        )
+        effective_sample = {
+            **sample,
+            "intent_card": effective_intent_card,
+            "behavior": effective_behavior,
+        }
         disclosed: set[str] = set()
         boundary_used = False
         override_applied = sample["scenario_type"] != "intent_override"
-        user_message = initial_message(effective_sample, coarse_category(categories.get(target, [])), disclosed)
+        user_message = initial_message(
+            effective_sample, coarse_category(categories.get(target, [])), disclosed
+        )
         hit_turn: int | None = None
         best_rank: int | None = None
         for turn in range(1, MAX_TURNS + 1):
@@ -298,16 +372,28 @@ def evaluate(
                 response_exception_count += 1
                 response = {"message": "", "ask_attribute": None, "recommendations": []}
             finally:
-                response_latencies_ms.append((time.perf_counter() - response_started) * 1000.0)
-            if not isinstance(response, dict) or not isinstance(response.get("message"), str):
+                response_latencies_ms.append(
+                    (time.perf_counter() - response_started) * 1000.0
+                )
+            if not isinstance(response, dict) or not isinstance(
+                response.get("message"), str
+            ):
                 response = {"message": "", "ask_attribute": None, "recommendations": []}
             usage = response.get("usage")
             if isinstance(usage, dict):
-                if isinstance(usage.get("prompt_tokens"), int) and usage["prompt_tokens"] >= 0:
+                if (
+                    isinstance(usage.get("prompt_tokens"), int)
+                    and usage["prompt_tokens"] >= 0
+                ):
                     total_prompt_tokens += usage["prompt_tokens"]
-                if isinstance(usage.get("completion_tokens"), int) and usage["completion_tokens"] >= 0:
+                if (
+                    isinstance(usage.get("completion_tokens"), int)
+                    and usage["completion_tokens"] >= 0
+                ):
                     total_completion_tokens += usage["completion_tokens"]
-            ranked = normalize_recommendations(response.get("recommendations"), catalog_ids)
+            ranked = normalize_recommendations(
+                response.get("recommendations"), catalog_ids
+            )
             if override_applied and target in ranked:
                 best_rank = ranked.index(target) + 1
                 hit_turn = turn
@@ -320,31 +406,45 @@ def evaluate(
                 new_value = str(override.get("new_value", ""))
                 if new_value:
                     disclosed.add(new_value)
-                user_message = str(override.get("message", "Actually, please ignore my earlier preference."))
+                user_message = str(
+                    override.get(
+                        "message", "Actually, please ignore my earlier preference."
+                    )
+                )
             else:
                 user_message, boundary_used = customer_reply(
-                    effective_sample, response.get("ask_attribute"), disclosed, boundary_used
+                    effective_sample,
+                    response.get("ask_attribute"),
+                    disclosed,
+                    boundary_used,
                 )
-        sessions.append({
-            "sample_id": sample["sample_id"],
-            "scenario_type": sample["scenario_type"],
-            "hit": hit_turn is not None,
-            "first_hit_turn": hit_turn,
-            "best_rank": best_rank,
-            "reciprocal_rank": 0.0 if best_rank is None else 1.0 / best_rank,
-        })
+        sessions.append(
+            {
+                "sample_id": sample["sample_id"],
+                "scenario_type": sample["scenario_type"],
+                "hit": hit_turn is not None,
+                "first_hit_turn": hit_turn,
+                "best_rank": best_rank,
+                "reciprocal_rank": 0.0 if best_rank is None else 1.0 / best_rank,
+            }
+        )
 
     overall = metric_summary(sessions)
     efficiency = max(0.0, min(1.0, (11.0 - float(overall["mttc"])) / 10.0))
-    technical_score = 0.50 * overall["hit_rate_at_10"] + 0.30 * overall["mrr"] + 0.20 * efficiency
+    technical_score = (
+        0.50 * overall["hit_rate_at_10"] + 0.30 * overall["mrr"] + 0.20 * efficiency
+    )
     grouped: dict[str, list[dict]] = defaultdict(list)
     for session in sessions:
         grouped[session["scenario_type"]].append(session)
     ordered_latencies = sorted(response_latencies_ms)
-    p95_index = max(0, min(
-        len(ordered_latencies) - 1,
-        int(0.95 * len(ordered_latencies) + 0.999999) - 1,
-    ))
+    p95_index = max(
+        0,
+        min(
+            len(ordered_latencies) - 1,
+            int(0.95 * len(ordered_latencies) + 0.999999) - 1,
+        ),
+    )
     return {
         **overall,
         "efficiency": round(efficiency, 6),
@@ -358,10 +458,14 @@ def evaluate(
             "completed_session_count": len(sessions),
             "response_count": len(response_latencies_ms),
             "response_exception_count": response_exception_count,
-            "average_response_latency_ms": round(statistics.fmean(response_latencies_ms), 6),
+            "average_response_latency_ms": round(
+                statistics.fmean(response_latencies_ms), 6
+            ),
             "p95_response_latency_ms": round(ordered_latencies[p95_index], 6),
         },
-        "scenario_metrics": {name: metric_summary(grouped[name]) for name in sorted(grouped)},
+        "scenario_metrics": {
+            name: metric_summary(grouped[name]) for name in sorted(grouped)
+        },
         "sessions": sessions,
     }
 
@@ -382,7 +486,21 @@ def main() -> None:
     parser.add_argument("--lexical-weight", type=float, default=1.0)
     parser.add_argument("--dense-weight", type=float, default=1.0)
     parser.add_argument("--rrf-k", type=float, default=60.0)
-    parser.add_argument("--dense-cache", default="data/.dense-retrieval/catalog-minilm.npz")
+    parser.add_argument(
+        "--dense-cache", default="data/.dense-retrieval/catalog-minilm.npz"
+    )
+    parser.add_argument(
+        "--semantic-reranker",
+        action="store_true",
+        help="opt in to bounded local cross-encoder reranking",
+    )
+    parser.add_argument("--semantic-model", default=DEFAULT_RERANKER_MODEL)
+    parser.add_argument("--semantic-model-revision")
+    parser.add_argument("--semantic-candidates", type=int, default=50)
+    parser.add_argument("--semantic-batch-size", type=int, default=16)
+    parser.add_argument(
+        "--semantic-max-length", type=int, default=DEFAULT_RERANKER_MAX_LENGTH
+    )
     args = parser.parse_args()
     samples = load_jsonl(args.dataset)
     catalog_ids, categories, products = catalog_index(args.catalog)
@@ -395,21 +513,60 @@ def main() -> None:
         dense_weight=args.dense_weight,
         rrf_k=args.rrf_k,
     )
+    semantic_config = SemanticRerankerConfig(
+        enabled=args.semantic_reranker,
+        model_name=args.semantic_model,
+        model_revision=args.semantic_model_revision,
+        candidate_count=args.semantic_candidates,
+        batch_size=args.semantic_batch_size,
+        max_length=args.semantic_max_length,
+    )
     startup_started = time.perf_counter()
-    agent = Agent(args.catalog, config=config, dense_cache_path=args.dense_cache)
+    agent = Agent(
+        args.catalog,
+        config=config,
+        dense_cache_path=args.dense_cache,
+        semantic_config=semantic_config,
+    )
     agent_startup_seconds = time.perf_counter() - startup_started
     result = evaluate(agent, samples, catalog_ids, categories, products)
+    result["configuration"] = {
+        "retrieval": {
+            "mode": RetrievalMode.parse(config.mode).value,
+            "lexical_candidate_count": config.lexical_candidate_count,
+            "dense_candidate_count": config.dense_candidate_count,
+            "final_candidate_count": config.final_candidate_count,
+            "lexical_weight": config.lexical_weight,
+            "dense_weight": config.dense_weight,
+            "rrf_k": config.rrf_k,
+        },
+        "semantic_reranker": {
+            "enabled": semantic_config.enabled,
+            "model": semantic_config.model_name,
+            "configured_model_revision": semantic_config.model_revision,
+            "candidate_count": semantic_config.candidate_count,
+            "batch_size": semantic_config.batch_size,
+            "max_length": semantic_config.max_length,
+            "device": semantic_config.device,
+        },
+    }
     result["performance"] = {
         "agent_startup_seconds": round(agent_startup_seconds, 6),
         "peak_process_rss_bytes": peak_process_rss_bytes(),
         "startup_scope": (
-            "Agent construction: catalog ID validation and mode-specific index/cache loading; "
-            "sentence-transformer model loading remains lazy until the first dense query"
+            "Agent construction: catalog ID validation, mode-specific index/cache "
+            "loading, and optional deterministic reranker text indexing; dense and "
+            "cross-encoder model loading remains lazy until first use"
         ),
         "latency_scope": "wall-clock time inside Agent.respond, including first-query model loading",
     }
+    result["semantic_reranker"] = agent.semantic_reranker_metrics
     Path(args.output).write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({key: value for key, value in result.items() if key != "sessions"}, indent=2))
+    print(
+        json.dumps(
+            {key: value for key, value in result.items() if key != "sessions"}, indent=2
+        )
+    )
 
 
 if __name__ == "__main__":

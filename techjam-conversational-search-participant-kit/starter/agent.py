@@ -21,6 +21,7 @@ from .hybrid_retrieval import (
     reciprocal_rank_fusion,
 )
 from .lexical_retriever import LexicalRetriever
+from .semantic_reranker import SemanticReranker, SemanticRerankerConfig
 
 LOGGER = logging.getLogger(__name__)
 
@@ -42,6 +43,8 @@ class Agent:
         lexical_retriever: Any | None = None,
         dense_retriever: Any | None = None,
         dense_factory: DenseFactory | None = None,
+        semantic_config: SemanticRerankerConfig | None = None,
+        semantic_reranker: SemanticReranker | None = None,
     ) -> None:
         self.catalog_path = Path(catalog_path)
         self.config = config or HybridRetrievalConfig()
@@ -50,9 +53,27 @@ class Agent:
         self._dense: Any | None = dense_retriever
         self._dense_unavailable = False
         self._dense_failure_logged = False
+        self.semantic_config = semantic_config or SemanticRerankerConfig()
+        self._semantic_failure_logged = False
+        self._semantic_initialization_failure_count = 0
+        self._semantic_guard_failure_count = 0
 
         catalog_ids = self._load_catalog_ids(self.catalog_path)
         self._catalog_ids = catalog_ids
+        self._semantic: SemanticReranker | None = None
+        if self.semantic_config.enabled:
+            try:
+                self._semantic = semantic_reranker or SemanticReranker.from_catalog(
+                    self.catalog_path,
+                    config=self.semantic_config,
+                )
+            except Exception as error:
+                self._semantic_initialization_failure_count = 1
+                self._semantic_failure_logged = True
+                LOGGER.warning(
+                    "semantic reranker initialization failed; using base order: %s",
+                    error,
+                )
 
         if dense_factory is None:
             cache_path = Path(dense_cache_path)
@@ -118,6 +139,11 @@ class Agent:
         }
 
     def _retrieve(self, query: SearchQuery, limit: int) -> list[Candidate]:
+        ranking_limit = (
+            max(limit, self.semantic_config.candidate_count)
+            if self._semantic is not None
+            else limit
+        )
         mode = self.config.mode
         if mode is RetrievalMode.LEXICAL:
             lexical = cast(
@@ -126,7 +152,8 @@ class Agent:
                     query, top_n=self.config.lexical_candidate_count
                 ),
             )
-            return rank_single_source(lexical, mode, self._catalog_ids, limit)
+            ranked = rank_single_source(lexical, mode, self._catalog_ids, ranking_limit)
+            return self._rerank(query.text, ranked, limit)
 
         if mode is RetrievalMode.DENSE:
             if not query.text.strip():
@@ -137,7 +164,8 @@ class Agent:
                     query.text, top_n=self.config.dense_candidate_count
                 ),
             )
-            return rank_single_source(dense, mode, self._catalog_ids, limit)
+            ranked = rank_single_source(dense, mode, self._catalog_ids, ranking_limit)
+            return self._rerank(query.text, ranked, limit)
 
         lexical = cast(
             list[RankedResult],
@@ -147,7 +175,103 @@ class Agent:
         )
         dense = self._safe_dense_results(query.text)
         merged = merge_candidates(lexical, dense, self._catalog_ids)
-        return reciprocal_rank_fusion(merged, self.config, limit=limit)
+        ranked = reciprocal_rank_fusion(merged, self.config, limit=ranking_limit)
+        return self._rerank(query.text, ranked, limit)
+
+    def _rerank(
+        self,
+        query_text: str,
+        candidates: list[Candidate],
+        limit: int,
+    ) -> list[Candidate]:
+        if self._semantic is None:
+            return candidates[:limit]
+        original = list(candidates)
+        original_ids_by_object = {id(item): item.parent_asin for item in original}
+
+        def restore_asins() -> None:
+            for item in original:
+                item.parent_asin = original_ids_by_object[id(item)]
+
+        try:
+            reranked = self._semantic.rerank(query_text, list(original))
+        except Exception as error:  # Defensive boundary for injected implementations.
+            self._semantic_guard_failure_count += 1
+            restore_asins()
+            if not self._semantic_failure_logged:
+                self._semantic_failure_logged = True
+                LOGGER.warning(
+                    "semantic reranker failed; preserving candidate order: %s", error
+                )
+            return original[:limit]
+
+        # Rerankers may only reorder the shared pool.  Reject any implementation
+        # that drops, duplicates, replaces, or introduces catalog identities.
+        original_ids = list(original_ids_by_object.values())
+        reranked_ids = [item.parent_asin for item in reranked]
+        if (
+            len(reranked_ids) != len(original_ids)
+            or len(set(reranked_ids)) != len(reranked_ids)
+            or set(reranked_ids) != set(original_ids)
+            or {id(item) for item in reranked} != set(original_ids_by_object)
+            or any(
+                item.parent_asin != original_ids_by_object.get(id(item))
+                for item in reranked
+            )
+        ):
+            self._semantic_guard_failure_count += 1
+            restore_asins()
+            if not self._semantic_failure_logged:
+                self._semantic_failure_logged = True
+                LOGGER.warning(
+                    "semantic reranker changed the candidate pool; preserving base order"
+                )
+            return original[:limit]
+        return reranked[:limit]
+
+    @property
+    def semantic_reranker_metrics(self) -> dict[str, object]:
+        if self._semantic is None:
+            return {
+                "enabled": self.semantic_config.enabled,
+                "operational": False,
+                "model": self.semantic_config.model_name,
+                "candidate_count": self.semantic_config.candidate_count,
+                "batch_size": self.semantic_config.batch_size,
+                "query_count": 0,
+                "initialization_failure_count": (
+                    self._semantic_initialization_failure_count
+                ),
+                "agent_guard_failure_count": self._semantic_guard_failure_count,
+                "failure_count": (
+                    self._semantic_initialization_failure_count
+                    + self._semantic_guard_failure_count
+                ),
+            }
+        snapshot = getattr(self._semantic, "metrics_snapshot", None)
+        metrics = (
+            snapshot()
+            if callable(snapshot)
+            else {
+                "enabled": True,
+                "model": self.semantic_config.model_name,
+                "candidate_count": self.semantic_config.candidate_count,
+                "batch_size": self.semantic_config.batch_size,
+                "query_count": 0,
+                "failure_count": 0,
+            }
+        )
+        metrics["operational"] = True
+        metrics["initialization_failure_count"] = 0
+        metrics["agent_guard_failure_count"] = self._semantic_guard_failure_count
+        reranker_failure_count = metrics.get("failure_count")
+        metrics["failure_count"] = (
+            reranker_failure_count
+            if isinstance(reranker_failure_count, int)
+            and not isinstance(reranker_failure_count, bool)
+            else 0
+        ) + self._semantic_guard_failure_count
+        return metrics
 
     def _require_lexical(self) -> Any:
         if self._lexical is None:

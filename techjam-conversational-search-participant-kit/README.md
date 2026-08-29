@@ -55,6 +55,20 @@ python3 -m evaluator.local_evaluator --retrieval-mode hybrid \
 different compatible Issue 2A cache. Hybrid falls back to the improved lexical
 retriever when dense initialization or retrieval fails.
 
+Issue 4B's local cross-encoder reranker is an opt-in experiment and is disabled
+unless `--semantic-reranker` is supplied. It reranks only a configurable prefix
+of the shared pool:
+
+```bash
+python3 -m evaluator.local_evaluator --retrieval-mode hybrid \
+  --semantic-reranker \
+  --semantic-model cross-encoder/ms-marco-MiniLM-L6-v2 \
+  --semantic-candidates 50 --semantic-batch-size 16
+```
+
+Implementation, fallback behavior, telemetry, and the isolated A/B benchmark
+are documented in [`docs/semantic_reranker.md`](docs/semantic_reranker.md).
+
 Edit `starter/agent.py` to implement your system. Do not edit the evaluator or public labels when reporting your local score.
 The command writes per-session results and aggregate metrics to `results.json`.
 
@@ -120,7 +134,9 @@ docs/competition_specification.md participant rules and evaluation protocol
 docs/agent_api_contract.json      machine-readable Agent contract
 docs/evaluation_config.json       scoring configuration
 docs/baseline_results.json        reproducible weak-starter reference score
+benchmarks/benchmark_semantic_reranker.py  isolated hybrid A/B experiment
 starter/agent.py                  editable weak starter
+starter/semantic_reranker.py      optional bounded local reranker
 evaluator/local_evaluator.py      public-set simulator and scorer
 ```
 

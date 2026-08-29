@@ -1,0 +1,119 @@
+{
+  "experiment": "bounded local semantic cross-encoder reranking",
+  "baseline": {
+    "hit_rate_at_10": 0.02,
+    "mrr": 0.00727,
+    "mttc": 10.815,
+    "efficiency": 0.0185,
+    "technical_score": 0.015881,
+    "scenario_metrics": {
+      "buying": {
+        "sample_count": 80,
+        "hit_rate_at_10": 0.025,
+        "mrr": 0.015,
+        "mttc": 10.75
+      },
+      "browsing": {
+        "sample_count": 80,
+        "hit_rate_at_10": 0.0125,
+        "mrr": 0.001389,
+        "mttc": 10.875
+      },
+      "intent_override": {
+        "sample_count": 30,
+        "hit_rate_at_10": 0.033333,
+        "mrr": 0.004762,
+        "mttc": 10.766667
+      },
+      "boundary": {
+        "sample_count": 10,
+        "hit_rate_at_10": 0.0,
+        "mrr": 0.0,
+        "mttc": 11.0
+      }
+    },
+    "agent_startup_seconds": 9.167164,
+    "average_response_latency_ms": 29.512574,
+    "p95_response_latency_ms": 56.837166,
+    "peak_process_rss_bytes": 1862041600,
+    "model": "cross-encoder/ms-marco-MiniLM-L6-v2",
+    "configured_model_revision": null,
+    "resolved_model_revision": null,
+    "candidate_count": 50,
+    "batch_size": 16,
+    "model_size_bytes": null,
+    "cold_start_seconds": null,
+    "average_reranking_latency_ms": null,
+    "p95_reranking_latency_ms": null,
+    "max_scored_candidates_per_query": 0,
+    "failure_count": 0
+  },
+  "semantic_reranker": {
+    "hit_rate_at_10": 0.02,
+    "mrr": 0.003964,
+    "mttc": 10.815,
+    "efficiency": 0.0185,
+    "technical_score": 0.014889,
+    "scenario_metrics": {
+      "buying": {
+        "sample_count": 80,
+        "hit_rate_at_10": 0.0375,
+        "mrr": 0.006786,
+        "mttc": 10.625
+      },
+      "browsing": {
+        "sample_count": 80,
+        "hit_rate_at_10": 0.0,
+        "mrr": 0.0,
+        "mttc": 11.0
+      },
+      "intent_override": {
+        "sample_count": 30,
+        "hit_rate_at_10": 0.033333,
+        "mrr": 0.008333,
+        "mttc": 10.766667
+      },
+      "boundary": {
+        "sample_count": 10,
+        "hit_rate_at_10": 0.0,
+        "mrr": 0.0,
+        "mttc": 11.0
+      }
+    },
+    "agent_startup_seconds": 9.923454,
+    "average_response_latency_ms": 446.216479,
+    "p95_response_latency_ms": 667.520458,
+    "peak_process_rss_bytes": 2054340608,
+    "model": "cross-encoder/ms-marco-MiniLM-L6-v2",
+    "configured_model_revision": null,
+    "resolved_model_revision": "233902d25c440f23af6f7d6e94d2946bac0bee0a",
+    "candidate_count": 50,
+    "batch_size": 16,
+    "model_size_bytes": 90854404,
+    "cold_start_seconds": 4.088602083967999,
+    "average_reranking_latency_ms": 478.1041699191052,
+    "p95_reranking_latency_ms": 614.5687500247732,
+    "max_scored_candidates_per_query": 50,
+    "failure_count": 0
+  },
+  "deltas_semantic_minus_baseline": {
+    "hit_rate_at_10": 0.0,
+    "mrr": -0.0033060000000000008,
+    "mttc": 0.0,
+    "efficiency": 0.0,
+    "technical_score": -0.0009919999999999998,
+    "agent_startup_seconds": 0.7562899999999999,
+    "average_response_latency_ms": 416.70390499999996,
+    "p95_response_latency_ms": 610.6832919999999,
+    "peak_process_rss_bytes": 192299008
+  },
+  "decision_rule": {
+    "minimum_technical_score_gain": 0.005,
+    "must_not_reduce_hit_rate_at_10": true,
+    "requires_zero_failures": true,
+    "maximum_average_reranking_latency_ms": 250.0,
+    "maximum_peak_memory_increase_bytes": 500000000
+  },
+  "recommendation": "do_not_retain_without_further_evidence",
+  "default_enabled": false
+}
