@@ -5,6 +5,7 @@ __pycache__/
 results.json
 data/catalog.jsonl
 data/releases/
+data/.dense-retrieval/
 # Organizer-only code, private evaluation data, manifests, and build reports.
 organizer/
 secure/
