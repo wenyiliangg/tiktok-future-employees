@@ -653,7 +653,12 @@ class Agent:
         policy = self._contextual_policy
         raw_text = self._raw_turn_text(session_id, query)
         active_text = self._active_raw_intent.get(session_id) or raw_text
-        anchor = list(self._anchor.retrieve(raw_text, top_n=policy.candidate_count))
+        anchor_text = raw_text
+        if policy.negative_feedback_uses_active_intent and NEGATIVE_FEEDBACK_RE.search(
+            raw_text
+        ):
+            anchor_text = active_text
+        anchor = list(self._anchor.retrieve(anchor_text, top_n=policy.candidate_count))
         soft_query = self._soft_backfill_query(query)
         state_results: list[RankedResult] = []
         if policy.state_lexical_weight > 0:

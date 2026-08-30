@@ -115,6 +115,40 @@ class ContextualAgentStateTest(unittest.TestCase):
             second["recommendations"],
             [{"parent_asin": "C"}, {"parent_asin": "D"}],
         )
+        self.assertEqual(
+            [call[0] for call in self.anchor.calls],
+            ["show me products", "Those options are not quite right yet."],
+        )
+
+    def test_feedback_memory_policy_reuses_last_informative_anchor_query(self) -> None:
+        anchor = FakeRetriever(self.anchor.results)
+        agent = Agent(
+            self.catalog,
+            config=HybridRetrievalConfig(mode="contextual"),
+            anchor_retriever=anchor,
+            contextual_policy=ContextualRetrievalPolicy(
+                policy_id="test.feedback-memory",
+                protected_lexical_count=2,
+                negative_feedback_uses_active_intent=True,
+            ),
+        )
+        agent.reset("memory", {})
+
+        first = agent.respond("memory", "show me products", 1, 2)
+        second = agent.respond("memory", "Those options are not quite right yet.", 2, 2)
+
+        self.assertEqual(
+            first["recommendations"],
+            [{"parent_asin": "A"}, {"parent_asin": "B"}],
+        )
+        self.assertEqual(
+            second["recommendations"],
+            [{"parent_asin": "C"}, {"parent_asin": "D"}],
+        )
+        self.assertEqual(
+            [call[0] for call in anchor.calls],
+            ["show me products", "show me products"],
+        )
 
     def test_intent_override_clears_known_negative_products(self) -> None:
         self.agent.respond("s", "show me products", 1, 2)

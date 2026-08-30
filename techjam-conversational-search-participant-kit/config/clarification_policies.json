@@ -72,6 +72,28 @@
         "max_questions_per_session": 1,
         "max_turns": 10
       }
+    },
+    {
+      "policy_id": "clarification.feedback-memory.v1",
+      "fingerprint_sha256": "56550e0f09f152db8be1a3988bacda499955e8b5683e95eedad44b3ce19fb7a5",
+      "rationale": "Iteration 01 keeps the selected Browsing-only clarification gates while evaluating memory-backed BM25 rotation after explicit negative feedback.",
+      "retrieval_policy_id": "contextual.feedback-memory.v1",
+      "clarification": {
+        "enabled": true,
+        "required_retrieval_policy_id": "contextual.feedback-memory.v1",
+        "analysis_candidate_limit": 50,
+        "browsing_min_candidates": 4,
+        "browsing_min_expected_reduction": 0.2,
+        "buying_min_candidates": 8,
+        "buying_min_expected_reduction": 0.5,
+        "eligible_routes": [
+          "browsing"
+        ]
+      },
+      "controller": {
+        "max_questions_per_session": 1,
+        "max_turns": 10
+      }
     }
   ]
 }
