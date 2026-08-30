@@ -4,9 +4,12 @@ import argparse
 import ctypes
 import hashlib
 import json
+import math
+import os
 import random
 import re
 import statistics
+import subprocess
 import sys
 import time
 import uuid
@@ -16,7 +19,12 @@ from pathlib import Path
 
 from starter.agent import Agent
 from starter.clarification_controller import ClarificationController
-from starter.clarification_policies import load_clarification_policy_registry
+from starter.clarification_policies import (
+    ROLLBACK_POLICY_ID,
+    SELECTED_POLICY_ID,
+    load_clarification_policy_by_id,
+    load_runtime_clarification_policy,
+)
 from starter.contextual_retrieval import (
     ContextualRetrievalPolicy,
     contextual_policy_candidates,
@@ -109,6 +117,67 @@ def peak_process_rss_bytes() -> int:
             return int(counters.peak_working_set_size)
 
     return 0
+
+
+def current_process_rss_bytes() -> int:
+    """Return current RSS bytes using the platform ``ps`` KiB contract."""
+
+    if sys.platform != "win32":
+        try:
+            completed = subprocess.run(
+                ["ps", "-o", "rss=", "-p", str(os.getpid())],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            return int(completed.stdout.strip()) * 1024
+        except (OSError, subprocess.SubprocessError, ValueError):
+            return 0
+    return peak_process_rss_bytes()
+
+
+def response_contract_is_valid(response: object) -> bool:
+    """Observe the official turn-response schema without altering the payload."""
+
+    if not isinstance(response, dict):
+        return False
+    required = {"message", "ask_attribute", "recommendations"}
+    if not required <= set(response) or set(response) - required - {"usage"}:
+        return False
+    if not isinstance(response.get("message"), str):
+        return False
+    ask_attribute = response.get("ask_attribute")
+    if ask_attribute is not None and ask_attribute not in ALLOWED_ATTRIBUTES:
+        return False
+    recommendations = response.get("recommendations")
+    if not isinstance(recommendations, list) or len(recommendations) > 100:
+        return False
+    for item in recommendations:
+        if not isinstance(item, dict) or set(item) - {"parent_asin", "score"}:
+            return False
+        if not isinstance(item.get("parent_asin"), str) or not item["parent_asin"]:
+            return False
+        if "score" in item and (
+            isinstance(item["score"], bool)
+            or not isinstance(item["score"], (int, float))
+            or not math.isfinite(float(item["score"]))
+        ):
+            return False
+    usage = response.get("usage")
+    if usage is not None:
+        if not isinstance(usage, dict) or set(usage) != {
+            "prompt_tokens",
+            "completion_tokens",
+        }:
+            return False
+        if any(
+            not isinstance(usage.get(name), int)
+            or isinstance(usage.get(name), bool)
+            or usage[name] < 0
+            for name in ("prompt_tokens", "completion_tokens")
+        ):
+            return False
+    return True
 
 
 def searchable_text(product: dict) -> str:
@@ -399,6 +468,8 @@ def evaluate(
     invalid_ask_attribute_count = 0
     invalid_asin_count = 0
     duplicate_recommendation_count = 0
+    invalid_response_count = 0
+    normalized_response_hasher = hashlib.sha256()
     for sample in samples:
         session_id = f"public_{uuid.uuid4().hex}"
         agent.reset(session_id, sample["user_profile"])
@@ -431,6 +502,31 @@ def evaluate(
                 response_latencies_ms.append(
                     (time.perf_counter() - response_started) * 1000.0
                 )
+            if not response_contract_is_valid(response):
+                invalid_response_count += 1
+            normalized_response_hasher.update(
+                json.dumps(
+                    {
+                        "turn": turn,
+                        "message": response.get("message")
+                        if isinstance(response, dict)
+                        else None,
+                        "ask_attribute": response.get("ask_attribute")
+                        if isinstance(response, dict)
+                        else None,
+                        "recommendations": response.get("recommendations")
+                        if isinstance(response, dict)
+                        else None,
+                        "usage": response.get("usage")
+                        if isinstance(response, dict)
+                        else None,
+                    },
+                    sort_keys=True,
+                    separators=(",", ":"),
+                    default=repr,
+                ).encode("utf-8")
+                + b"\n"
+            )
             if not isinstance(response, dict) or not isinstance(
                 response.get("message"), str
             ):
@@ -519,6 +615,9 @@ def evaluate(
             int(0.95 * len(ordered_latencies) + 0.999999) - 1,
         ),
     )
+    session_outcome_sha256 = hashlib.sha256(
+        json.dumps(sessions, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
     return {
         **overall,
         "efficiency": round(efficiency, 6),
@@ -537,6 +636,7 @@ def evaluate(
             ),
             "p50_response_latency_ms": round(statistics.median(ordered_latencies), 6),
             "p95_response_latency_ms": round(ordered_latencies[p95_index], 6),
+            "maximum_response_latency_ms": round(max(ordered_latencies), 6),
         },
         "response_contract_diagnostics": {
             "clarification_question_count": clarification_question_count,
@@ -547,6 +647,13 @@ def evaluate(
             "invalid_ask_attribute_count": invalid_ask_attribute_count,
             "invalid_asin_count": invalid_asin_count,
             "duplicate_recommendation_count": duplicate_recommendation_count,
+            "invalid_response_count": invalid_response_count,
+            "response_contract_violation_count": invalid_response_count,
+        },
+        "determinism": {
+            "normalized_response_sha256": normalized_response_hasher.hexdigest(),
+            "session_outcome_sha256": session_outcome_sha256,
+            "timing_fields_excluded": True,
         },
         "scenario_metrics": {
             name: metric_summary(grouped[name]) for name in sorted(grouped)
@@ -557,7 +664,6 @@ def evaluate(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="TechJam public-set local evaluator")
-    clarification_registry = load_clarification_policy_registry()
     parser.add_argument("--catalog", default="data/catalog.jsonl")
     parser.add_argument("--dataset", default="data/public_set.jsonl")
     parser.add_argument("--output", default="results.json")
@@ -583,7 +689,6 @@ def main() -> None:
     clarification_group = parser.add_mutually_exclusive_group()
     clarification_group.add_argument(
         "--clarification-policy",
-        choices=[policy.policy_id for policy in clarification_registry.policies],
         help="Use one predeclared clarification policy and its fixed seed.",
     )
     clarification_group.add_argument(
@@ -603,13 +708,25 @@ def main() -> None:
         dense_weight=args.dense_weight,
         rrf_k=args.rrf_k,
     )
+    process_rss_before_agent_bytes = current_process_rss_bytes()
     startup_started = time.perf_counter()
     clarification_policy_id = (
         "clarification.issue-5c.v1"
         if args.enable_selective_clarification
-        else args.clarification_policy or clarification_registry.runtime_default_policy
+        else args.clarification_policy or SELECTED_POLICY_ID
     )
-    clarification_policy = clarification_registry.policy_by_id(clarification_policy_id)
+    if clarification_policy_id == SELECTED_POLICY_ID:
+        clarification_policy, _selected_error = load_runtime_clarification_policy()
+    else:
+        clarification_policy = load_clarification_policy_by_id(clarification_policy_id)
+    if clarification_policy.policy_id not in {
+        SELECTED_POLICY_ID,
+        ROLLBACK_POLICY_ID,
+        "clarification.issue-5c.v1",
+    }:
+        raise ValueError(
+            f"unsupported clarification policy: {clarification_policy.policy_id}"
+        )
     random.seed(clarification_policy.evaluation_seed)
     clarification_config = clarification_policy.clarification
     contextual_policy = policy_by_id(args.contextual_policy)
@@ -624,10 +741,21 @@ def main() -> None:
         ),
     )
     agent_startup_seconds = time.perf_counter() - startup_started
+    process_rss_after_agent_bytes = current_process_rss_bytes()
+    evaluation_started = time.perf_counter()
     result = evaluate(agent, samples, catalog_ids, categories, products)
+    evaluator_wall_seconds = time.perf_counter() - evaluation_started
+    process_rss_after_sessions_and_resets_bytes = current_process_rss_bytes()
     result["performance"] = {
         "agent_startup_seconds": round(agent_startup_seconds, 6),
         "peak_process_rss_bytes": peak_process_rss_bytes(),
+        "peak_process_rss_mib": round(peak_process_rss_bytes() / (1024**2), 6),
+        "full_evaluator_wall_seconds": round(evaluator_wall_seconds, 6),
+        "process_rss_before_agent_bytes": process_rss_before_agent_bytes,
+        "process_rss_after_agent_bytes": process_rss_after_agent_bytes,
+        "process_rss_after_sessions_and_resets_bytes": (
+            process_rss_after_sessions_and_resets_bytes
+        ),
         "startup_scope": (
             "Agent construction: catalog ID validation and mode-specific index/cache loading; "
             "sentence-transformer model loading remains lazy until the first dense query"
@@ -650,6 +778,7 @@ def main() -> None:
         "fingerprint_sha256": clarification_policy.fingerprint_sha256,
     }
     result["clarification_diagnostics"] = agent.clarification_diagnostics_snapshot()
+    result["fallback_diagnostics"] = agent.diagnostics_snapshot()
     Path(args.output).write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     print(
         json.dumps(

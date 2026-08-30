@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "issue": "6B",
+  "date": "2026-08-30",
+  "starting_main_commit": "7b8cf08076b8198a616de3ee74448b0e3f2c722d",
+  "branch": "feature/issue-6b-agent-hardening",
+  "verdict": "PASS",
+  "environment": {
+    "platform": "macOS-26.5.2-arm64-arm-64bit",
+    "python": "3.12.2",
+    "dataset_sha256": "857259f7a438e6188ac63e18995b6ff4489bfcfc4a716a798b9a2aa0ee8f7579",
+    "catalog_sha256": "da979b05a68af864cb0dcf9ee6a81c010c7e66a57978ad286c7a2e005fc69a67",
+    "dense_cache_sha256": "dffc05e41866913f169c3a51ef295b47f43859a0da6bb0c6a4c19de77fd1a5f6"
+  },
+  "configuration": {
+    "seed": 20260830,
+    "selected_policy": "clarification.browsing-only.v1",
+    "selected_fingerprint_sha256": "405c3ff441211cc6073b3732e1bd60b7aa8e85698c8ceb7d7931fed8eeaeb6fd",
+    "rollback_policy": "contextual.browsing-dense.v1",
+    "rollback_configuration_fingerprint_sha256": "04a16f9cec5162ab8a3d6ecff098c0342d205a37d24b5665a36316ba4f64f8a6",
+    "rollback_retrieval_fingerprint_sha256": "972158c9e3905e4d0bb5390eb7224fe3fe00b9f5444337099b3422960bf0448a"
+  },
+  "normal_path_expected_and_observed": {
+    "hit_rate_at_10": 0.14,
+    "mrr": 0.074867,
+    "mttc": 9.74,
+    "efficiency": 0.126,
+    "technical_score": 0.11766,
+    "buying_hit_rate_at_10": 0.2375,
+    "browsing_hit_rate_at_10": 0.0625,
+    "intent_override_hit_rate_at_10": 0.133333,
+    "boundary_hit_rate_at_10": 0.0,
+    "clarification_questions": 13
+  },
+  "determinism": {
+    "normalized_response_sha256": "318f069ef485d23d74d689ff25a3a58db874bfa3f412fcdb541c38cfaae4f91c",
+    "session_outcome_sha256": "b5e4c9d3643d03aac697747e9e37cb202af2fee550ba0e2db235f7e126f4f165",
+    "run_1_equals_run_2_excluding_timing": true,
+    "recommendation_order_equal": true,
+    "question_fields_equal": true,
+    "hit_turn_rank_outcomes_equal": true,
+    "metrics_equal": true
+  },
+  "final_runs": [
+    {
+      "run": 1,
+      "full_evaluator_wall_seconds": 56.021521,
+      "startup_seconds": 9.518816,
+      "latency_ms": {
+        "mean": 31.426024,
+        "p50": 27.085229,
+        "p95": 30.691125,
+        "maximum": 8881.442375
+      },
+      "peak_rss_bytes": 1115684864,
+      "peak_rss_mib": 1064.0,
+      "rss_before_agent_bytes": 239124480,
+      "rss_after_agent_bytes": 592953344,
+      "rss_after_200_sessions_and_resets_bytes": 1098399744
+    },
+    {
+      "run": 2,
+      "full_evaluator_wall_seconds": 54.568843,
+      "startup_seconds": 9.447933,
+      "latency_ms": {
+        "mean": 30.613713,
+        "p50": 26.805333,
+        "p95": 29.282834,
+        "maximum": 8060.185208
+      },
+      "peak_rss_bytes": 1137213440,
+      "peak_rss_mib": 1084.53125,
+      "rss_before_agent_bytes": 239370240,
+      "rss_after_agent_bytes": 596901888,
+      "rss_after_200_sessions_and_resets_bytes": 1126301696
+    }
+  ],
+  "cold_start": {
+    "method": "Agent construction in three independent Python processes with no response warmup",
+    "run_count": 3,
+    "durations_seconds": [9.968202, 9.841796, 9.966112],
+    "median_seconds": 9.966112,
+    "maximum_seconds": 9.968202
+  },
+  "correctness_counts_each_final_run": {
+    "response_exceptions": 0,
+    "invalid_responses": 0,
+    "invalid_asins": 0,
+    "duplicate_recommendations": 0,
+    "invalid_question_attributes": 0,
+    "repeated_questions": 0,
+    "response_contract_violations": 0,
+    "clarification_failures": 0,
+    "fallback_activations": 0,
+    "runtime_benchmark_leakage": 0
+  },
+  "failure_matrix": [
+    {"failure": "missing or corrupt dense cache", "fallback": "protected raw-message BM25"},
+    {"failure": "dense initialization or query", "fallback": "protected raw-message BM25"},
+    {"failure": "router exception or invalid route", "fallback": "protected raw-message BM25 order"},
+    {"failure": "contextual candidate fusion", "fallback": "already retrieved BM25 order"},
+    {"failure": "ambiguity analyzer", "fallback": "same recommendations; clarification omitted"},
+    {"failure": "clarification eligibility", "fallback": "same recommendations; clarification omitted"},
+    {"failure": "invalid clarification attribute", "fallback": "same recommendations; clarification omitted"},
+    {"failure": "clarification controller", "fallback": "same recommendations; clarification omitted"},
+    {"failure": "question composition", "fallback": "same recommendations; clarification omitted"},
+    {"failure": "selected policy missing or corrupt", "fallback": "verified contextual.browsing-dense.v1 rollback"},
+    {"failure": "selected and rollback policies invalid", "fallback": "clear initialization failure"},
+    {"failure": "unexpected response exception", "fallback": "one non-recursive protected BM25 attempt, then contract-valid empty response"}
+  ],
+  "verification": {
+    "new_validator_and_failure_tests": "20 passed",
+    "issue_5a_5b_5c_6a_checkpoint": "62 passed",
+    "relevant_state_routing_retrieval_contract_checkpoint": "94 passed",
+    "full_unit_suite": "229 passed",
+    "ruff_changed_files": "passed",
+    "ruff_format_changed_files": "passed",
+    "focused_mypy": "passed on response validator, policy loader, evaluator and runtime measurement",
+    "agent_mypy_note": "pre-existing query/reranker cross-module findings remain out of scope"
+  }
+}

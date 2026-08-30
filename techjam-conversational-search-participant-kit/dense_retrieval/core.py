@@ -4,13 +4,13 @@ import hashlib
 import json
 import os
 import tempfile
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Mapping, Protocol, Sequence
+from typing import Any, Protocol
 
 import numpy as np
 from numpy.typing import NDArray
-
 
 TEXT_BUILDER_VERSION = "catalog-semantic-text-v1"
 CACHE_SCHEMA_VERSION = 1
@@ -32,7 +32,9 @@ class Encoder(Protocol):
     model_revision: str | None
     embedding_dimension: int | None
 
-    def encode(self, texts: Sequence[str], batch_size: int) -> NDArray[np.floating[Any]]:
+    def encode(
+        self, texts: Sequence[str], batch_size: int
+    ) -> NDArray[np.floating[Any]]:
         """Encode texts into one vector per input text."""
 
 
@@ -194,7 +196,9 @@ class ProductTextBuilder:
             parts = [cls._normalize(item) for item in value]
             return "; ".join(item for item in parts if item)
         if isinstance(value, (set, frozenset)):
-            parts = sorted(item for item in (cls._normalize(item) for item in value) if item)
+            parts = sorted(
+                item for item in (cls._normalize(item) for item in value) if item
+            )
             return "; ".join(parts)
         return cls._clean_scalar(value)
 
@@ -233,6 +237,7 @@ class SentenceTransformerEncoder:
                 ) from error
             kwargs: dict[str, object] = {
                 "device": self._device,
+                "local_files_only": True,
                 "trust_remote_code": False,
             }
             if self.model_revision is not None:
@@ -250,7 +255,9 @@ class SentenceTransformerEncoder:
                 self.resolved_model_revision = detected_revision
         return self._model
 
-    def encode(self, texts: Sequence[str], batch_size: int) -> NDArray[np.floating[Any]]:
+    def encode(
+        self, texts: Sequence[str], batch_size: int
+    ) -> NDArray[np.floating[Any]]:
         if batch_size <= 0:
             raise ValueError("batch_size must be positive")
         model = self._load_model()
@@ -273,7 +280,9 @@ class DenseRetriever:
         parent_asins: Sequence[str],
         encoder: Encoder,
     ) -> None:
-        validated = _validate_normalized_embeddings(embeddings, expected_rows=len(parent_asins))
+        validated = _validate_normalized_embeddings(
+            embeddings, expected_rows=len(parent_asins)
+        )
         _validate_parent_asins(parent_asins)
         self._embeddings = np.array(validated, dtype=np.float32, order="C", copy=True)
         self._embeddings.flags.writeable = False
@@ -305,7 +314,7 @@ class DenseRetriever:
         batch_size: int = 64,
         text_builder: ProductTextBuilder | None = None,
         rebuild_cache: bool = False,
-    ) -> "DenseRetriever":
+    ) -> DenseRetriever:
         if batch_size <= 0:
             raise ValueError("batch_size must be positive")
         snapshot = _load_catalog(catalog_path)
@@ -325,7 +334,11 @@ class DenseRetriever:
             "normalized": True,
         }
 
-        loaded = None if rebuild_cache else _load_cache(cache, expected, snapshot.parent_asins)
+        loaded = (
+            None
+            if rebuild_cache
+            else _load_cache(cache, expected, snapshot.parent_asins)
+        )
         if loaded is None:
             texts = [builder.build(product) for product in snapshot.products]
             raw_embeddings = selected_encoder.encode(texts, batch_size=batch_size)
@@ -370,7 +383,9 @@ class DenseRetriever:
             )
         scores = np.matmul(self._embeddings, query_matrix[0])
         if not np.isfinite(scores).all():
-            raise EmbeddingValidationError("cosine similarity produced non-finite scores")
+            raise EmbeddingValidationError(
+                "cosine similarity produced non-finite scores"
+            )
 
         result_count = min(top_n, self.catalog_size)
         # Stable sorting makes the original catalog row order the secondary key.
@@ -414,7 +429,9 @@ def _load_catalog(catalog_path: str | Path) -> _CatalogSnapshot:
                 products.append(product)
                 parent_asins.append(_catalog_asin(product, line_number))
     except OSError as error:
-        raise CatalogValidationError(f"unable to read catalog {path}: {error}") from error
+        raise CatalogValidationError(
+            f"unable to read catalog {path}: {error}"
+        ) from error
     if not products:
         raise CatalogValidationError("catalog contains no products")
     _validate_parent_asins(parent_asins)
@@ -438,7 +455,9 @@ def _validate_parent_asins(parent_asins: Sequence[str]) -> None:
     seen: set[str] = set()
     for row_index, parent_asin in enumerate(parent_asins):
         if not isinstance(parent_asin, str) or not parent_asin:
-            raise CatalogValidationError(f"indexed row {row_index} has an empty parent_asin")
+            raise CatalogValidationError(
+                f"indexed row {row_index} has an empty parent_asin"
+            )
         if parent_asin in seen:
             raise CatalogValidationError(
                 f"duplicate parent_asin {parent_asin!r} at indexed row {row_index}"
@@ -446,9 +465,7 @@ def _validate_parent_asins(parent_asins: Sequence[str]) -> None:
         seen.add(parent_asin)
 
 
-def _normalize_embeddings(
-    values: object, *, expected_rows: int
-) -> NDArray[np.float32]:
+def _normalize_embeddings(values: object, *, expected_rows: int) -> NDArray[np.float32]:
     array = np.asarray(values)
     if array.ndim != 2:
         raise EmbeddingValidationError(
@@ -465,7 +482,9 @@ def _normalize_embeddings(
         raise EmbeddingValidationError("embeddings contain non-finite values")
     norms = np.linalg.norm(converted, axis=1)
     if not np.isfinite(norms).all() or np.any(norms <= np.finfo(np.float32).eps):
-        raise EmbeddingValidationError("embeddings contain a zero-norm or invalid vector")
+        raise EmbeddingValidationError(
+            "embeddings contain a zero-norm or invalid vector"
+        )
     normalized = converted / norms[:, np.newaxis]
     return np.asarray(normalized, dtype=np.float32, order="C")
 
@@ -485,7 +504,9 @@ def _validate_normalized_embeddings(
     if not np.isfinite(array).all():
         raise EmbeddingValidationError("cached embeddings contain non-finite values")
     norms = np.linalg.norm(array, axis=1)
-    if not np.allclose(norms, 1.0, rtol=NORMALIZATION_TOLERANCE, atol=NORMALIZATION_TOLERANCE):
+    if not np.allclose(
+        norms, 1.0, rtol=NORMALIZATION_TOLERANCE, atol=NORMALIZATION_TOLERANCE
+    ):
         raise EmbeddingValidationError("cached embeddings are not unit-normalized")
     return np.asarray(array, dtype=np.float32)
 
@@ -501,19 +522,24 @@ def _load_cache(
             if set(archive.files) != required:
                 return None
             metadata_value = archive["metadata"]
-            if metadata_value.shape != () or metadata_value.dtype.kind not in {"U", "S"}:
+            if metadata_value.shape != () or metadata_value.dtype.kind not in {
+                "U",
+                "S",
+            }:
                 return None
             metadata = json.loads(str(metadata_value.item()))
             if not isinstance(metadata, dict):
                 return None
-            if any(metadata.get(key) != value for key, value in expected_metadata.items()):
+            if any(
+                metadata.get(key) != value for key, value in expected_metadata.items()
+            ):
                 return None
             embeddings = archive["embeddings"]
             stored_asins_array = archive["parent_asins"]
-            if (
-                stored_asins_array.ndim != 1
-                or stored_asins_array.dtype.kind not in {"U", "S"}
-            ):
+            if stored_asins_array.ndim != 1 or stored_asins_array.dtype.kind not in {
+                "U",
+                "S",
+            }:
                 return None
             stored_asins = tuple(str(value) for value in stored_asins_array.tolist())
             if stored_asins != tuple(expected_parent_asins):
@@ -525,7 +551,9 @@ def _load_cache(
             ):
                 return None
             return np.array(
-                _validate_normalized_embeddings(embeddings, expected_rows=len(stored_asins)),
+                _validate_normalized_embeddings(
+                    embeddings, expected_rows=len(stored_asins)
+                ),
                 dtype=np.float32,
                 order="C",
                 copy=True,

@@ -21,11 +21,15 @@ from .ambiguity_analysis import AmbiguityAnalyzer
 from .bm25_anchor import BM25AnchorRetriever
 from .clarification_controller import (
     ClarificationController,
+    ClarificationPrompt,
     compose_clarification_response,
     is_explicit_no_preference,
     normalize_attribute,
 )
-from .clarification_policies import load_clarification_policy_registry
+from .clarification_policies import (
+    ClarificationPolicy,
+    load_runtime_clarification_policy,
+)
 from .contextual_retrieval import (
     ContextualRetrievalPolicy,
     policy_by_id,
@@ -55,6 +59,7 @@ from .hybrid_retrieval import (
 )
 from .intent_router import IntentRouter, RoutingDecision
 from .lexical_retriever import LexicalRetriever
+from .response_validation import DEFAULT_RECOMMENDATION_MESSAGE, validate_response
 from .route_aware_retrieval import (
     filter_candidates,
     merge_fallback_candidates,
@@ -68,6 +73,7 @@ NEGATIVE_FEEDBACK_RE = re.compile(
     re.IGNORECASE,
 )
 DenseFactory = Callable[[], Any]
+ClarificationPolicyLoader = Callable[[str], ClarificationPolicy]
 
 
 class Agent:
@@ -94,6 +100,10 @@ class Agent:
         clarification_config: SelectiveClarificationConfig | None = None,
         ambiguity_analyzer: Any | None = None,
         clarification_controller: Any | None = None,
+        clarification_policy_loader: ClarificationPolicyLoader | None = None,
+        clarification_composer: Callable[
+            [Mapping[str, object], ClarificationPrompt | None], dict[str, object]
+        ] = compose_clarification_response,
     ) -> None:
         self.catalog_path = Path(catalog_path)
         self.config = config or HybridRetrievalConfig()
@@ -108,10 +118,17 @@ class Agent:
         self._contextual_policy = contextual_policy or policy_by_id(
             "contextual.browsing-dense.v1"
         )
+        self._initialization_fallback_counts: Counter[str] = Counter()
         if clarification_config is None:
-            default_clarification_policy = (
-                load_clarification_policy_registry().runtime_default
+            default_clarification_policy, selected_error = (
+                load_runtime_clarification_policy(clarification_policy_loader)
             )
+            if selected_error is not None:
+                self._initialization_fallback_counts["selected_policy"] += 1
+                LOGGER.warning(
+                    "selected clarification policy unavailable; using verified rollback: %s",
+                    selected_error,
+                )
             self._clarification_config = default_clarification_policy.clarification
             default_controller_config = default_clarification_policy.controller
         else:
@@ -122,6 +139,7 @@ class Agent:
             clarification_controller
             or ClarificationController(default_controller_config)
         )
+        self._clarification_composer = clarification_composer
         self._known_negative_ids: dict[str, set[str]] = {}
         self._last_recommended_ids: dict[str, tuple[str, ...]] = {}
         self._active_raw_intent: dict[str, str] = {}
@@ -254,6 +272,55 @@ class Agent:
         turn: int,
         top_k: int,
     ) -> dict:
+        """Return one validated response with a single non-recursive safety guard."""
+
+        try:
+            response = self._respond_once(session_id, user_message, turn, top_k)
+            return validate_response(
+                response,
+                self._last_candidates.get(session_id, ()),
+                self._catalog_ids,
+                top_k,
+            )
+        except Exception as error:  # noqa: BLE001 - final evaluator boundary
+            self._component_failure_counts["unexpected_response"] += 1
+            LOGGER.warning(
+                "response failed for session %s turn %s; attempting protected BM25: %s",
+                session_id,
+                turn,
+                error,
+            )
+            try:
+                response, candidates = self._protected_lexical_response(
+                    user_message, top_k
+                )
+                self._component_failure_counts["protected_lexical_fallback"] += 1
+                return validate_response(response, candidates, self._catalog_ids, top_k)
+            except Exception as fallback_error:  # noqa: BLE001 - final safety boundary
+                self._component_failure_counts["protected_lexical_failure"] += 1
+                LOGGER.warning(
+                    "protected BM25 fallback failed; returning an empty response: %s",
+                    fallback_error,
+                )
+                return validate_response(
+                    {
+                        "message": DEFAULT_RECOMMENDATION_MESSAGE,
+                        "ask_attribute": None,
+                        "recommendations": [],
+                        "usage": {"prompt_tokens": 0, "completion_tokens": 0},
+                    },
+                    (),
+                    self._catalog_ids,
+                    top_k,
+                )
+
+    def _respond_once(
+        self,
+        session_id: str,
+        user_message: str,
+        turn: int,
+        top_k: int,
+    ) -> dict[str, object]:
         if self._clarification_config.enabled:
             self._resolve_pending_clarification(session_id, user_message)
 
@@ -273,13 +340,17 @@ class Agent:
         limit = min(max(0, top_k), self.config.final_candidate_count)
         if self._clarification_config.enabled and not limit:
             self._clarification_candidates[session_id] = []
-        candidates = self._retrieve(query, limit, session_id, turn) if limit else []
+        candidates = (
+            self._retrieve(query, limit, session_id, turn)
+            if limit and user_message.strip()
+            else []
+        )
         self._last_candidates[session_id] = copy.deepcopy(candidates)
         self._last_recommended_ids[session_id] = tuple(
             candidate.parent_asin for candidate in candidates
         )
         response: dict[str, object] = {
-            "message": "Here are the closest matches I found.",
+            "message": DEFAULT_RECOMMENDATION_MESSAGE,
             "ask_attribute": None,
             "recommendations": [
                 {"parent_asin": item.parent_asin} for item in candidates
@@ -289,6 +360,34 @@ class Agent:
         if not self._clarification_config.enabled:
             return response
         return self._attach_clarification(response, session_id=session_id, turn=turn)
+
+    def _protected_lexical_response(
+        self, user_message: str, top_k: object
+    ) -> tuple[dict[str, object], list[Candidate]]:
+        limit = (
+            min(max(0, top_k), self.config.final_candidate_count)
+            if isinstance(top_k, int) and not isinstance(top_k, bool)
+            else 0
+        )
+        candidates: list[Candidate] = []
+        if limit and user_message.strip():
+            if self._anchor is None:
+                raise RuntimeError("BM25 anchor retriever is unavailable")
+            raw = self._anchor.retrieve(user_message, top_n=limit)
+            candidates = rank_single_source(
+                raw, RetrievalMode.LEXICAL, self._catalog_ids, limit
+            )
+        return (
+            {
+                "message": DEFAULT_RECOMMENDATION_MESSAGE,
+                "ask_attribute": None,
+                "recommendations": [
+                    {"parent_asin": candidate.parent_asin} for candidate in candidates
+                ],
+                "usage": {"prompt_tokens": 0, "completion_tokens": 0},
+            },
+            candidates,
+        )
 
     def _resolve_pending_clarification(
         self, session_id: str, user_message: str
@@ -338,30 +437,52 @@ class Agent:
             or self._contextual_policy.policy_id != config.required_retrieval_policy_id
         ):
             return dict(response)
+        candidates = self._clarification_candidates.get(session_id, [])[
+            : config.analysis_candidate_limit
+        ]
         try:
-            candidates = self._clarification_candidates.get(session_id, [])[
-                : config.analysis_candidate_limit
-            ]
             catalog = self._clarification_catalog(candidates)
             active_state = self._state.state_for(session_id)
             opportunity = self._ambiguity_analyzer.analyze(
                 candidates, catalog, active_state
             )
-            route = self._contextual_routes.get(session_id, "uncertain")
+        except Exception as error:  # noqa: BLE001 - analyzer boundary
+            self._record_clarification_failure(session_id, "ambiguity_analyzer", error)
+            return dict(response)
+        route = self._contextual_routes.get(session_id, "uncertain")
+        try:
             if not config.is_eligible(route, len(candidates), opportunity):
                 return dict(response)
+        except Exception as error:  # noqa: BLE001 - policy boundary
+            self._record_clarification_failure(session_id, "policy_eligibility", error)
+            return dict(response)
+        attribute = normalize_attribute(getattr(opportunity, "attribute", None))
+        if attribute is None:
+            self._record_clarification_failure(
+                session_id,
+                "invalid_attribute",
+                ValueError("ambiguity analyzer returned an invalid attribute"),
+            )
+            return dict(response)
+        try:
             prompt = self._clarification_controller.build_prompt(
-                session_id, opportunity.attribute, active_state, turn
+                session_id, attribute, active_state, turn
             )
             if prompt is None:
                 return dict(response)
-            composed = compose_clarification_response(response, prompt)
-            attribute = str(prompt.ask_attribute)
-            self._clarification_question_counts[attribute] += 1
+        except Exception as error:  # noqa: BLE001 - controller boundary
+            self._record_clarification_failure(session_id, "controller", error)
+            return dict(response)
+        try:
+            composed = self._clarification_composer(response, prompt)
+            prompt_attribute = str(prompt.ask_attribute)
+            self._clarification_question_counts[prompt_attribute] += 1
             self._clarification_route_counts[route] += 1
             return composed
-        except Exception as error:  # noqa: BLE001 - clarification-only boundary
-            self._record_clarification_failure(session_id, "attach_question", error)
+        except Exception as error:  # noqa: BLE001 - formatting boundary
+            self._record_clarification_failure(
+                session_id, "question_composition", error
+            )
             return dict(response)
 
     def _clarification_catalog(
@@ -391,6 +512,7 @@ class Agent:
         self, session_id: str, operation: str, error: Exception
     ) -> None:
         self._clarification_failure_count += 1
+        self._component_failure_counts[f"clarification.{operation}"] += 1
         LOGGER.warning(
             "clarification %s failed for session %s; returning recommendations only: %s",
             operation,
@@ -540,32 +662,66 @@ class Agent:
             state_results = list(
                 self._lexical.retrieve(soft_query, top_n=policy.candidate_count)
             )
-        route_query = replace(query, text=active_text)
-        try:
-            route = self._router.route(
-                self._state.state_for(session_id), route_query
-            ).route
-        except Exception:  # noqa: BLE001 - router component boundary
-            route = "uncertain"
-        self._contextual_routes[session_id] = route
-        dense_results: list[RankedResult] = []
-        if policy.dense_weight > 0 and route in policy.dense_routes:
-            dense_results = self._safe_dense_results(active_text)
         ranking_limit = limit
         if self._clarification_config.enabled:
             ranking_limit = min(
                 policy.candidate_count,
                 max(limit, self._clarification_config.analysis_candidate_limit),
             )
-        ranked = rank_contextual_candidates(
-            anchor,
-            state_results,
-            dense_results,
-            self._catalog_ids,
-            self._known_negative_ids.get(session_id, set()),
-            policy,
-            limit=ranking_limit,
-        )
+        route_query = replace(query, text=active_text)
+        try:
+            route = self._router.route(
+                self._state.state_for(session_id), route_query
+            ).route
+            if route not in {"buying", "browsing", "boundary", "uncertain"}:
+                raise ValueError(f"unsupported router output: {route!r}")
+        except Exception as error:  # noqa: BLE001 - router component boundary
+            self._component_failure_counts["router"] += 1
+            route = "uncertain"
+            self._contextual_routes[session_id] = route
+            ranked = rank_single_source(
+                anchor,
+                RetrievalMode.LEXICAL,
+                self._catalog_ids,
+                ranking_limit,
+            )
+            if self._clarification_config.enabled:
+                self._clarification_candidates[session_id] = copy.deepcopy(
+                    ranked[: self._clarification_config.analysis_candidate_limit]
+                )
+            LOGGER.warning(
+                "intent routing failed for session %s; using protected BM25: %s",
+                session_id,
+                error,
+            )
+            return ranked[:limit]
+        self._contextual_routes[session_id] = route
+        dense_results: list[RankedResult] = []
+        if policy.dense_weight > 0 and route in policy.dense_routes:
+            dense_results = self._safe_dense_results(active_text)
+        try:
+            ranked = rank_contextual_candidates(
+                anchor,
+                state_results,
+                dense_results,
+                self._catalog_ids,
+                self._known_negative_ids.get(session_id, set()),
+                policy,
+                limit=ranking_limit,
+            )
+        except Exception as error:  # noqa: BLE001 - fusion component boundary
+            self._component_failure_counts["candidate_fusion"] += 1
+            LOGGER.warning(
+                "contextual candidate fusion failed for session %s; using protected BM25: %s",
+                session_id,
+                error,
+            )
+            ranked = rank_single_source(
+                anchor,
+                RetrievalMode.LEXICAL,
+                self._catalog_ids,
+                ranking_limit,
+            )
         if self._clarification_config.enabled:
             self._clarification_candidates[session_id] = copy.deepcopy(
                 ranked[: self._clarification_config.analysis_candidate_limit]
@@ -859,6 +1015,9 @@ class Agent:
             "component_failure_counts": dict(
                 sorted(self._component_failure_counts.items())
             ),
+            "initialization_fallback_counts": dict(
+                sorted(self._initialization_fallback_counts.items())
+            ),
             "fallback_attempt_count": self._fallback_attempt_count,
             "fallback_success_count": self._fallback_success_count,
             "fallback_reasons": dict(sorted(self._fallback_reasons.items())),
@@ -921,6 +1080,7 @@ class Agent:
         except Exception as error:  # noqa: BLE001 - dense component boundary
             if self._dense is None:
                 self._dense_unavailable = True
+            self._component_failure_counts["dense"] += 1
             self._log_dense_failure(error)
             return []
         if not results:

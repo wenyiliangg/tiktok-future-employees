@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
@@ -14,6 +14,14 @@ from .selective_clarification import SelectiveClarificationConfig
 
 DEFAULT_POLICY_PATH = (
     Path(__file__).resolve().parents[1] / "config" / "clarification_policies.json"
+)
+SELECTED_POLICY_ID = "clarification.browsing-only.v1"
+SELECTED_POLICY_FINGERPRINT = (
+    "405c3ff441211cc6073b3732e1bd60b7aa8e85698c8ceb7d7931fed8eeaeb6fd"
+)
+ROLLBACK_POLICY_ID = "contextual.browsing-dense.v1"
+ROLLBACK_POLICY_FINGERPRINT = (
+    "04a16f9cec5162ab8a3d6ecff098c0342d205a37d24b5665a36316ba4f64f8a6"
 )
 
 
@@ -170,6 +178,73 @@ def load_clarification_policy_registry(
 
 def clarification_policy_by_id(policy_id: str) -> ClarificationPolicy:
     return load_clarification_policy_registry().policy_by_id(policy_id)
+
+
+def load_clarification_policy_by_id(
+    policy_id: str, path: str | Path = DEFAULT_POLICY_PATH
+) -> ClarificationPolicy:
+    """Load one named policy so a corrupt sibling cannot disable rollback."""
+
+    payload = _require_mapping(
+        json.loads(Path(path).read_text(encoding="utf-8")), "registry"
+    )
+    if payload.get("schema_version") != 1:
+        raise ValueError("unsupported clarification policy schema")
+    evaluation_seed = payload.get("evaluation_seed")
+    if (
+        not isinstance(evaluation_seed, int)
+        or isinstance(evaluation_seed, bool)
+        or evaluation_seed < 0
+    ):
+        raise ValueError("evaluation_seed must be a non-negative integer")
+    raw_policies = payload.get("policies")
+    if not isinstance(raw_policies, list):
+        raise TypeError("policies must be an array")
+    for index, raw_policy in enumerate(raw_policies):
+        policy = _require_mapping(raw_policy, f"policies[{index}]")
+        if policy.get("policy_id") != policy_id:
+            continue
+        loaded = ClarificationPolicy(
+            policy_id=policy_id,
+            rationale=str(policy.get("rationale", "")),
+            retrieval_policy_id=str(policy.get("retrieval_policy_id", "")),
+            evaluation_seed=evaluation_seed,
+            clarification=_clarification_config(
+                _require_mapping(policy.get("clarification"), "clarification")
+            ),
+            controller=ClarificationControllerConfig(
+                **dict(_require_mapping(policy.get("controller"), "controller"))
+            ),
+        )
+        if policy.get("fingerprint_sha256") != loaded.fingerprint_sha256:
+            raise ValueError(
+                f"fingerprint mismatch for clarification policy {policy_id}"
+            )
+        return loaded
+    raise ValueError(f"unknown clarification policy id: {policy_id}")
+
+
+def load_runtime_clarification_policy(
+    loader: Callable[[str], ClarificationPolicy] | None = None,
+) -> tuple[ClarificationPolicy, Exception | None]:
+    """Load the selected policy or its independently verified named rollback."""
+
+    policy_loader = loader or load_clarification_policy_by_id
+    try:
+        selected = policy_loader(SELECTED_POLICY_ID)
+        if selected.fingerprint_sha256 != SELECTED_POLICY_FINGERPRINT:
+            raise ValueError("selected clarification fingerprint mismatch")
+        return selected, None
+    except Exception as selected_error:  # noqa: BLE001 - config boundary
+        try:
+            rollback = policy_loader(ROLLBACK_POLICY_ID)
+            if rollback.fingerprint_sha256 != ROLLBACK_POLICY_FINGERPRINT:
+                raise ValueError("rollback clarification fingerprint mismatch")
+        except Exception as rollback_error:
+            raise RuntimeError(
+                "selected and rollback clarification policies are invalid"
+            ) from rollback_error
+        return rollback, selected_error
 
 
 def clarification_policy_candidates() -> tuple[ClarificationPolicy, ...]:
