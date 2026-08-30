@@ -50,9 +50,15 @@ COLOR_RE = re.compile(
     r"\b(?:black|white|blue|red|pink|green|brown|gray|grey|yellow|purple)\b",
     re.IGNORECASE,
 )
-SIZE_RE = re.compile(r"\b(?:size|sizing|width|wide|narrow|inch|cm|small|large)\b", re.I)
-STYLE_RE = re.compile(r"\b(?:style|fit|sleeve|neck|department|casual|formal)\b", re.I)
-USE_CASE_RE = re.compile(r"\b(?:hiking|running|gym|winter|outdoor|work|travel)\b", re.I)
+SIZE_RE = re.compile(
+    r"\b(?:size|sizing|width|wide|narrow|inch|cm|small|large)\b", re.IGNORECASE
+)
+STYLE_RE = re.compile(
+    r"\b(?:style|fit|sleeve|neck|department|casual|formal)\b", re.IGNORECASE
+)
+USE_CASE_RE = re.compile(
+    r"\b(?:hiking|running|gym|winter|outdoor|work|travel)\b", re.IGNORECASE
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -640,6 +646,10 @@ def main() -> None:
         "--candidate-contextual-policy",
         default="contextual.feedback-memory.v1",
     )
+    parser.add_argument(
+        "--candidate-clarification-policy",
+        default="clarification.feedback-memory.v1",
+    )
     args = parser.parse_args()
 
     catalog_path = Path(args.catalog)
@@ -694,7 +704,7 @@ def main() -> None:
         gc.collect()
 
         candidate_policy = clarification_policy_by_id(
-            "clarification.feedback-memory.v1"
+            args.candidate_clarification_policy
         )
         candidate_agent = _agent(
             catalog_path,

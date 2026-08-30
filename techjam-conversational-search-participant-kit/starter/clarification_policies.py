@@ -55,12 +55,23 @@ class ClarificationPolicy:
     def fingerprint_payload(self) -> dict[str, object]:
         """Return all output-affecting values in canonical schema order."""
 
+        clarification_payload = asdict(self.clarification)
+        if not self.clarification.uses_utility_strategy:
+            for name in (
+                "question_candidates",
+                "utility_min_candidates",
+                "answerability_rates",
+                "hit_probability_weight",
+                "reciprocal_rank_weight",
+                "additional_turn_cost",
+            ):
+                clarification_payload.pop(name)
         return {
             "schema_version": 1,
             "policy_id": self.policy_id,
             "retrieval_policy_id": self.retrieval_policy_id,
             "evaluation_seed": self.evaluation_seed,
-            "clarification": asdict(self.clarification),
+            "clarification": clarification_payload,
             "controller": asdict(self.controller),
         }
 
@@ -120,6 +131,14 @@ def _clarification_config(payload: Mapping[str, Any]) -> SelectiveClarificationC
     eligible_routes = values.get("eligible_routes")
     if isinstance(eligible_routes, list):
         values["eligible_routes"] = tuple(eligible_routes)
+    question_candidates = values.get("question_candidates")
+    if isinstance(question_candidates, list):
+        values["question_candidates"] = tuple(question_candidates)
+    answerability_rates = values.get("answerability_rates")
+    if isinstance(answerability_rates, list):
+        values["answerability_rates"] = tuple(
+            (str(attribute), float(rate)) for attribute, rate in answerability_rates
+        )
     return SelectiveClarificationConfig(**values)
 
 

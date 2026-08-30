@@ -69,6 +69,7 @@ from .hybrid_retrieval import (
 from .intent_router import IntentRouter, RoutingDecision
 from .lexical_retriever import LexicalRetriever
 from .override_history_policy import override_history_policy_for_retrieval
+from .question_utility import rank_question_candidates
 from .response_validation import DEFAULT_RECOMMENDATION_MESSAGE, validate_response
 from .route_aware_retrieval import (
     filter_candidates,
@@ -466,6 +467,13 @@ class Agent:
             pending = getattr(clarification_state, "pending_attribute", None)
             if pending is None:
                 return
+            uses_utility_strategy = bool(
+                getattr(self._clarification_config, "uses_utility_strategy", False)
+            )
+            if uses_utility_strategy and OVERRIDE_CUE_RE.search(user_message):
+                if self._clarification_controller.interrupt_pending(session_id):
+                    self._clarification_resolution_counts["interrupted"] += 1
+                return
             if is_explicit_no_preference(user_message):
                 if self._clarification_controller.record_resolution(
                     session_id, pending, "no_preference"
@@ -476,11 +484,15 @@ class Agent:
                 normalize_attribute(attribute)
                 for attribute in explicit_attribute_mentions(user_message)
             }
+            protocol_answer = (
+                uses_utility_strategy
+                and pending in self._clarification_config.question_candidates
+                and bool(user_message.strip())
+            )
             if (
-                pending in recognized
-                and self._clarification_controller.record_resolution(
-                    session_id, pending, "answered"
-                )
+                pending in recognized or protocol_answer
+            ) and self._clarification_controller.record_resolution(
+                session_id, pending, "answered"
             ):
                 self._clarification_resolution_counts["answered"] += 1
         except Exception as error:  # noqa: BLE001 - clarification-only boundary
@@ -507,6 +519,33 @@ class Agent:
         candidates = self._clarification_candidates.get(session_id, [])[
             : config.analysis_candidate_limit
         ]
+        route = self._contextual_routes.get(session_id, "uncertain")
+        if getattr(config, "uses_utility_strategy", False):
+            try:
+                if not config.utility_is_eligible(route, len(candidates)):
+                    return dict(response)
+                catalog = self._clarification_catalog(candidates)
+                active_state = self._state.state_for(session_id)
+                statistics = self._ambiguity_analyzer.attribute_statistics(
+                    candidates, catalog, active_state
+                )
+                prompt = None
+                for utility in rank_question_candidates(statistics, config):
+                    prompt = self._clarification_controller.build_prompt(
+                        session_id, utility.attribute, active_state, turn
+                    )
+                    if prompt is not None:
+                        break
+                if prompt is None:
+                    return dict(response)
+            except Exception as error:  # noqa: BLE001 - utility policy boundary
+                self._record_clarification_failure(
+                    session_id, "question_utility", error
+                )
+                return dict(response)
+            return self._compose_clarification(
+                response, prompt=prompt, route=route, session_id=session_id
+            )
         try:
             catalog = self._clarification_catalog(candidates)
             active_state = self._state.state_for(session_id)
@@ -516,7 +555,6 @@ class Agent:
         except Exception as error:  # noqa: BLE001 - analyzer boundary
             self._record_clarification_failure(session_id, "ambiguity_analyzer", error)
             return dict(response)
-        route = self._contextual_routes.get(session_id, "uncertain")
         try:
             if not config.is_eligible(route, len(candidates), opportunity):
                 return dict(response)
@@ -540,6 +578,18 @@ class Agent:
         except Exception as error:  # noqa: BLE001 - controller boundary
             self._record_clarification_failure(session_id, "controller", error)
             return dict(response)
+        return self._compose_clarification(
+            response, prompt=prompt, route=route, session_id=session_id
+        )
+
+    def _compose_clarification(
+        self,
+        response: Mapping[str, object],
+        *,
+        prompt: ClarificationPrompt,
+        route: str,
+        session_id: str,
+    ) -> dict[str, object]:
         try:
             composed = self._clarification_composer(response, prompt)
             prompt_attribute = str(prompt.ask_attribute)

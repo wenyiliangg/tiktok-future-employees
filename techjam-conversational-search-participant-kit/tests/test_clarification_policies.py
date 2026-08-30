@@ -28,6 +28,7 @@ class ClarificationPolicyRegistryTest(unittest.TestCase):
                 "clarification.issue-5c.v1",
                 "clarification.browsing-only.v1",
                 "clarification.feedback-memory.v1",
+                "clarification.category-evidence-utility.v1",
             ],
         )
         self.assertEqual(
@@ -37,9 +38,18 @@ class ClarificationPolicyRegistryTest(unittest.TestCase):
                 "clarification.issue-5c.v1": "307822c299d9c3614f06215ecb5118107a5264f1d2efb7b704cf3787018ce1ed",
                 "clarification.browsing-only.v1": "405c3ff441211cc6073b3732e1bd60b7aa8e85698c8ceb7d7931fed8eeaeb6fd",
                 "clarification.feedback-memory.v1": "56550e0f09f152db8be1a3988bacda499955e8b5683e95eedad44b3ce19fb7a5",
+                "clarification.category-evidence-utility.v1": "ce4634f3f2e14414238812ba0eda841e2ab2e0fd71bc00f392192539571924d1",
             },
         )
         self.assertEqual({policy.evaluation_seed for policy in policies}, {20260830})
+
+        utility = clarification_policy_by_id(
+            "clarification.category-evidence-utility.v1"
+        )
+        self.assertEqual(
+            utility.clarification.question_candidates, ("other", "feature")
+        )
+        self.assertEqual(utility.controller.max_questions_per_session, 2)
 
     def test_control_and_issue_5c_exact_values_are_immutable(self) -> None:
         control = clarification_policy_by_id("contextual.browsing-dense.v1")

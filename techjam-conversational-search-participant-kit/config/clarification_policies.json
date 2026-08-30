@@ -94,6 +94,41 @@
         "max_questions_per_session": 1,
         "max_turns": 10
       }
+    },
+    {
+      "policy_id": "clarification.category-evidence-utility.v1",
+      "fingerprint_sha256": "ce4634f3f2e14414238812ba0eda841e2ab2e0fd71bc00f392192539571924d1",
+      "rationale": "P2 uses catalog-derived answerability and candidate-distribution utility to ask open other then targeted feature questions on Browsing and Boundary, with correct pending resolution and a two-question cap.",
+      "retrieval_policy_id": "contextual.category-evidence.v1",
+      "clarification": {
+        "enabled": true,
+        "required_retrieval_policy_id": "contextual.category-evidence.v1",
+        "analysis_candidate_limit": 50,
+        "browsing_min_candidates": 4,
+        "browsing_min_expected_reduction": 0.2,
+        "buying_min_candidates": 8,
+        "buying_min_expected_reduction": 0.5,
+        "eligible_routes": [
+          "browsing",
+          "boundary"
+        ],
+        "question_candidates": [
+          "other",
+          "feature"
+        ],
+        "utility_min_candidates": 4,
+        "answerability_rates": [
+          ["other", 1.0],
+          ["feature", 0.99294]
+        ],
+        "hit_probability_weight": 0.5,
+        "reciprocal_rank_weight": 0.3,
+        "additional_turn_cost": 0.02
+      },
+      "controller": {
+        "max_questions_per_session": 2,
+        "max_turns": 10
+      }
     }
   ]
 }

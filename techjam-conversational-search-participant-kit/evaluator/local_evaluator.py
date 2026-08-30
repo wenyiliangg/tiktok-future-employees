@@ -732,6 +732,7 @@ def main() -> None:
         ROLLBACK_POLICY_ID,
         "clarification.issue-5c.v1",
         "clarification.feedback-memory.v1",
+        "clarification.category-evidence-utility.v1",
     }:
         raise ValueError(
             f"unsupported clarification policy: {clarification_policy.policy_id}"

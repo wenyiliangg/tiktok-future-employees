@@ -12,6 +12,19 @@ from dataclasses import dataclass
 
 from .ambiguity_analysis import ClarificationOpportunity
 
+QUESTION_ATTRIBUTES = frozenset(
+    {
+        "material",
+        "color",
+        "size",
+        "style",
+        "budget",
+        "feature",
+        "use_case",
+        "other",
+    }
+)
+
 
 @dataclass(frozen=True, slots=True)
 class SelectiveClarificationConfig:
@@ -25,6 +38,12 @@ class SelectiveClarificationConfig:
     buying_min_candidates: int = 8
     buying_min_expected_reduction: float = 0.50
     eligible_routes: tuple[str, ...] = ("browsing", "buying")
+    question_candidates: tuple[str, ...] = ()
+    utility_min_candidates: int = 1
+    answerability_rates: tuple[tuple[str, float], ...] = ()
+    hit_probability_weight: float = 0.50
+    reciprocal_rank_weight: float = 0.30
+    additional_turn_cost: float = 0.02
 
     def __post_init__(self) -> None:
         if not isinstance(self.enabled, bool):
@@ -35,6 +54,7 @@ class SelectiveClarificationConfig:
             "analysis_candidate_limit",
             "browsing_min_candidates",
             "buying_min_candidates",
+            "utility_min_candidates",
         ):
             value = getattr(self, name)
             if not isinstance(value, int) or isinstance(value, bool) or value < 1:
@@ -61,6 +81,49 @@ class SelectiveClarificationConfig:
             for route in self.eligible_routes
         ):
             raise ValueError("eligible_routes contains an unsupported observable route")
+        if len(set(self.question_candidates)) != len(self.question_candidates) or any(
+            attribute not in QUESTION_ATTRIBUTES
+            for attribute in self.question_candidates
+        ):
+            raise ValueError(
+                "question_candidates contains a duplicate or unsupported attribute"
+            )
+        rate_attributes = tuple(
+            attribute for attribute, _rate in self.answerability_rates
+        )
+        if len(set(rate_attributes)) != len(rate_attributes) or any(
+            attribute not in self.question_candidates for attribute in rate_attributes
+        ):
+            raise ValueError(
+                "answerability rates must uniquely match question candidates"
+            )
+        if self.question_candidates and set(rate_attributes) != set(
+            self.question_candidates
+        ):
+            raise ValueError("every question candidate requires an answerability rate")
+        for _attribute, rate in self.answerability_rates:
+            if isinstance(rate, bool) or not math.isfinite(rate) or not 0 <= rate <= 1:
+                raise ValueError("answerability rates must be between zero and one")
+        for name in (
+            "hit_probability_weight",
+            "reciprocal_rank_weight",
+            "additional_turn_cost",
+        ):
+            value = getattr(self, name)
+            if isinstance(value, bool) or not math.isfinite(value) or value < 0:
+                raise ValueError(f"{name} must be finite and non-negative")
+
+    @property
+    def uses_utility_strategy(self) -> bool:
+        return bool(self.question_candidates)
+
+    def utility_is_eligible(self, route: str, candidate_count: int) -> bool:
+        return (
+            self.enabled
+            and self.uses_utility_strategy
+            and route in self.eligible_routes
+            and candidate_count >= self.utility_min_candidates
+        )
 
     def is_eligible(
         self,
