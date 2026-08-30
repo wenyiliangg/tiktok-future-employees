@@ -264,6 +264,91 @@ class SentenceTransformerEncoder:
         return np.asarray(result)
 
 
+class TransformerClsEncoder:
+    """Lazy Hugging Face encoder using the first-token representation.
+
+    This adapter is intended for domain-adapted encoder checkpoints such as
+    ``hyp1231/blair-roberta-base``.  BLaIR's published embedding recipe uses
+    the model's CLS representation, while :class:`SentenceTransformerEncoder`
+    may apply a sentence-transformers pooling module around a plain checkpoint.
+    Keeping this adapter separate makes the pooling choice explicit and keeps
+    the existing MiniLM path unchanged.
+    """
+
+    def __init__(
+        self,
+        model_name: str,
+        *,
+        revision: str | None = None,
+        device: str = "cpu",
+        max_length: int = 512,
+    ) -> None:
+        if not isinstance(model_name, str) or not model_name.strip():
+            raise ValueError("model_name must be non-empty")
+        if not isinstance(max_length, int) or isinstance(max_length, bool) or max_length <= 0:
+            raise ValueError("max_length must be a positive integer")
+        self.model_name = model_name
+        self.model_revision = revision
+        self.resolved_model_revision: str | None = None
+        self.embedding_dimension: int | None = None
+        self._device = device
+        self._max_length = max_length
+        self._tokenizer: Any = None
+        self._model: Any = None
+
+    def _load_model(self) -> tuple[Any, Any, Any]:
+        if self._model is None or self._tokenizer is None:
+            try:
+                import torch
+                from transformers import AutoModel, AutoTokenizer
+            except ImportError as error:
+                raise RuntimeError(
+                    "transformers and torch are required for the CLS encoder; "
+                    "install dependencies from requirements.txt"
+                ) from error
+            kwargs: dict[str, object] = {}
+            if self.model_revision is not None:
+                kwargs["revision"] = self.model_revision
+            self._tokenizer = AutoTokenizer.from_pretrained(self.model_name, **kwargs)
+            self._model = AutoModel.from_pretrained(self.model_name, **kwargs)
+            self._model = self._model.to(self._device)
+            self._model.eval()
+            dimension = getattr(getattr(self._model, "config", None), "hidden_size", None)
+            self.embedding_dimension = int(dimension) if dimension is not None else None
+            detected_revision = getattr(getattr(self._model, "config", None), "_commit_hash", None)
+            if isinstance(detected_revision, str) and detected_revision:
+                self.resolved_model_revision = detected_revision
+            return self._tokenizer, self._model, torch
+        import torch
+
+        return self._tokenizer, self._model, torch
+
+    def encode(self, texts: Sequence[str], batch_size: int) -> NDArray[np.floating[Any]]:
+        if batch_size <= 0:
+            raise ValueError("batch_size must be positive")
+        tokenizer, model, torch = self._load_model()
+        batches: list[np.ndarray] = []
+        for start in range(0, len(texts), batch_size):
+            batch = list(texts[start : start + batch_size])
+            if not batch:
+                continue
+            encoded = tokenizer(
+                batch,
+                padding=True,
+                truncation=True,
+                max_length=self._max_length,
+                return_tensors="pt",
+            )
+            encoded = {key: value.to(self._device) for key, value in encoded.items()}
+            with torch.inference_mode():
+                outputs = model(**encoded, return_dict=True)
+            batches.append(outputs.last_hidden_state[:, 0, :].detach().cpu().numpy())
+        if not batches:
+            dimension = self.embedding_dimension or 0
+            return np.empty((0, dimension), dtype=np.float32)
+        return np.concatenate(batches, axis=0)
+
+
 class DenseRetriever:
     """Exact in-memory cosine retrieval over a catalog-aligned matrix."""
 

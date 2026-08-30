@@ -15,7 +15,12 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Any, cast
 
-from dense_retrieval import DEFAULT_MODEL_NAME, DEFAULT_MODEL_REVISION, DenseRetriever
+from dense_retrieval import (
+    DEFAULT_MODEL_NAME,
+    DEFAULT_MODEL_REVISION,
+    DenseRetriever,
+    TransformerClsEncoder,
+)
 
 from .ambiguity_analysis import AmbiguityAnalyzer
 from .bm25_anchor import BM25AnchorRetriever
@@ -81,6 +86,7 @@ class Agent:
         dense_cache_path: str | Path = "data/.dense-retrieval/catalog-minilm.npz",
         model_name: str = DEFAULT_MODEL_NAME,
         model_revision: str | None = DEFAULT_MODEL_REVISION,
+        dense_encoder_kind: str = "auto",
         lexical_retriever: Any | None = None,
         dense_retriever: Any | None = None,
         dense_factory: DenseFactory | None = None,
@@ -95,6 +101,10 @@ class Agent:
         ambiguity_analyzer: Any | None = None,
         clarification_controller: Any | None = None,
     ) -> None:
+        if dense_encoder_kind not in {"auto", "sentence-transformer", "transformers-cls"}:
+            raise ValueError(
+                "dense_encoder_kind must be 'auto', 'sentence-transformer', or 'transformers-cls'"
+            )
         self.catalog_path = Path(catalog_path)
         self.config = config or HybridRetrievalConfig()
         self._state = ConversationStateManager()
@@ -125,6 +135,7 @@ class Agent:
         self._known_negative_ids: dict[str, set[str]] = {}
         self._last_recommended_ids: dict[str, tuple[str, ...]] = {}
         self._active_raw_intent: dict[str, str] = {}
+        self._intent_memory: dict[str, list[str]] = {}
         self._fallback_init_error: str | None = None
         self._user_profiles: dict[str, dict] = {}
         self._session_diagnostics: dict[str, list[dict[str, object]]] = {}
@@ -169,9 +180,18 @@ class Agent:
             cache_path = Path(dense_cache_path)
 
             def build_dense() -> DenseRetriever:
+                encoder = None
+                if dense_encoder_kind == "transformers-cls" or (
+                    dense_encoder_kind == "auto"
+                    and model_name.lower().startswith("hyp1231/blair-roberta")
+                ):
+                    encoder = TransformerClsEncoder(
+                        model_name, revision=model_revision
+                    )
                 return DenseRetriever.from_catalog(
                     self.catalog_path,
                     cache_path=cache_path,
+                    encoder=encoder,
                     model_name=model_name,
                     model_revision=model_revision,
                 )
@@ -235,6 +255,7 @@ class Agent:
         self._known_negative_ids[session_id] = set()
         self._last_recommended_ids[session_id] = ()
         self._active_raw_intent[session_id] = ""
+        self._intent_memory[session_id] = []
         self._clarification_candidates[session_id] = []
         self._contextual_routes.pop(session_id, None)
         self._clarification_disabled_sessions.discard(session_id)
@@ -258,6 +279,7 @@ class Agent:
             self._resolve_pending_clarification(session_id, user_message)
 
         if self.config.mode is RetrievalMode.CONTEXTUAL:
+            self._remember_intent(session_id, user_message)
             if OVERRIDE_CUE_RE.search(user_message):
                 self._known_negative_ids.setdefault(session_id, set()).clear()
                 self._last_recommended_ids[session_id] = ()
@@ -550,7 +572,12 @@ class Agent:
         self._contextual_routes[session_id] = route
         dense_results: list[RankedResult] = []
         if policy.dense_weight > 0 and route in policy.dense_routes:
-            dense_results = self._safe_dense_results(active_text)
+            dense_query = active_text
+            if policy.dense_query_mode == "memory":
+                dense_query = self._memory_dense_query(
+                    session_id, query, policy.memory_turn_limit
+                )
+            dense_results = self._safe_dense_results(dense_query)
         ranking_limit = limit
         if self._clarification_config.enabled:
             ranking_limit = min(
@@ -905,6 +932,39 @@ class Agent:
         if self._dense is None:
             self._dense = self._dense_factory()
         return self._dense
+
+    def _remember_intent(self, session_id: str, user_message: str) -> None:
+        """Keep informative turns for residual dense retrieval only.
+
+        Generic rejection and no-preference replies are control signals, not
+        search intent.  They must not overwrite the last useful request.  An
+        override starts a fresh intent and therefore replaces the memory.
+        """
+
+        message = user_message.strip()
+        if not message:
+            return
+        if OVERRIDE_CUE_RE.search(message):
+            self._intent_memory[session_id] = [message]
+            return
+        if NEGATIVE_FEEDBACK_RE.search(message) or is_explicit_no_preference(message):
+            return
+        history = self._intent_memory.setdefault(session_id, [])
+        if not history or history[-1] != message:
+            history.append(message)
+        del history[:-8]
+
+    def _memory_dense_query(
+        self, session_id: str, query: SearchQuery, memory_turn_limit: int
+    ) -> str:
+        """Build a bounded semantic query from intent memory and active slots."""
+
+        history = self._intent_memory.get(session_id, [])[-memory_turn_limit:]
+        fragments = [item for item in history if item.strip()]
+        structured = query.text.strip()
+        if structured and structured not in fragments:
+            fragments.append(structured)
+        return " ".join(fragments).strip()
 
     def _safe_dense_results(self, query_text: str) -> list[RankedResult]:
         if not query_text.strip():

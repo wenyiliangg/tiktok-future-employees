@@ -12,6 +12,7 @@ from .core import (
     ProductTextBuilder,
     RetrievalResult,
     SentenceTransformerEncoder,
+    TransformerClsEncoder,
 )
 
 __all__ = [
@@ -26,4 +27,5 @@ __all__ = [
     "ProductTextBuilder",
     "RetrievalResult",
     "SentenceTransformerEncoder",
+    "TransformerClsEncoder",
 ]

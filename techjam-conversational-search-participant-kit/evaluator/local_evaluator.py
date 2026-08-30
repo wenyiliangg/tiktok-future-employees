@@ -14,6 +14,7 @@ from collections import Counter, defaultdict
 from dataclasses import asdict
 from pathlib import Path
 
+from dense_retrieval import DEFAULT_MODEL_NAME, DEFAULT_MODEL_REVISION
 from starter.agent import Agent
 from starter.clarification_controller import ClarificationController
 from starter.clarification_policies import load_clarification_policy_registry
@@ -235,6 +236,10 @@ def recommendation_contract_issues(
 def retrieval_configuration_fingerprint(
     config: HybridRetrievalConfig,
     contextual_policy: ContextualRetrievalPolicy,
+    *,
+    dense_model_name: str = DEFAULT_MODEL_NAME,
+    dense_model_revision: str | None = DEFAULT_MODEL_REVISION,
+    dense_encoder_kind: str = "auto",
 ) -> tuple[str, dict[str, object]]:
     """Return a stable fingerprint of recommendation-affecting configuration."""
 
@@ -247,6 +252,9 @@ def retrieval_configuration_fingerprint(
         "contextual_policy": policy_payload,
         "dense_candidate_count": config.dense_candidate_count,
         "final_candidate_count": config.final_candidate_count,
+        "dense_model_name": dense_model_name,
+        "dense_model_revision": dense_model_revision,
+        "dense_encoder_kind": dense_encoder_kind,
     }
     canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest(), payload
@@ -580,6 +588,25 @@ def main() -> None:
     parser.add_argument(
         "--dense-cache", default="data/.dense-retrieval/catalog-minilm.npz"
     )
+    parser.add_argument(
+        "--dense-model",
+        default=None,
+        help=(
+            "Optional dense encoder model. Omit to keep the pinned MiniLM default; "
+            "use hyp1231/blair-roberta-base for the domain-adapted residual trial."
+        ),
+    )
+    parser.add_argument(
+        "--dense-model-revision",
+        default=None,
+        help="Optional immutable model revision for --dense-model.",
+    )
+    parser.add_argument(
+        "--dense-model-kind",
+        choices=("auto", "sentence-transformer", "transformers-cls"),
+        default="auto",
+        help="Pooling adapter for the optional dense model.",
+    )
     clarification_group = parser.add_mutually_exclusive_group()
     clarification_group.add_argument(
         "--clarification-policy",
@@ -613,10 +640,19 @@ def main() -> None:
     random.seed(clarification_policy.evaluation_seed)
     clarification_config = clarification_policy.clarification
     contextual_policy = policy_by_id(args.contextual_policy)
+    dense_model_name = args.dense_model or DEFAULT_MODEL_NAME
+    dense_model_revision = (
+        DEFAULT_MODEL_REVISION
+        if args.dense_model is None and args.dense_model_revision is None
+        else args.dense_model_revision
+    )
     agent = Agent(
         args.catalog,
         config=config,
         dense_cache_path=args.dense_cache,
+        model_name=dense_model_name,
+        model_revision=dense_model_revision,
+        dense_encoder_kind=args.dense_model_kind,
         contextual_policy=contextual_policy,
         clarification_config=clarification_config,
         clarification_controller=ClarificationController(
@@ -637,7 +673,11 @@ def main() -> None:
         "memory_method": "peak resident set size for the evaluator process",
     }
     fingerprint, fingerprint_payload = retrieval_configuration_fingerprint(
-        config, contextual_policy
+        config,
+        contextual_policy,
+        dense_model_name=dense_model_name,
+        dense_model_revision=dense_model_revision,
+        dense_encoder_kind=args.dense_model_kind,
     )
     result["retrieval_configuration"] = {
         **fingerprint_payload,

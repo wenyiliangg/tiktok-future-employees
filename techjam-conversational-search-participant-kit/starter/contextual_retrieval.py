@@ -23,6 +23,8 @@ class ContextualRetrievalPolicy:
     dense_weight: float = 0.0
     dense_routes: tuple[str, ...] = ()
     rrf_k: float = 60.0
+    dense_query_mode: str = "current"
+    memory_turn_limit: int = 3
 
     def __post_init__(self) -> None:
         if not self.policy_id.strip():
@@ -35,6 +37,14 @@ class ContextualRetrievalPolicy:
             value = getattr(self, name)
             if isinstance(value, bool) or not math.isfinite(value) or value < 0:
                 raise ValueError(f"{name} must be finite and non-negative")
+        if self.dense_query_mode not in {"current", "memory"}:
+            raise ValueError("dense_query_mode must be 'current' or 'memory'")
+        if (
+            not isinstance(self.memory_turn_limit, int)
+            or isinstance(self.memory_turn_limit, bool)
+            or not 1 <= self.memory_turn_limit <= 8
+        ):
+            raise ValueError("memory_turn_limit must be an integer between 1 and 8")
 
 
 def contextual_policy_candidates() -> tuple[ContextualRetrievalPolicy, ...]:
@@ -59,6 +69,14 @@ def contextual_policy_candidates() -> tuple[ContextualRetrievalPolicy, ...]:
             state_lexical_weight=0.25,
             dense_weight=0.50,
             dense_routes=("browsing",),
+        ),
+        ContextualRetrievalPolicy(
+            policy_id="contextual.domain-residual.v1",
+            protected_lexical_count=8,
+            dense_weight=0.50,
+            dense_routes=("browsing",),
+            dense_query_mode="memory",
+            memory_turn_limit=4,
         ),
     )
 

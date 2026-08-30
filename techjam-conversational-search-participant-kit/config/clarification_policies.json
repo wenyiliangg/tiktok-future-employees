@@ -72,6 +72,28 @@
         "max_questions_per_session": 1,
         "max_turns": 10
       }
+    },
+    {
+      "policy_id": "clarification.domain-residual.v1",
+      "fingerprint_sha256": "0b01e16335d361171aae82cf5c8a235d07e794d27725ea0c05f1d811a24d908d",
+      "rationale": "Use the same conservative Browsing-only clarification gates with the domain-adapted residual retrieval trial.",
+      "retrieval_policy_id": "contextual.domain-residual.v1",
+      "clarification": {
+        "enabled": true,
+        "required_retrieval_policy_id": "contextual.domain-residual.v1",
+        "analysis_candidate_limit": 50,
+        "browsing_min_candidates": 4,
+        "browsing_min_expected_reduction": 0.2,
+        "buying_min_candidates": 8,
+        "buying_min_expected_reduction": 0.5,
+        "eligible_routes": [
+          "browsing"
+        ]
+      },
+      "controller": {
+        "max_questions_per_session": 1,
+        "max_turns": 10
+      }
     }
   ]
 }
