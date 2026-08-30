@@ -19,6 +19,11 @@ from dense_retrieval import DEFAULT_MODEL_NAME, DEFAULT_MODEL_REVISION, DenseRet
 
 from .ambiguity_analysis import AmbiguityAnalyzer
 from .bm25_anchor import BM25AnchorRetriever
+from .category_evidence import (
+    CategoryEvidenceIndex,
+    EvidenceMessageStore,
+    category_evidence_policy_for_retrieval,
+)
 from .clarification_controller import (
     ClarificationController,
     ClarificationPrompt,
@@ -129,6 +134,10 @@ class Agent:
         self._dual_evidence_policy = dual_evidence_policy_for_retrieval(
             self._contextual_policy.policy_id
         )
+        self._category_evidence_policy = category_evidence_policy_for_retrieval(
+            self._contextual_policy.policy_id
+        )
+        self._evidence_messages = EvidenceMessageStore()
         if (
             self._override_history_policy.enabled
             and self._contextual_policy.state_lexical_weight
@@ -196,6 +205,18 @@ class Agent:
                 self._initialization_fallback_counts["dual_evidence"] += 1
                 LOGGER.warning(
                     "dual-evidence initialization failed; preserving H3 ranking: %s",
+                    error,
+                )
+        self._category_evidence_index: CategoryEvidenceIndex | None = None
+        if self._category_evidence_policy.enabled:
+            try:
+                self._category_evidence_index = CategoryEvidenceIndex.from_jsonl(
+                    self.catalog_path, self._category_evidence_policy
+                )
+            except Exception as error:  # noqa: BLE001 - optional ranker boundary
+                self._initialization_fallback_counts["category_evidence"] += 1
+                LOGGER.warning(
+                    "category-evidence initialization failed; preserving H3 ranking: %s",
                     error,
                 )
         # Experimental reranking remains opt-in. Protected BM25 and contextual
@@ -284,6 +305,7 @@ class Agent:
         self._last_recommended_ids[session_id] = ()
         self._active_raw_intent[session_id] = ""
         self._historical_raw_evidence[session_id] = ""
+        self._evidence_messages.reset(session_id)
         self._clarification_candidates[session_id] = []
         self._contextual_routes.pop(session_id, None)
         self._clarification_disabled_sessions.discard(session_id)
@@ -356,14 +378,23 @@ class Agent:
             self._resolve_pending_clarification(session_id, user_message)
 
         if self.config.mode is RetrievalMode.CONTEXTUAL:
-            if OVERRIDE_CUE_RE.search(user_message):
+            is_override = bool(OVERRIDE_CUE_RE.search(user_message))
+            is_negative = bool(NEGATIVE_FEEDBACK_RE.search(user_message))
+            self._evidence_messages.observe(
+                session_id,
+                user_message,
+                override=is_override,
+                non_evidence_reply=is_negative
+                or is_explicit_no_preference(user_message),
+            )
+            if is_override:
                 if self._override_history_policy.enabled:
                     prior_intent = self._active_raw_intent.get(session_id, "").strip()
                     self._historical_raw_evidence[session_id] = prior_intent
                 self._known_negative_ids.setdefault(session_id, set()).clear()
                 self._last_recommended_ids[session_id] = ()
                 self._active_raw_intent[session_id] = user_message
-            elif NEGATIVE_FEEDBACK_RE.search(user_message):
+            elif is_negative:
                 self._known_negative_ids.setdefault(session_id, set()).update(
                     self._last_recommended_ids.get(session_id, ())
                 )
@@ -779,6 +810,30 @@ class Agent:
                 self._catalog_ids,
                 ranking_limit,
             )
+        if self._category_evidence_index is not None:
+            try:
+                ranked = self._category_evidence_index.rank(
+                    query=query,
+                    current_text=(
+                        self._evidence_messages.current_text(session_id) or active_text
+                    ),
+                    historical_text=(
+                        self._evidence_messages.historical_text(session_id)
+                        or history_text
+                    ),
+                    base_results=anchor,
+                    history_results=state_results,
+                    catalog=self._catalog_view,
+                    known_negative_ids=self._known_negative_ids.get(session_id, set()),
+                    limit=ranking_limit,
+                )
+            except Exception as error:  # noqa: BLE001 - optional ranker boundary
+                self._component_failure_counts["category_evidence"] += 1
+                LOGGER.warning(
+                    "category-evidence ranking failed for session %s; preserving H3 ranking: %s",
+                    session_id,
+                    error,
+                )
         if self._dual_evidence_ranker is not None and history_text and ranked:
             try:
                 head = ranked[:limit]

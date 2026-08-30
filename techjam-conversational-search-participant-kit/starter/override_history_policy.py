@@ -53,6 +53,7 @@ def override_history_policy_for_retrieval(
     if retrieval_policy_id in {
         "contextual.override-history-tail.v1",
         "contextual.override-history-conjunction.v1",
+        "contextual.category-evidence.v1",
     }:
         return OverrideHistoryPolicy(
             policy_id="override-history.single-tail.v1",
