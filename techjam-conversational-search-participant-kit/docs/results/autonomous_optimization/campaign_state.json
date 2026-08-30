@@ -3,11 +3,11 @@
   "campaign_status": "running",
   "campaign_base_commit": "c57dfce8f7aeb44cb366ab3a90c11e9ac613cf07",
   "campaign_branch": "experiment/bounded-technicalscore-optimization",
-  "champion_commit": "1179c8bf70bf4994420599a8f70b05af70230a59",
+  "champion_commit": "7ba0a7c769954d758e1c6db6e70cde3cac214bb5",
   "champion_configuration": {
     "retrieval_mode": "contextual",
     "retrieval_policy": "contextual.category-evidence.v1",
-    "clarification_policy": "clarification.feedback-memory.v1",
+    "clarification_policy": "clarification.category-evidence-utility.v1",
     "bm25_candidate_count": 200,
     "dense_candidate_count": 200,
     "final_candidate_count": 10,
@@ -20,43 +20,52 @@
     "weak_evidence_anchor_floor": 6,
     "rare_document_fraction": 0.05,
     "strong_evidence_document_fraction": 0.01,
+    "question_candidates": [
+      "other",
+      "feature"
+    ],
+    "eligible_clarification_routes": [
+      "browsing",
+      "boundary"
+    ],
+    "max_questions_per_session": 2,
     "fixed_seed": 20260830
   },
   "champion_fingerprint": {
     "retrieval": "d7283c869605b440a2e6f702db5a9179f983fd3bc045f38193bb05b5bf85c47b",
     "override_history": "fc9e1a03e3b5a789e141dc7c644db12420e2fb312c0a1d9564a9472b87b40e01",
     "category_evidence": "13964662e5fb63bf16da308e43ed107fff58dc6eb76263cc1d4b7c814c1eb267",
-    "clarification": "56550e0f09f152db8be1a3988bacda499955e8b5683e95eedad44b3ce19fb7a5"
+    "clarification": "ce4634f3f2e14414238812ba0eda841e2ab2e0fd71bc00f392192539571924d1"
   },
   "champion_metrics": {
     "sample_count": 200,
-    "hit_rate_at_10": 0.68,
-    "mrr": 0.240615,
-    "mttc": 6.21,
-    "efficiency": 0.479,
-    "technical_score": 0.507985,
-    "clarification_questions": 13
+    "hit_rate_at_10": 0.71,
+    "mrr": 0.314782,
+    "mttc": 5.75,
+    "efficiency": 0.525,
+    "technical_score": 0.554435,
+    "clarification_questions": 53
   },
-  "champion_response_hash": "6fb17d8312bd84ebfe3d0d57595ad9f891d1eaa3fab942c3759148c1335f398c",
-  "champion_session_hash": "cb648d582f23270d03fe74fe76ba7ac728aa6581509e840b8283954007887bf8",
-  "current_experiment_id": "P2-answerability-utility-questions-v1",
-  "current_hypothesis": "Answerability-aware open and feature questions, correct pending resolution, decline recovery, and a two-question cap can convert P1 candidate evidence into earlier and higher-ranked hits without sacrificing P1 coverage.",
-  "current_stage": "preliminary_gates_passed_awaiting_official_next_invocation",
-  "experiment_start_commit": "5b7b6cd230770815db727dacb158009cbf8c5614",
-  "experiment_commits": [
-    "7ba0a7c769954d758e1c6db6e70cde3cac214bb5"
-  ],
+  "champion_response_hash": "921cbfe879262cae0c5332db632920544bb0b90c562ae91cf450a7252617e7f5",
+  "champion_session_hash": "9513a906150178fc4ae5e829129cfd50b699c98b1f040d641dae91bb40847deb",
+  "current_experiment_id": null,
+  "current_hypothesis": null,
+  "current_stage": "P2_promoted_invocation_complete",
+  "experiment_start_commit": null,
+  "experiment_commits": [],
   "completed_hypotheses": [
     "H0-feedback-memory-bm25",
     "H1-open-evidence-questions-v1",
     "H2-catalog-signature-index-v1",
     "H3-override-history-tail-v1",
-    "P1-category-evidence-pipeline-v1"
+    "P1-category-evidence-pipeline-v1",
+    "P2-answerability-utility-questions-v1"
   ],
   "retained_hypotheses": [
     "H0-feedback-memory-bm25",
     "H3-override-history-tail-v1",
-    "P1-category-evidence-pipeline-v1"
+    "P1-category-evidence-pipeline-v1",
+    "P2-answerability-utility-questions-v1"
   ],
   "rejected_hypotheses": [
     "H1-open-evidence-questions-v1",
@@ -67,12 +76,12 @@
   ],
   "consecutive_rejections": 0,
   "consecutive_small_improvements": 0,
-  "official_runs_used": 6,
-  "official_runs_remaining": 6,
+  "official_runs_used": 8,
+  "official_runs_remaining": 4,
   "fixed_seed": 20260830,
   "run_start_utc": "2026-08-30T14:44:51Z",
-  "last_checkpoint_utc": "2026-08-30T16:07:19Z",
+  "last_checkpoint_utc": "2026-08-30T19:18:17Z",
   "pause_reason": null,
   "stop_reason": null,
-  "next_action": "At the next invocation, verify the diagnostic evaluator wrapper and run one official P2 finalist using contextual.category-evidence.v1 plus clarification.category-evidence-utility.v1; pair against the promoted P1 artifact before any promotion."
+  "next_action": "In a later invocation, predeclare and shadow-test a separate P3 confidence/list-exposure policy against P2 without changing P2; preserve the four remaining official runs until a coherent finalist passes preliminary gates."
 }
