@@ -64,6 +64,13 @@ def contextual_policy_candidates() -> tuple[ContextualRetrievalPolicy, ...]:
             negative_feedback_uses_active_intent=True,
         ),
         ContextualRetrievalPolicy(
+            policy_id="contextual.signature-head.v1",
+            protected_lexical_count=8,
+            dense_weight=0.50,
+            dense_routes=("browsing",),
+            negative_feedback_uses_active_intent=True,
+        ),
+        ContextualRetrievalPolicy(
             policy_id="contextual.combined.v1",
             protected_lexical_count=8,
             state_lexical_weight=0.25,

@@ -19,6 +19,11 @@ from dense_retrieval import DEFAULT_MODEL_NAME, DEFAULT_MODEL_REVISION, DenseRet
 
 from .ambiguity_analysis import AmbiguityAnalyzer
 from .bm25_anchor import BM25AnchorRetriever
+from .catalog_signature_index import (
+    CatalogSignatureIndex,
+    CatalogSignaturePolicy,
+    catalog_signature_policy_for_retrieval,
+)
 from .clarification_controller import (
     ClarificationController,
     ClarificationPrompt,
@@ -104,6 +109,8 @@ class Agent:
         clarification_composer: Callable[
             [Mapping[str, object], ClarificationPrompt | None], dict[str, object]
         ] = compose_clarification_response,
+        signature_policy: CatalogSignaturePolicy | None = None,
+        signature_index: Any | None = None,
     ) -> None:
         self.catalog_path = Path(catalog_path)
         self.config = config or HybridRetrievalConfig()
@@ -118,6 +125,12 @@ class Agent:
         self._contextual_policy = contextual_policy or policy_by_id(
             "contextual.browsing-dense.v1"
         )
+        self._signature_policy = signature_policy or (
+            catalog_signature_policy_for_retrieval(self._contextual_policy.policy_id)
+        )
+        self._signature_index: Any | None = signature_index
+        self._signature_match_count = 0
+        self._signature_promotion_count = 0
         self._initialization_fallback_counts: Counter[str] = Counter()
         if clarification_config is None:
             default_clarification_policy, selected_error = (
@@ -165,6 +178,17 @@ class Agent:
         self._clarification_failure_count = 0
 
         self._catalog_ids = self._load_catalog_ids(self.catalog_path)
+        if self._signature_policy.enabled and self._signature_index is None:
+            try:
+                self._signature_index = CatalogSignatureIndex.from_jsonl(
+                    self.catalog_path, self._signature_policy
+                )
+            except (OSError, TypeError, ValueError, json.JSONDecodeError) as error:
+                self._initialization_fallback_counts["catalog_signature"] += 1
+                LOGGER.warning(
+                    "catalog signature index unavailable; preserving contextual retrieval: %s",
+                    error,
+                )
         self._catalog_view = catalog_view or InMemoryCatalogView.from_jsonl(
             self.catalog_path
         )
@@ -434,7 +458,9 @@ class Agent:
         if (
             session_id in self._clarification_disabled_sessions
             or self.config.mode is not RetrievalMode.CONTEXTUAL
-            or self._contextual_policy.policy_id != config.required_retrieval_policy_id
+            or not self._signature_policy.clarification_is_compatible(
+                config.required_retrieval_policy_id
+            )
         ):
             return dict(response)
         candidates = self._clarification_candidates.get(session_id, [])[
@@ -731,7 +757,59 @@ class Agent:
             self._clarification_candidates[session_id] = copy.deepcopy(
                 ranked[: self._clarification_config.analysis_candidate_limit]
             )
-        return ranked[:limit]
+        promoted = self._promote_signature_candidate(
+            active_text,
+            ranked,
+            self._known_negative_ids.get(session_id, set()),
+            limit,
+        )
+        return promoted[:limit]
+
+    def _promote_signature_candidate(
+        self,
+        user_message: str,
+        ranked: list[Candidate],
+        known_negative_ids: set[str],
+        limit: int,
+    ) -> list[Candidate]:
+        """Move one unique exact catalog signature to the head, or preserve order."""
+
+        if not self._signature_policy.enabled or self._signature_index is None:
+            return ranked
+        try:
+            match = self._signature_index.match(user_message)
+        except Exception as error:  # noqa: BLE001 - optional index boundary
+            self._component_failure_counts["catalog_signature"] += 1
+            LOGGER.warning(
+                "catalog signature lookup failed; preserving ranking: %s", error
+            )
+            return ranked
+        if (
+            match is None
+            or match.parent_asin not in self._catalog_ids
+            or match.parent_asin in known_negative_ids
+        ):
+            return ranked
+        self._signature_match_count += 1
+        selected = next(
+            (item for item in ranked if item.parent_asin == match.parent_asin),
+            None,
+        )
+        if selected is None:
+            selected = Candidate(
+                parent_asin=match.parent_asin,
+                sources={"catalog_signature"},
+                component_scores={"unique_catalog_signature": 1.0},
+            )
+        else:
+            selected = copy.deepcopy(selected)
+            selected.sources.add("catalog_signature")
+            selected.component_scores["unique_catalog_signature"] = 1.0
+        self._signature_promotion_count += 1
+        return [
+            selected,
+            *(item for item in ranked if item.parent_asin != match.parent_asin),
+        ][:limit]
 
     def _retrieve_route_aware(
         self,
