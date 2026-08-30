@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "campaign_status": "paused_for_time",
+  "campaign_status": "running",
   "campaign_base_commit": "c57dfce8f7aeb44cb366ab3a90c11e9ac613cf07",
   "campaign_branch": "experiment/bounded-technicalscore-optimization",
   "champion_commit": "4d7af4eea2cfb8626fc858452ba4d0ab7f2cc509",
@@ -53,9 +53,9 @@
   "official_runs_used": 1,
   "official_runs_remaining": 11,
   "fixed_seed": 20260830,
-  "run_start_utc": "2026-08-30T08:20:45Z",
-  "last_checkpoint_utc": "2026-08-30T12:38:55Z",
-  "pause_reason": "Mandatory invocation wall-clock limit reached after H2 preliminary qualification and candidate commit; no H2 official run was started.",
+  "run_start_utc": "2026-08-30T12:46:41Z",
+  "last_checkpoint_utc": "2026-08-30T12:46:41Z",
+  "pause_reason": null,
   "stop_reason": null,
-  "next_action": "After overlap protection permits a new invocation, verify commit c6979a1 and the immutable-input gates, run one official evaluation with contextual.signature-head.v1 and clarification.feedback-memory.v1, then run the fixed-seed paired bootstrap against the 4d7af4e champion."
+  "next_action": "Verify commit c6979a1 and the immutable-input gates, run one official evaluation with contextual.signature-head.v1 and clarification.feedback-memory.v1, run the fixed-seed paired bootstrap against the 4d7af4e champion, decide H2, then stop the campaign at the user's request."
 }
