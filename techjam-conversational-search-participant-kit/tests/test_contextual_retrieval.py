@@ -31,6 +31,33 @@ class FakeRetriever:
         return self.results[:top_n]
 
 
+class QueryRetriever:
+    def __init__(self, results: dict[str, list[FakeResult]]) -> None:
+        self.results = results
+        self.calls: list[tuple[object, int]] = []
+
+    def retrieve(self, query: object, top_n: int) -> list[FakeResult]:
+        self.calls.append((query, top_n))
+        value = self.results.get(str(query), [])
+        if value and value[0].parent_asin == "FAIL":
+            raise RuntimeError("injected history failure")
+        return value[:top_n]
+
+
+class FailOnRepeatedQueryRetriever(QueryRetriever):
+    def __init__(self, results: dict[str, list[FakeResult]], fail_query: str) -> None:
+        super().__init__(results)
+        self.fail_query = fail_query
+        self.query_counts: dict[str, int] = {}
+
+    def retrieve(self, query: object, top_n: int) -> list[FakeResult]:
+        key = str(query)
+        self.query_counts[key] = self.query_counts.get(key, 0) + 1
+        if key == self.fail_query and self.query_counts[key] > 1:
+            raise RuntimeError("injected repeated-query failure")
+        return super().retrieve(query, top_n)
+
+
 class ContextualRankingTest(unittest.TestCase):
     def test_negative_ids_are_removed_and_bm25_prefix_is_protected(self) -> None:
         policy = ContextualRetrievalPolicy(
@@ -165,6 +192,124 @@ class ContextualAgentStateTest(unittest.TestCase):
             self.agent._active_raw_intent["s"],
             "Actually, ignore my earlier preference and start over.",
         )
+
+    def test_override_history_only_changes_unprotected_tail(self) -> None:
+        current = [
+            FakeResult(value, 101 - rank, rank)
+            for rank, value in enumerate(
+                ("A", "B", "C", "D", "E", "F", "G", "H", "I", "J"),
+                start=1,
+            )
+        ]
+        current.extend(FakeResult("TARGET", 1, rank) for rank in (50,))
+        history = [FakeResult("TARGET", 100, 1)]
+        anchor = QueryRetriever(
+            {
+                "old identifying phrase": history,
+                "Actually, I need the new requirement.": current,
+            }
+        )
+        agent = Agent(
+            self.catalog,
+            config=HybridRetrievalConfig(mode="contextual"),
+            anchor_retriever=anchor,
+            contextual_policy=ContextualRetrievalPolicy(
+                policy_id="contextual.override-history-tail.v1",
+                protected_lexical_count=8,
+                state_lexical_weight=0.5,
+                negative_feedback_uses_active_intent=True,
+            ),
+        )
+        agent._catalog_ids = frozenset(
+            {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "TARGET"}
+        )
+        agent.reset("history", {})
+        agent.respond("history", "old identifying phrase", 1, 10)
+
+        response = agent.respond(
+            "history", "Actually, I need the new requirement.", 2, 10
+        )
+        ranked = [item["parent_asin"] for item in response["recommendations"]]
+
+        self.assertEqual(ranked[:8], list("ABCDEFGH"))
+        self.assertIn("TARGET", ranked[8:])
+        self.assertEqual(
+            agent._historical_raw_evidence["history"], "old identifying phrase"
+        )
+
+    def test_history_is_reset_and_disabled_policy_does_not_archive(self) -> None:
+        self.agent.respond("s", "old phrase", 1, 2)
+        self.agent.respond("s", "Actually, start over", 2, 2)
+        self.assertEqual(self.agent._historical_raw_evidence["s"], "")
+
+        history_policy = ContextualRetrievalPolicy(
+            policy_id="contextual.override-history-tail.v1",
+            protected_lexical_count=8,
+            state_lexical_weight=0.5,
+        )
+        agent = Agent(
+            self.catalog,
+            config=HybridRetrievalConfig(mode="contextual"),
+            anchor_retriever=self.anchor,
+            contextual_policy=history_policy,
+        )
+        agent.reset("reset", {})
+        agent.respond("reset", "old phrase", 1, 2)
+        agent.respond("reset", "Actually, start over", 2, 2)
+        self.assertEqual(agent._historical_raw_evidence["reset"], "old phrase")
+        agent.reset("reset", {})
+        self.assertEqual(agent._historical_raw_evidence["reset"], "")
+
+    def test_history_policy_is_identical_before_an_override(self) -> None:
+        anchor = QueryRetriever({"initial request": self.anchor.results})
+        agent = Agent(
+            self.catalog,
+            config=HybridRetrievalConfig(mode="contextual"),
+            anchor_retriever=anchor,
+            contextual_policy=ContextualRetrievalPolicy(
+                policy_id="contextual.override-history-tail.v1",
+                protected_lexical_count=8,
+                state_lexical_weight=0.5,
+            ),
+        )
+        agent.reset("pre-override", {})
+
+        response = agent.respond("pre-override", "initial request", 1, 4)
+
+        self.assertEqual(
+            response["recommendations"],
+            [{"parent_asin": value} for value in ("A", "B", "C", "D")],
+        )
+        self.assertEqual([call[0] for call in anchor.calls], ["initial request"])
+
+    def test_history_retrieval_failure_preserves_current_ranking(self) -> None:
+        anchor = FailOnRepeatedQueryRetriever(
+            {
+                "old evidence": self.anchor.results,
+                "Actually, use new evidence": self.anchor.results,
+            },
+            fail_query="old evidence",
+        )
+        agent = Agent(
+            self.catalog,
+            config=HybridRetrievalConfig(mode="contextual"),
+            anchor_retriever=anchor,
+            contextual_policy=ContextualRetrievalPolicy(
+                policy_id="contextual.override-history-tail.v1",
+                protected_lexical_count=8,
+                state_lexical_weight=0.5,
+            ),
+        )
+        agent.reset("failure", {})
+        agent.respond("failure", "old evidence", 1, 4)
+
+        response = agent.respond("failure", "Actually, use new evidence", 2, 4)
+
+        self.assertEqual(
+            response["recommendations"],
+            [{"parent_asin": value} for value in ("A", "B", "C", "D")],
+        )
+        self.assertEqual(agent._component_failure_counts["override_history"], 1)
 
 
 if __name__ == "__main__":

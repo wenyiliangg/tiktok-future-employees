@@ -59,6 +59,7 @@ from .hybrid_retrieval import (
 )
 from .intent_router import IntentRouter, RoutingDecision
 from .lexical_retriever import LexicalRetriever
+from .override_history_policy import override_history_policy_for_retrieval
 from .response_validation import DEFAULT_RECOMMENDATION_MESSAGE, validate_response
 from .route_aware_retrieval import (
     filter_candidates,
@@ -118,6 +119,15 @@ class Agent:
         self._contextual_policy = contextual_policy or policy_by_id(
             "contextual.browsing-dense.v1"
         )
+        self._override_history_policy = override_history_policy_for_retrieval(
+            self._contextual_policy.policy_id
+        )
+        if (
+            self._override_history_policy.enabled
+            and self._contextual_policy.state_lexical_weight
+            != self._override_history_policy.required_tail_weight
+        ):
+            raise ValueError("override history and contextual tail weights differ")
         self._initialization_fallback_counts: Counter[str] = Counter()
         if clarification_config is None:
             default_clarification_policy, selected_error = (
@@ -143,6 +153,7 @@ class Agent:
         self._known_negative_ids: dict[str, set[str]] = {}
         self._last_recommended_ids: dict[str, tuple[str, ...]] = {}
         self._active_raw_intent: dict[str, str] = {}
+        self._historical_raw_evidence: dict[str, str] = {}
         self._fallback_init_error: str | None = None
         self._user_profiles: dict[str, dict] = {}
         self._session_diagnostics: dict[str, list[dict[str, object]]] = {}
@@ -253,6 +264,7 @@ class Agent:
         self._known_negative_ids[session_id] = set()
         self._last_recommended_ids[session_id] = ()
         self._active_raw_intent[session_id] = ""
+        self._historical_raw_evidence[session_id] = ""
         self._clarification_candidates[session_id] = []
         self._contextual_routes.pop(session_id, None)
         self._clarification_disabled_sessions.discard(session_id)
@@ -326,6 +338,9 @@ class Agent:
 
         if self.config.mode is RetrievalMode.CONTEXTUAL:
             if OVERRIDE_CUE_RE.search(user_message):
+                if self._override_history_policy.enabled:
+                    prior_intent = self._active_raw_intent.get(session_id, "").strip()
+                    self._historical_raw_evidence[session_id] = prior_intent
                 self._known_negative_ids.setdefault(session_id, set()).clear()
                 self._last_recommended_ids[session_id] = ()
                 self._active_raw_intent[session_id] = user_message
@@ -434,7 +449,9 @@ class Agent:
         if (
             session_id in self._clarification_disabled_sessions
             or self.config.mode is not RetrievalMode.CONTEXTUAL
-            or self._contextual_policy.policy_id != config.required_retrieval_policy_id
+            or not self._override_history_policy.clarification_is_compatible(
+                config.required_retrieval_policy_id
+            )
         ):
             return dict(response)
         candidates = self._clarification_candidates.get(session_id, [])[
@@ -661,7 +678,23 @@ class Agent:
         anchor = list(self._anchor.retrieve(anchor_text, top_n=policy.candidate_count))
         soft_query = self._soft_backfill_query(query)
         state_results: list[RankedResult] = []
-        if policy.state_lexical_weight > 0:
+        history_text = self._historical_raw_evidence.get(session_id, "")
+        if self._override_history_policy.enabled:
+            if history_text:
+                try:
+                    state_results = list(
+                        self._anchor.retrieve(
+                            history_text, top_n=policy.candidate_count
+                        )
+                    )
+                except Exception as error:  # noqa: BLE001 - optional evidence boundary
+                    self._component_failure_counts["override_history"] += 1
+                    LOGGER.warning(
+                        "override history retrieval failed for session %s; preserving current intent: %s",
+                        session_id,
+                        error,
+                    )
+        elif policy.state_lexical_weight > 0:
             if self._lexical is None:
                 self._lexical = LexicalRetriever.from_jsonl(self.catalog_path)
             state_results = list(
