@@ -55,18 +55,12 @@ class ClarificationPolicy:
     def fingerprint_payload(self) -> dict[str, object]:
         """Return all output-affecting values in canonical schema order."""
 
-        clarification_payload = asdict(self.clarification)
-        if not self.clarification.uses_priority_strategy:
-            # Preserve every frozen pre-H1 fingerprint. The threshold has no
-            # output effect unless an ordered priority is explicitly enabled.
-            clarification_payload.pop("question_priority")
-            clarification_payload.pop("priority_min_candidates")
         return {
             "schema_version": 1,
             "policy_id": self.policy_id,
             "retrieval_policy_id": self.retrieval_policy_id,
             "evaluation_seed": self.evaluation_seed,
-            "clarification": clarification_payload,
+            "clarification": asdict(self.clarification),
             "controller": asdict(self.controller),
         }
 
@@ -126,9 +120,6 @@ def _clarification_config(payload: Mapping[str, Any]) -> SelectiveClarificationC
     eligible_routes = values.get("eligible_routes")
     if isinstance(eligible_routes, list):
         values["eligible_routes"] = tuple(eligible_routes)
-    question_priority = values.get("question_priority")
-    if isinstance(question_priority, list):
-        values["question_priority"] = tuple(question_priority)
     return SelectiveClarificationConfig(**values)
 
 

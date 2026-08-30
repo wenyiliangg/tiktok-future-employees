@@ -36,7 +36,7 @@ class ClarificationPolicyRegistryTest(unittest.TestCase):
                 "contextual.browsing-dense.v1": "04a16f9cec5162ab8a3d6ecff098c0342d205a37d24b5665a36316ba4f64f8a6",
                 "clarification.issue-5c.v1": "307822c299d9c3614f06215ecb5118107a5264f1d2efb7b704cf3787018ce1ed",
                 "clarification.browsing-only.v1": "405c3ff441211cc6073b3732e1bd60b7aa8e85698c8ceb7d7931fed8eeaeb6fd",
-                "clarification.feedback-memory.v1": "a0c693ee073ef88ba3a31712f078dd5f6573bda1de9e97e007e959f316a483c3",
+                "clarification.feedback-memory.v1": "56550e0f09f152db8be1a3988bacda499955e8b5683e95eedad44b3ce19fb7a5",
             },
         )
         self.assertEqual({policy.evaluation_seed for policy in policies}, {20260830})
@@ -93,22 +93,6 @@ class ClarificationPolicyRegistryTest(unittest.TestCase):
         self.assertEqual(
             registry.selected_for_issue_6b, "clarification.browsing-only.v1"
         )
-
-    def test_feedback_memory_candidate_uses_bounded_open_evidence_priority(
-        self,
-    ) -> None:
-        candidate = clarification_policy_by_id("clarification.feedback-memory.v1")
-
-        self.assertEqual(candidate.retrieval_policy_id, "contextual.feedback-memory.v1")
-        self.assertEqual(
-            candidate.clarification.question_priority, ("other", "feature")
-        )
-        self.assertEqual(candidate.clarification.priority_min_candidates, 4)
-        self.assertEqual(
-            candidate.clarification.eligible_routes,
-            ("browsing", "boundary"),
-        )
-        self.assertEqual(candidate.controller.max_questions_per_session, 2)
 
     def test_unknown_policy_and_invalid_default_fail_closed(self) -> None:
         with self.assertRaisesRegex(ValueError, "unknown clarification policy"):

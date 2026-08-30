@@ -401,13 +401,6 @@ class Agent:
             pending = getattr(clarification_state, "pending_attribute", None)
             if pending is None:
                 return
-            if (
-                self._clarification_config.uses_priority_strategy
-                and OVERRIDE_CUE_RE.search(user_message)
-            ):
-                if self._clarification_controller.interrupt_pending(session_id):
-                    self._clarification_resolution_counts["interrupted"] += 1
-                return
             if is_explicit_no_preference(user_message):
                 if self._clarification_controller.record_resolution(
                     session_id, pending, "no_preference"
@@ -418,15 +411,11 @@ class Agent:
                 normalize_attribute(attribute)
                 for attribute in explicit_attribute_mentions(user_message)
             }
-            protocol_answer = (
-                self._clarification_config.uses_priority_strategy
-                and pending in self._clarification_config.question_priority
-                and bool(user_message.strip())
-            )
             if (
-                pending in recognized or protocol_answer
-            ) and self._clarification_controller.record_resolution(
-                session_id, pending, "answered"
+                pending in recognized
+                and self._clarification_controller.record_resolution(
+                    session_id, pending, "answered"
+                )
             ):
                 self._clarification_resolution_counts["answered"] += 1
         except Exception as error:  # noqa: BLE001 - clarification-only boundary
@@ -451,29 +440,6 @@ class Agent:
         candidates = self._clarification_candidates.get(session_id, [])[
             : config.analysis_candidate_limit
         ]
-        route = self._contextual_routes.get(session_id, "uncertain")
-        if getattr(config, "uses_priority_strategy", False):
-            try:
-                if not config.priority_is_eligible(route, len(candidates)):
-                    return dict(response)
-                active_state = self._state.state_for(session_id)
-                prompt = None
-                for requested_attribute in config.question_priority:
-                    prompt = self._clarification_controller.build_prompt(
-                        session_id, requested_attribute, active_state, turn
-                    )
-                    if prompt is not None:
-                        break
-                if prompt is None:
-                    return dict(response)
-            except Exception as error:  # noqa: BLE001 - policy/controller boundary
-                self._record_clarification_failure(
-                    session_id, "priority_strategy", error
-                )
-                return dict(response)
-            return self._compose_clarification(
-                response, prompt=prompt, route=route, session_id=session_id
-            )
         try:
             catalog = self._clarification_catalog(candidates)
             active_state = self._state.state_for(session_id)
@@ -483,6 +449,7 @@ class Agent:
         except Exception as error:  # noqa: BLE001 - analyzer boundary
             self._record_clarification_failure(session_id, "ambiguity_analyzer", error)
             return dict(response)
+        route = self._contextual_routes.get(session_id, "uncertain")
         try:
             if not config.is_eligible(route, len(candidates), opportunity):
                 return dict(response)
@@ -506,20 +473,6 @@ class Agent:
         except Exception as error:  # noqa: BLE001 - controller boundary
             self._record_clarification_failure(session_id, "controller", error)
             return dict(response)
-        return self._compose_clarification(
-            response, prompt=prompt, route=route, session_id=session_id
-        )
-
-    def _compose_clarification(
-        self,
-        response: Mapping[str, object],
-        *,
-        prompt: ClarificationPrompt,
-        route: str,
-        session_id: str,
-    ) -> dict[str, object]:
-        """Compose and count one validated prompt behind the failure boundary."""
-
         try:
             composed = self._clarification_composer(response, prompt)
             prompt_attribute = str(prompt.ask_attribute)

@@ -284,18 +284,6 @@ class ClarificationControllerTest(unittest.TestCase):
             self.controller.build_prompt("session", "color", SessionState(), 2)
         )
 
-    def test_interrupt_clears_only_pending_question(self) -> None:
-        self.controller.build_prompt("session", "other", SessionState(), 1)
-
-        self.assertEqual(self.controller.interrupt_pending("session"), "other")
-        state = self.controller.state_for("session")
-        assert state is not None
-        self.assertIsNone(state.pending_attribute)
-        self.assertEqual(state.asked_attributes, frozenset({"other"}))
-        self.assertEqual(state.answered_attributes, frozenset())
-        self.assertEqual(state.declined_attributes, frozenset())
-        self.assertIsNone(self.controller.interrupt_pending("missing"))
-
 
 class ClarificationResponseCompositionTest(unittest.TestCase):
     def setUp(self) -> None:
