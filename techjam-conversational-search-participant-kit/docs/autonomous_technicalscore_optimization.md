@@ -393,6 +393,52 @@ Mean response latency was `17.488197ms`, p95 was `26.069125ms`, startup was
 `5.432080s`, full evaluator time was `26.331934s`, and peak RSS was
 `1106.218750 MiB`.
 
+H3 promotion evidence is checkpointed at `ccf4843`.
+
+## H4 experiment card: dual-evidence conjunction
+
+Experiment ID: `H4-dual-evidence-conjunction-v1`
+
+Hypothesis: H3 recovers target candidates into the Intent Override tail but
+usually leaves them at ranks 9-10. A candidate that independently matches
+distinctive catalog tokens from both the authoritative current override and
+the separately stored pre-override evidence has stronger product-identification
+support than candidates matching only one side. A strict two-sided conjunction
+can promote such a candidate within the existing Top 10 and improve MRR without
+changing coverage.
+
+Expected metric changes: Intent Override MRR only; HR@10 and MTTC should be
+preserved because H4 reorders, rather than replaces, the H3 Top 10. Buying,
+Browsing, and Boundary must remain exactly unchanged.
+
+Minimal implementation:
+
+1. Build deterministic catalog token document frequencies from participant-
+   visible title, feature, detail, category, store, and description fields.
+2. Score current and historical evidence independently using only catalog-
+   matched, non-boilerplate tokens; require positive distinctive support from
+   both sides before any promotion.
+3. Apply the conjunction only after explicit override and only to H3's existing
+   Top 10. Keep current active requirements authoritative and preserve stable
+   order for non-qualifying candidates.
+4. Bound configuration and memory, fail closed to the H3 order, reset all
+   session evidence, and never use target labels or evaluator helpers at
+   runtime.
+
+Risks: the old preference is semantically obsolete; shared generic tokens can
+create false conjunctions; token normalization can overvalue catalog boilerplate;
+promoting a false positive can hurt MRR even while HR is unchanged.
+
+Falsifiable threshold: before runtime integration, a non-public diagnostic over
+H3 Top-10 candidates must show positive mean reciprocal-rank change, zero lost
+hits, and no worse target ranks. The integrated deterministic shadow must
+preserve every non-override outcome and all correctness/robustness gates.
+Official promotion uses the standard campaign rule; any worse or statistically
+unresolved result rejects only H4 and advances to H5.
+
+Rollback: checkpoint diagnostics separately and isolate the H4 ranker/integration
+commit so rejection can revert only runtime behavior while retaining evidence.
+
 ## Evaluation budget
 
 - New campaign official runs used: 4.
@@ -402,7 +448,6 @@ Mean response latency was `17.488197ms`, p95 was `26.069125ms`, startup was
 
 ## Immediate next action
 
-Record the retained H3 champion, then write the H4 conjunctive-posterior
-experiment card. Build a benchmark-only feature/conjunction diagnostic before
-changing runtime ranking, preserving the H3 protected-prefix and override
-history behavior underneath.
+Build a benchmark-only dual-evidence conjunction diagnostic on non-public H3
+Top-10 outcomes. Reject H4 before runtime integration unless it improves MRR
+without a single worse rank; otherwise implement and run the full shadow gate.
