@@ -217,6 +217,13 @@ and clarification
 `56550e0f09f152db8be1a3988bacda499955e8b5683e95eedad44b3ce19fb7a5`.
 H2 is qualified for one official full run.
 
+The preliminary evidence is checkpointed at `df239c8`, and the isolated H2
+runtime candidate is checkpointed at `c6979a1`. The final pre-official check
+confirmed a clean tree, an unchanged evaluator, baseline public/catalog hashes,
+and no public-set identifiers or evaluator imports in runtime code. The
+invocation then reached its mandatory `4h15m` wall-clock limit, so no H2
+official run was started. This is a time pause, not an H2 rejection.
+
 ## Evaluation budget
 
 - New campaign official runs used: 1.
@@ -227,7 +234,8 @@ H2 is qualified for one official full run.
 ## Immediate next action
 
 Commit the H2 preliminary evidence and isolated runtime candidate, recheck the
-immutable inputs and clean worktree, then spend one official run on the exact
-fingerprinted H2 configuration. Compare every session with the retained
-feedback-memory champion using the fixed-seed paired bootstrap before deciding
-retention or rejection.
+immutable inputs and clean worktree in the next non-overlapping invocation,
+then spend one official run on commit `c6979a1` with
+`contextual.signature-head.v1` and `clarification.feedback-memory.v1`. Compare
+every session with the retained feedback-memory champion using the fixed-seed
+paired bootstrap before deciding retention or rejection.

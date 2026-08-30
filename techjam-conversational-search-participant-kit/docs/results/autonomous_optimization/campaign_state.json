@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "campaign_status": "running",
+  "campaign_status": "paused_for_time",
   "campaign_base_commit": "c57dfce8f7aeb44cb366ab3a90c11e9ac613cf07",
   "campaign_branch": "experiment/bounded-technicalscore-optimization",
   "champion_commit": "4d7af4eea2cfb8626fc858452ba4d0ab7f2cc509",
@@ -32,9 +32,12 @@
   "champion_session_hash": "ee2d7a3a683273d17dcb2e8a9d0dcc1ab7c05816c4c611a43be9070133e45e67",
   "current_experiment_id": "H2-catalog-signature-index-v1",
   "current_hypothesis": "A participant-visible offline catalog signature index can turn one or two disclosed phrases into exact-product hypotheses and improve rank-one identification without evaluator coupling.",
-  "current_stage": "preliminary_gates_passed",
+  "current_stage": "preliminary_gates_passed_candidate_committed",
   "experiment_start_commit": "9b62271a1426913e0c3b8721a08d1799fe06984b",
-  "experiment_commits": [],
+  "experiment_commits": [
+    "df239c856366d28fdab46810ca64548420e250a2",
+    "c6979a129be50694029ff77476c711e65f1bf509"
+  ],
   "completed_hypotheses": [
     "H0-feedback-memory-bm25",
     "H1-open-evidence-questions-v1"
@@ -51,8 +54,8 @@
   "official_runs_remaining": 11,
   "fixed_seed": 20260830,
   "run_start_utc": "2026-08-30T08:20:45Z",
-  "last_checkpoint_utc": "2026-08-30T12:36:16Z",
-  "pause_reason": null,
+  "last_checkpoint_utc": "2026-08-30T12:38:55Z",
+  "pause_reason": "Mandatory invocation wall-clock limit reached after H2 preliminary qualification and candidate commit; no H2 official run was started.",
   "stop_reason": null,
-  "next_action": "Commit the H2 evidence and isolated runtime candidate, verify the clean-tree and immutable-input gates, then run one official evaluation with contextual.signature-head.v1 and clarification.feedback-memory.v1."
+  "next_action": "After overlap protection permits a new invocation, verify commit c6979a1 and the immutable-input gates, run one official evaluation with contextual.signature-head.v1 and clarification.feedback-memory.v1, then run the fixed-seed paired bootstrap against the 4d7af4e champion."
 }
