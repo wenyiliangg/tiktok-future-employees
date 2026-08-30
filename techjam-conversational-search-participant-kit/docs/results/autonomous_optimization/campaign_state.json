@@ -35,9 +35,12 @@
   "champion_session_hash": "d58ec1b9edf7f68a8d63cb30597ed0721bf32142233f6880cc43fcecbcaef013",
   "current_experiment_id": "H4-dual-evidence-conjunction-v1",
   "current_hypothesis": "A strict conjunction over independent current and pre-override catalog-token evidence can promote strongly identified H3 Top-10 candidates and improve Intent Override MRR without changing coverage.",
-  "current_stage": "preliminary_gates_passed",
+  "current_stage": "candidate_committed_pre_official",
   "experiment_start_commit": "ccf4843222b83297a5102de316c3a550a9f7ceae",
-  "experiment_commits": [],
+  "experiment_commits": [
+    "a8e5a5dee39557622dbc41ea412984b103c4761a",
+    "0bf338bf45a0c6838c8f80b81a6e32c891da7cba"
+  ],
   "completed_hypotheses": [
     "H0-feedback-memory-bm25",
     "H1-open-evidence-questions-v1",
@@ -58,7 +61,7 @@
   "official_runs_remaining": 8,
   "fixed_seed": 20260830,
   "run_start_utc": "2026-08-30T12:59:34Z",
-  "last_checkpoint_utc": "2026-08-30T13:51:09Z",
+  "last_checkpoint_utc": "2026-08-30T13:57:30Z",
   "pause_reason": null,
   "stop_reason": null,
   "next_action": "Commit H4 preliminary evidence and isolated runtime candidate, verify clean-tree and immutable-input gates, then run one official contextual.override-history-conjunction.v1 evaluation and paired bootstrap."

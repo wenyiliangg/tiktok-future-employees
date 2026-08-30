@@ -468,6 +468,9 @@ and clarification
 The effect is small but strictly positive and regression-free, so H4 qualifies
 for one official run and paired decision under the smaller-gain rule.
 
+The preliminary evidence is checkpointed at `a8e5a5d`, and the isolated H4
+runtime candidate is checkpointed at `0bf338b`.
+
 ## Evaluation budget
 
 - New campaign official runs used: 4.
