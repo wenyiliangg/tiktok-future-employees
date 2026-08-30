@@ -41,6 +41,10 @@ from .conversation_state import (
     SearchQuery,
     explicit_attribute_mentions,
 )
+from .dual_evidence_conjunction import (
+    DualEvidenceConjunctionRanker,
+    dual_evidence_policy_for_retrieval,
+)
 from .fallback_candidates import FallbackCandidateGenerator
 from .feature_reranker import (
     CatalogView,
@@ -122,6 +126,9 @@ class Agent:
         self._override_history_policy = override_history_policy_for_retrieval(
             self._contextual_policy.policy_id
         )
+        self._dual_evidence_policy = dual_evidence_policy_for_retrieval(
+            self._contextual_policy.policy_id
+        )
         if (
             self._override_history_policy.enabled
             and self._contextual_policy.state_lexical_weight
@@ -179,6 +186,18 @@ class Agent:
         self._catalog_view = catalog_view or InMemoryCatalogView.from_jsonl(
             self.catalog_path
         )
+        self._dual_evidence_ranker: DualEvidenceConjunctionRanker | None = None
+        if self._dual_evidence_policy.enabled:
+            try:
+                self._dual_evidence_ranker = DualEvidenceConjunctionRanker.from_jsonl(
+                    self.catalog_path, self._dual_evidence_policy
+                )
+            except Exception as error:  # noqa: BLE001 - optional ranker boundary
+                self._initialization_fallback_counts["dual_evidence"] += 1
+                LOGGER.warning(
+                    "dual-evidence initialization failed; preserving H3 ranking: %s",
+                    error,
+                )
         # Experimental reranking remains opt-in. Protected BM25 and contextual
         # modes never pass their prefix through this component.
         self._reranker = reranker or FeatureReranker(reranker_config)
@@ -760,6 +779,27 @@ class Agent:
                 self._catalog_ids,
                 ranking_limit,
             )
+        if self._dual_evidence_ranker is not None and history_text and ranked:
+            try:
+                head = ranked[:limit]
+                identifiers = [candidate.parent_asin for candidate in head]
+                ranked = [
+                    *self._dual_evidence_ranker.rerank(
+                        head,
+                        identifiers,
+                        active_text,
+                        history_text,
+                        self._catalog_view,
+                    ),
+                    *ranked[limit:],
+                ]
+            except Exception as error:  # noqa: BLE001 - optional ranker boundary
+                self._component_failure_counts["dual_evidence"] += 1
+                LOGGER.warning(
+                    "dual-evidence reranking failed for session %s; preserving H3 ranking: %s",
+                    session_id,
+                    error,
+                )
         if self._clarification_config.enabled:
             self._clarification_candidates[session_id] = copy.deepcopy(
                 ranked[: self._clarification_config.analysis_candidate_limit]
