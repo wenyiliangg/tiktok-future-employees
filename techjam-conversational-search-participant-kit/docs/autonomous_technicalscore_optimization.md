@@ -337,6 +337,39 @@ campaign to H4.
 Rollback: commit the isolated history-policy runtime change separately; on
 rejection, retain its evidence and revert only that implementation commit.
 
+## H3 preliminary evidence
+
+The benchmark-only diagnostic evaluated 64 Intent Override targets selected
+from 256 non-public shadow products with zero public-target overlap. The current
+override phrase placed 23 targets in the BM25 Top 100, while the archived phrase
+placed 59 there. With an eight-result current prefix and `0.5` historical tail
+weight, the diagnostic gained eight Top-10 hits, improved one existing rank,
+lost none, changed zero protected prefixes, and increased mean reciprocal rank
+by `0.013715278`.
+
+The first integrated shadow exposed and removed a non-override state-fusion
+leak before qualification. The narrowed runtime activates the supplemental
+source only when archived override text exists. On the final deterministic
+64-session balanced shadow, Buying, Browsing, and Boundary were then exactly
+identical to the champion. Intent Override HR@10 rose from `0.500` to `0.875`,
+MRR from `0.361979` to `0.372917`, and MTTC fell from `7.5625` to `6.000`.
+Overall shadow TechnicalScore rose from `0.386477` to `0.441985`
+(`+0.055508`), with six gained hits, zero lost hits, three earlier shared hits,
+and zero later shared hits.
+
+All shadow correctness counters are zero, the repeat transcript is
+deterministic, and malformed metadata, missing dense cache, component failure,
+catalog reorder, and consecutive-session isolation checks pass. The complete
+suite passes (`247` tests), Ruff passes, focused MyPy passes, and compile checks
+pass. The selected fingerprints are retrieval
+`3e3fbcb9624e7ffd4a76a90914c9166e9e94a4f0510a2f8319da60046ae79c6e`,
+override-history
+`f1eff95d936386efe560c927ec1ecb3392fa970d5a1ad830759d30dc016fee1c`,
+and clarification
+`56550e0f09f152db8be1a3988bacda499955e8b5683e95eedad44b3ce19fb7a5`.
+H3 is qualified for one official full run after its evidence and isolated
+runtime commits are checkpointed.
+
 ## Evaluation budget
 
 - New campaign official runs used: 3.
@@ -346,7 +379,6 @@ rejection, retain its evidence and revert only that implementation commit.
 
 ## Immediate next action
 
-Build a benchmark-only Intent Override history diagnostic and a deterministic
-non-public shadow candidate. Implement only the narrow protected-prefix/tail
-mechanism, reject H3 without an official run if preliminary gates fail, and
-otherwise spend one official run followed by the fixed-seed paired bootstrap.
+Commit the H3 preliminary evidence and isolated runtime candidate, verify the
+clean-tree and immutable-input gates, then spend one official run on the exact
+fingerprinted configuration followed by the fixed-seed paired bootstrap.

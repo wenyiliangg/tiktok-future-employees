@@ -32,7 +32,7 @@
   "champion_session_hash": "ee2d7a3a683273d17dcb2e8a9d0dcc1ab7c05816c4c611a43be9070133e45e67",
   "current_experiment_id": "H3-override-history-tail-v1",
   "current_hypothesis": "Pre-override raw text can remain useful as low-confidence product-identification evidence when it is kept separate from authoritative active requirements and fused only into the unprotected recommendation tail.",
-  "current_stage": "experiment_card_written",
+  "current_stage": "preliminary_gates_passed",
   "experiment_start_commit": "7b8e471903b0a1cb699810a8d46730d7828f5f66",
   "experiment_commits": [],
   "completed_hypotheses": [
@@ -53,8 +53,8 @@
   "official_runs_remaining": 9,
   "fixed_seed": 20260830,
   "run_start_utc": "2026-08-30T12:59:34Z",
-  "last_checkpoint_utc": "2026-08-30T12:59:34Z",
+  "last_checkpoint_utc": "2026-08-30T13:28:14Z",
   "pause_reason": null,
   "stop_reason": null,
-  "next_action": "Build a benchmark-only H3 Intent Override history diagnostic and deterministic non-public shadow candidate; proceed to an official run only if preliminary gates pass."
+  "next_action": "Commit the H3 preliminary evidence and isolated runtime candidate, verify clean-tree and immutable-input gates, then run one official contextual.override-history-tail.v1 evaluation and paired bootstrap."
 }
