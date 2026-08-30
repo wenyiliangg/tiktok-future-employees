@@ -14,9 +14,11 @@ organizer's additional 800-session set is private and is not in this repository.
 ## Current implementation status
 
 The evaluator-facing `Agent` uses exact raw-turn BM25 as its lexical foundation.
-The promoted default is `contextual.browsing-dense.v1`: it rotates products the
-shopper explicitly rejected, clears that history on intent override, and lets
-dense evidence fill only two unprotected positions on Browsing turns.
+The promoted retrieval foundation remains `contextual.browsing-dense.v1`: it
+rotates products the shopper explicitly rejected, clears that history on intent
+override, and lets dense evidence fill only two unprotected positions on
+Browsing turns. Issue 6A selects `clarification.browsing-only.v1` as the runtime
+default; the retrieval-only policy remains available unchanged as rollback.
 
 | Capability | Status on this branch |
 | --- | --- |
@@ -29,12 +31,14 @@ dense evidence fill only two unprotected positions on Browsing turns.
 | Hybrid dense-failure fallback to lexical | Integrated |
 | Intent routing | Integrated for selective dense activation; full route-aware mode remains explicit |
 | Boundary/empty-intent fallback candidates | Explicit route-aware mode only; disabled by default |
-| Candidate-pool ambiguity analysis | Implemented and tested, not connected to `Agent` |
+| Candidate-pool ambiguity analysis | Integrated behind declarative clarification policy gates |
 | Deterministic feature reranking | Explicit opt-in only; disabled by default |
-| User-facing clarification questions/history | Not implemented; `ask_attribute` is always `null` |
+| User-facing clarification questions/history | At most one question on eligible runtime-routed Browsing sessions |
 
 See [`docs/contextual_retrieval_recovery.md`](docs/contextual_retrieval_recovery.md)
-for the promotion evidence and [`docs/architecture.md`](docs/architecture.md)
+for the retrieval promotion evidence,
+[`docs/issue_6a_ablation_tuning.md`](docs/issue_6a_ablation_tuning.md) for the
+final clarification selection, and [`docs/architecture.md`](docs/architecture.md)
 for the component contracts.
 
 ## Architecture at a glance
@@ -171,8 +175,11 @@ between sessions, simulate at most ten turns, and write aggregate plus
 per-session results.
 
 ```bash
-# Promoted contextual default
+# Selected Issue 6A default: contextual retrieval plus Browsing-only clarification
 python -m evaluator.local_evaluator --catalog data/catalog.jsonl --dataset data/public_set.jsonl --output results.json
+
+# Stable retrieval-only rollback
+python -m evaluator.local_evaluator --catalog data/catalog.jsonl --dataset data/public_set.jsonl --clarification-policy contextual.browsing-dense.v1 --output results.json
 
 # Exact BM25 control
 python -m evaluator.local_evaluator --catalog data/catalog.jsonl --dataset data/public_set.jsonl --retrieval-mode bm25 --output results.json
@@ -247,9 +254,8 @@ metrics, raw output, environment details, and interpretation are in
 
 ### Remaining downstream work
 
-This result promotes the retrieval foundation only. Proactive clarification,
-personalization, adaptive orchestration, final robustness, and submission
-evaluation remain separate downstream work.
+Personalization, adaptive orchestration, Issue 6B evaluator-facing hardening,
+and submission evaluation remain separate downstream work.
 
 ## Runtime and memory
 

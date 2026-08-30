@@ -1,0 +1,387 @@
+{
+  "schema_version": 1,
+  "issue": "6A",
+  "date": "2026-08-30",
+  "starting_main_commit": "a027eacec8cfc63a288afa2560f604d7c90bc58b",
+  "branch": "experiment/issue-6a-ablation-tuning",
+  "dataset": {
+    "path": "data/public_set.jsonl",
+    "sample_count": 200,
+    "sha256": "857259f7a438e6188ac63e18995b6ff4489bfcfc4a716a798b9a2aa0ee8f7579"
+  },
+  "catalog_sha256": "da979b05a68af864cb0dcf9ee6a81c010c7e66a57978ad286c7a2e005fc69a67",
+  "dense_cache_sha256": "dffc05e41866913f169c3a51ef295b47f43859a0da6bb0c6a4c19de77fd1a5f6",
+  "evidence_labels": {
+    "stored": "read directly from an immutable committed artifact",
+    "reconstructed": "derived exactly from stored per-session output and the validated paired reconstruction without changing evaluator semantics",
+    "fresh": "measured by the single Issue 6A official run",
+    "missing": "not recorded and not invented",
+    "not_comparable": "recorded under a different performance environment or method and not used as a direct performance comparison"
+  },
+  "measurement_method_for_fresh_runs": {
+    "latency": "wall-clock time inside every Agent.respond call, including first-query model loading",
+    "warmup_response_count": 0,
+    "latency_statistics": [
+      "mean",
+      "p50",
+      "p95"
+    ],
+    "memory": "peak resident set size for the evaluator process",
+    "max_turns": 10,
+    "top_k": 10
+  },
+  "predeclared_finalists": [
+    {
+      "policy_id": "contextual.browsing-dense.v1",
+      "configuration_fingerprint_sha256": "04a16f9cec5162ab8a3d6ecff098c0342d205a37d24b5665a36316ba4f64f8a6",
+      "retrieval_fingerprint_sha256": "972158c9e3905e4d0bb5390eb7224fe3fe00b9f5444337099b3422960bf0448a",
+      "evaluation_seed": 20260830,
+      "rationale": "Immutable stable champion control and rollback with clarification disabled."
+    },
+    {
+      "policy_id": "clarification.issue-5c.v1",
+      "configuration_fingerprint_sha256": "307822c299d9c3614f06215ecb5118107a5264f1d2efb7b704cf3787018ce1ed",
+      "retrieval_fingerprint_sha256": "972158c9e3905e4d0bb5390eb7224fe3fe00b9f5444337099b3422960bf0448a",
+      "evaluation_seed": 20260830,
+      "rationale": "Exact immutable Issue 5C configuration reconstructed from the stored artifact."
+    },
+    {
+      "policy_id": "clarification.browsing-only.v1",
+      "configuration_fingerprint_sha256": "405c3ff441211cc6073b3732e1bd60b7aa8e85698c8ceb7d7931fed8eeaeb6fd",
+      "retrieval_fingerprint_sha256": "972158c9e3905e4d0bb5390eb7224fe3fe00b9f5444337099b3422960bf0448a",
+      "evaluation_seed": 20260830,
+      "rationale": "Exact Issue 5C gates restricted to the runtime-observable Browsing route because Phase 2 found zero outcome changes among all 25 Buying-question sessions."
+    }
+  ],
+  "stricter_buying_policy": {
+    "evaluated": false,
+    "reason": "Phase 2 found 25 Buying questions, 0 improved sessions, 0 regressed sessions, and 25 unchanged sessions; no aggregate-value subset justified a fourth finalist."
+  },
+  "official_runs_performed": [
+    {
+      "policy_id": "clarification.browsing-only.v1",
+      "run_kind": "fresh official 200-session finalist",
+      "run_count_for_exact_configuration": 1,
+      "seed": 20260830,
+      "duration_seconds": 69.7,
+      "command": "python3 -m evaluator.local_evaluator --retrieval-mode contextual --contextual-policy contextual.browsing-dense.v1 --clarification-policy clarification.browsing-only.v1 --output diagnostics/retrieval_regression/issue_6a_browsing_only_200.json",
+      "raw_artifact": "diagnostics/retrieval_regression/issue_6a_browsing_only_200.json",
+      "raw_artifact_committed": false
+    }
+  ],
+  "official_runs_not_performed": [
+    "official weak BM25 baseline",
+    "rejected historical systems",
+    "contextual.browsing-dense.v1 control",
+    "clarification.issue-5c.v1"
+  ],
+  "finalists": [
+    {
+      "policy_id": "contextual.browsing-dense.v1",
+      "configuration_fingerprint_sha256": "04a16f9cec5162ab8a3d6ecff098c0342d205a37d24b5665a36316ba4f64f8a6",
+      "evidence": {
+        "overall_metrics": "stored",
+        "scenario_metrics": "reconstructed",
+        "latency_and_memory": "missing",
+        "correctness": "stored and parity-tested"
+      },
+      "metrics": {
+        "hit_rate_at_10": 0.14,
+        "mrr": 0.070423,
+        "mttc": 9.78,
+        "efficiency": 0.122,
+        "technical_score": 0.115527
+      },
+      "scenario_metrics": {
+        "buying": {
+          "hit_rate_at_10": 0.2375,
+          "mrr": 0.126508,
+          "mttc": 8.625
+        },
+        "browsing": {
+          "hit_rate_at_10": 0.0625,
+          "mrr": 0.010486,
+          "mttc": 10.675
+        },
+        "intent_override": {
+          "hit_rate_at_10": 0.133333,
+          "mrr": 0.104167,
+          "mttc": 10.066667
+        },
+        "boundary": {
+          "hit_rate_at_10": 0.0,
+          "mrr": 0.0,
+          "mttc": 11.0
+        }
+      },
+      "performance": {
+        "mean_response_latency_ms": "not recorded",
+        "p50_response_latency_ms": "not recorded",
+        "p95_response_latency_ms": "not recorded",
+        "peak_process_rss_bytes": "not recorded"
+      },
+      "questions": {
+        "total": 0,
+        "by_attribute": {},
+        "by_observable_route": {},
+        "repeated": 0
+      },
+      "correctness_gates": {
+        "response_exceptions": 0,
+        "invalid_asins": 0,
+        "duplicate_recommendations": 0,
+        "repeated_questions": 0,
+        "response_contract_violations": 0,
+        "more_than_10_turns": 0,
+        "runtime_benchmark_leakage": false,
+        "nondeterministic_output": false,
+        "eligible": true,
+        "note": "Exception status is stored in the recovery gate; ASIN/duplicate safety follows the common validated Agent response contract and exact disabled parity."
+      },
+      "paired_vs_stable_champion": {
+        "new_hits": [],
+        "lost_hits": [],
+        "earlier_hits": 0,
+        "later_hits": 0,
+        "better_ranks": 0,
+        "worse_ranks": 0
+      }
+    },
+    {
+      "policy_id": "clarification.issue-5c.v1",
+      "configuration_fingerprint_sha256": "307822c299d9c3614f06215ecb5118107a5264f1d2efb7b704cf3787018ce1ed",
+      "evidence": {
+        "overall_metrics": "stored",
+        "scenario_metrics": "stored",
+        "latency_and_memory": "stored but not_comparable with the fresh run",
+        "paired_tradeoffs": "reconstructed"
+      },
+      "metrics": {
+        "hit_rate_at_10": 0.14,
+        "mrr": 0.074867,
+        "mttc": 9.74,
+        "efficiency": 0.126,
+        "technical_score": 0.11766
+      },
+      "scenario_metrics": {
+        "buying": {
+          "hit_rate_at_10": 0.2375,
+          "mrr": 0.126508,
+          "mttc": 8.625
+        },
+        "browsing": {
+          "hit_rate_at_10": 0.0625,
+          "mrr": 0.021597,
+          "mttc": 10.575
+        },
+        "intent_override": {
+          "hit_rate_at_10": 0.133333,
+          "mrr": 0.104167,
+          "mttc": 10.066667
+        },
+        "boundary": {
+          "hit_rate_at_10": 0.0,
+          "mrr": 0.0,
+          "mttc": 11.0
+        }
+      },
+      "performance": {
+        "mean_response_latency_ms": 27.251815,
+        "p50_response_latency_ms": "not recorded",
+        "p95_response_latency_ms": 25.694792,
+        "peak_process_rss_bytes": 1079312384,
+        "comparability": "not_comparable"
+      },
+      "questions": {
+        "total": 38,
+        "by_attribute": {
+          "category": 28,
+          "feature": 9,
+          "style": 1
+        },
+        "by_observable_route": {
+          "buying": 25,
+          "browsing": 13
+        },
+        "by_turn": {
+          "1": 33,
+          "2": 4,
+          "4": 1
+        },
+        "evaluator_follow_up": {
+          "decline": 25,
+          "explicit_answer": 7,
+          "not_observed_session_ended": 6
+        },
+        "runtime_resolution_after_follow_up": {
+          "declined": 25,
+          "unresolved": 7,
+          "not_observed_session_ended": 6
+        },
+        "repeated": 0
+      },
+      "correctness_gates": {
+        "response_exceptions": 0,
+        "invalid_asins": 0,
+        "duplicate_recommendations": 0,
+        "repeated_questions": 0,
+        "response_contract_violations": 0,
+        "more_than_10_turns": 0,
+        "runtime_benchmark_leakage": false,
+        "nondeterministic_output": false,
+        "eligible": true
+      },
+      "paired_vs_stable_champion": {
+        "improved_questioned_sessions": 1,
+        "regressed_questioned_sessions": 1,
+        "unchanged_questioned_sessions": 36,
+        "new_hits": [
+          "public_0102"
+        ],
+        "lost_hits": [
+          "public_0070"
+        ],
+        "earlier_hits": 0,
+        "later_hits": 0,
+        "better_ranks": 0,
+        "worse_ranks": 0,
+        "sessions_with_later_recommendation_changes": 32
+      }
+    },
+    {
+      "policy_id": "clarification.browsing-only.v1",
+      "configuration_fingerprint_sha256": "405c3ff441211cc6073b3732e1bd60b7aa8e85698c8ceb7d7931fed8eeaeb6fd",
+      "evidence": {
+        "overall_metrics": "fresh",
+        "scenario_metrics": "fresh",
+        "latency_and_memory": "fresh",
+        "paired_tradeoffs": "fresh joined to reconstructed champion"
+      },
+      "metrics": {
+        "hit_rate_at_10": 0.14,
+        "mrr": 0.074867,
+        "mttc": 9.74,
+        "efficiency": 0.126,
+        "technical_score": 0.11766
+      },
+      "scenario_metrics": {
+        "buying": {
+          "hit_rate_at_10": 0.2375,
+          "mrr": 0.126508,
+          "mttc": 8.625
+        },
+        "browsing": {
+          "hit_rate_at_10": 0.0625,
+          "mrr": 0.021597,
+          "mttc": 10.575
+        },
+        "intent_override": {
+          "hit_rate_at_10": 0.133333,
+          "mrr": 0.104167,
+          "mttc": 10.066667
+        },
+        "boundary": {
+          "hit_rate_at_10": 0.0,
+          "mrr": 0.0,
+          "mttc": 11.0
+        }
+      },
+      "performance": {
+        "mean_response_latency_ms": 32.498954,
+        "p50_response_latency_ms": 27.458813,
+        "p95_response_latency_ms": 31.194541,
+        "peak_process_rss_bytes": 1071824896,
+        "warmup_response_count": 0,
+        "comparability": "fresh"
+      },
+      "questions": {
+        "total": 13,
+        "by_attribute": {
+          "category": 8,
+          "feature": 5
+        },
+        "by_observable_route": {
+          "browsing": 13
+        },
+        "by_turn": {
+          "1": 13
+        },
+        "evaluator_follow_up": {
+          "decline": 9,
+          "explicit_answer": 4
+        },
+        "runtime_resolution_after_follow_up": {
+          "declined": 9,
+          "unresolved": 4
+        },
+        "repeated": 0
+      },
+      "correctness_gates": {
+        "response_exceptions": 0,
+        "clarification_failures": 0,
+        "invalid_asins": 0,
+        "duplicate_recommendations": 0,
+        "invalid_question_attributes": 0,
+        "repeated_questions": 0,
+        "response_contract_violations": 0,
+        "more_than_10_turns": 0,
+        "runtime_benchmark_leakage": false,
+        "nondeterministic_output": false,
+        "eligible": true
+      },
+      "paired_vs_stable_champion": {
+        "improved_questioned_sessions": 1,
+        "regressed_questioned_sessions": 1,
+        "unchanged_questioned_sessions": 11,
+        "new_hits": [
+          "public_0102"
+        ],
+        "lost_hits": [
+          "public_0070"
+        ],
+        "earlier_hits": 0,
+        "later_hits": 0,
+        "better_ranks": 0,
+        "worse_ranks": 0,
+        "sessions_with_later_recommendation_changes": 13
+      },
+      "delta_vs_stable_champion": {
+        "hit_rate_at_10": 0.0,
+        "mrr": 0.004444,
+        "mttc": -0.04,
+        "efficiency": 0.004,
+        "technical_score": 0.002133,
+        "buying_hit_rate_at_10": 0.0,
+        "browsing_hit_rate_at_10": 0.0,
+        "intent_override_hit_rate_at_10": 0.0,
+        "boundary_hit_rate_at_10": 0.0
+      }
+    }
+  ],
+  "issue_5c_vs_browsing_only": {
+    "session_metric_mismatch_count": 0,
+    "official_metric_deltas": {
+      "hit_rate_at_10": 0.0,
+      "mrr": 0.0,
+      "mttc": 0.0,
+      "efficiency": 0.0,
+      "technical_score": 0.0
+    },
+    "question_count_delta": -25,
+    "interpretation": "All 25 removed Buying questions were outcome-neutral on the public evaluator; the 13 retained Browsing questions contain the one new and one lost hit."
+  },
+  "selection": {
+    "primary_metric": "technical_score",
+    "selected_policy_id": "clarification.browsing-only.v1",
+    "selected_configuration_fingerprint_sha256": "405c3ff441211cc6073b3732e1bd60b7aa8e85698c8ceb7d7931fed8eeaeb6fd",
+    "stable_rollback_policy_id": "contextual.browsing-dense.v1",
+    "stable_rollback_retrieval_fingerprint_sha256": "972158c9e3905e4d0bb5390eb7224fe3fe00b9f5444337099b3422960bf0448a",
+    "reason": "Browsing-only ties exact Issue 5C on every official aggregate and scenario metric and on all 200 session outcomes, but asks 25 fewer questions and uses the narrower runtime-observable route policy. Both beat the stable champion TechnicalScore by 0.002133."
+  },
+  "statistical_limitations": {
+    "public_set_is_pristine_holdout": false,
+    "paired_bootstrap_performed": false,
+    "reason_no_bootstrap": "No existing paired-bootstrap facility was present; scope was not expanded merely to add one.",
+    "statement": "The public 200 sessions influenced development and are not a pristine holdout. This deterministic comparison supports a bounded engineering choice but not statistical certainty or guaranteed private-set improvement."
+  }
+}

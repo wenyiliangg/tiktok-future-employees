@@ -10,6 +10,7 @@ data/.dense-retrieval/
 diagnostics/retrieval_regression/official_bm25_hits.json
 diagnostics/retrieval_regression/contextual_full_200.json
 diagnostics/retrieval_regression/issue_5c_clarification_enabled_200.json
+diagnostics/retrieval_regression/issue_6a_browsing_only_200.json
 # Organizer-only code, private evaluation data, manifests, and build reports.
 organizer/
 secure/

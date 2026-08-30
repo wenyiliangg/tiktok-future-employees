@@ -1,0 +1,4201 @@
+{
+  "schema_version": 1,
+  "issue": "6A",
+  "analysis_kind": "benchmark-only deterministic reconstruction of stored policies",
+  "runtime_leakage": false,
+  "champion_policy_id": "contextual.browsing-dense.v1",
+  "issue_5c_configuration": {
+    "enabled": true,
+    "required_retrieval_policy_id": "contextual.browsing-dense.v1",
+    "analysis_candidate_limit": 50,
+    "browsing_min_candidates": 4,
+    "browsing_min_expected_reduction": 0.2,
+    "buying_min_candidates": 8,
+    "buying_min_expected_reduction": 0.5,
+    "eligible_routes": [
+      "browsing",
+      "buying"
+    ]
+  },
+  "validation": {
+    "issue_5c_session_metric_mismatch_count": 0,
+    "issue_5c_session_metric_mismatches": {},
+    "issue_5c_expected_question_count": 38,
+    "issue_5c_replayed_question_count": 38,
+    "champion_hit_ids_match_stored": true,
+    "champion_replayed_hit_ids": [
+      "public_0010",
+      "public_0044",
+      "public_0046",
+      "public_0061",
+      "public_0067",
+      "public_0070",
+      "public_0081",
+      "public_0082",
+      "public_0085",
+      "public_0088",
+      "public_0090",
+      "public_0107",
+      "public_0119",
+      "public_0129",
+      "public_0134",
+      "public_0137",
+      "public_0142",
+      "public_0143",
+      "public_0148",
+      "public_0155",
+      "public_0156",
+      "public_0160",
+      "public_0166",
+      "public_0168",
+      "public_0185",
+      "public_0190",
+      "public_0193",
+      "public_0197"
+    ],
+    "passed": true
+  },
+  "diagnosis": {
+    "questioned_session_count": 38,
+    "improved_session_count": 1,
+    "regressed_session_count": 1,
+    "unchanged_session_count": 36,
+    "change_counts": {
+      "lost_hit": 1,
+      "new_hit": 1
+    },
+    "question_turn_counts": {
+      "1": 33,
+      "2": 4,
+      "4": 1
+    },
+    "evaluator_follow_up_counts": {
+      "decline": 25,
+      "explicit_answer": 7,
+      "not_observed_session_ended": 6
+    },
+    "runtime_resolution_counts": {
+      "declined": 25,
+      "not_observed_session_ended": 6,
+      "unresolved": 7
+    },
+    "sessions_with_later_recommendation_changes": 32,
+    "by_observable_route": {
+      "browsing": {
+        "questioned_sessions": 13,
+        "improved": 1,
+        "regressed": 1,
+        "unchanged": 11,
+        "lost_hit": 1,
+        "new_hit": 1
+      },
+      "buying": {
+        "questioned_sessions": 25,
+        "improved": 0,
+        "regressed": 0,
+        "unchanged": 25
+      }
+    },
+    "by_attribute": {
+      "category": {
+        "questioned_sessions": 28,
+        "improved": 0,
+        "regressed": 1,
+        "unchanged": 27,
+        "lost_hit": 1
+      },
+      "feature": {
+        "questioned_sessions": 9,
+        "improved": 1,
+        "regressed": 0,
+        "unchanged": 8,
+        "new_hit": 1
+      },
+      "style": {
+        "questioned_sessions": 1,
+        "improved": 0,
+        "regressed": 0,
+        "unchanged": 1
+      }
+    },
+    "by_scenario": {
+      "boundary": {
+        "questioned_sessions": 2,
+        "improved": 0,
+        "regressed": 0,
+        "unchanged": 2
+      },
+      "browsing": {
+        "questioned_sessions": 11,
+        "improved": 1,
+        "regressed": 1,
+        "unchanged": 9,
+        "lost_hit": 1,
+        "new_hit": 1
+      },
+      "buying": {
+        "questioned_sessions": 22,
+        "improved": 0,
+        "regressed": 0,
+        "unchanged": 22
+      },
+      "intent_override": {
+        "questioned_sessions": 3,
+        "improved": 0,
+        "regressed": 0,
+        "unchanged": 3
+      }
+    },
+    "questioned_sessions": [
+      {
+        "sample_id": "public_0005",
+        "scenario_type": "buying",
+        "observable_route": "buying",
+        "attribute": "category",
+        "question_turn": 2,
+        "evaluator_follow_up": "decline",
+        "runtime_resolution_after_follow_up": "declined",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "one-pieces",
+              "belts",
+              "one-piece suits",
+              "pullovers"
+            ],
+            "expected_reduction": 0.9552,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.140;expected_reduction=0.955"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.14,
+            "normalized_entropy": 0.953486,
+            "expected_reduction": 0.9552
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0008",
+        "scenario_type": "buying",
+        "observable_route": "buying",
+        "attribute": "category",
+        "question_turn": 2,
+        "evaluator_follow_up": "decline",
+        "runtime_resolution_after_follow_up": "declined",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "one-pieces",
+              "belts",
+              "one-piece suits",
+              "pullovers"
+            ],
+            "expected_reduction": 0.9552,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.140;expected_reduction=0.955"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.14,
+            "normalized_entropy": 0.953486,
+            "expected_reduction": 0.9552
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0017",
+        "scenario_type": "buying",
+        "observable_route": "buying",
+        "attribute": "category",
+        "question_turn": 1,
+        "evaluator_follow_up": "decline",
+        "runtime_resolution_after_follow_up": "declined",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "wallets",
+              "card cases",
+              "coin purses & pouches",
+              "business card cases"
+            ],
+            "expected_reduction": 0.6512,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.540;expected_reduction=0.651"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.54,
+            "normalized_entropy": 0.747011,
+            "expected_reduction": 0.6512
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0019",
+        "scenario_type": "browsing",
+        "observable_route": "browsing",
+        "attribute": "feature",
+        "question_turn": 1,
+        "evaluator_follow_up": "explicit_answer",
+        "runtime_resolution_after_follow_up": "unresolved",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "feature",
+            "options": [
+              "rubber sole",
+              "not:rubber sole"
+            ],
+            "expected_reduction": 0.390698,
+            "reason": "selected:feature;coverage=0.860;dominant_share=0.651;expected_reduction=0.391"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "feature",
+            "candidate_count": 50,
+            "usable_count": 43,
+            "coverage": 0.86,
+            "dominant_share": 0.651163,
+            "normalized_entropy": 0.933025,
+            "expected_reduction": 0.390698
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 1,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 1,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 3,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 4,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0020",
+        "scenario_type": "buying",
+        "observable_route": "buying",
+        "attribute": "category",
+        "question_turn": 1,
+        "evaluator_follow_up": "decline",
+        "runtime_resolution_after_follow_up": "declined",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "keychains",
+              "novelty",
+              "t-shirts",
+              "wallets"
+            ],
+            "expected_reduction": 0.6016,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.620;expected_reduction=0.602"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.62,
+            "normalized_entropy": 0.596959,
+            "expected_reduction": 0.6016
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0028",
+        "scenario_type": "buying",
+        "observable_route": "buying",
+        "attribute": "category",
+        "question_turn": 1,
+        "evaluator_follow_up": "decline",
+        "runtime_resolution_after_follow_up": "declined",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "wallets",
+              "card cases",
+              "coin purses & pouches",
+              "business card cases"
+            ],
+            "expected_reduction": 0.6512,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.540;expected_reduction=0.651"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.54,
+            "normalized_entropy": 0.747011,
+            "expected_reduction": 0.6512
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0033",
+        "scenario_type": "browsing",
+        "observable_route": "browsing",
+        "attribute": "category",
+        "question_turn": 1,
+        "evaluator_follow_up": "decline",
+        "runtime_resolution_after_follow_up": "declined",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "walking",
+              "athletic socks",
+              "active hoodies",
+              "active shorts"
+            ],
+            "expected_reduction": 0.708,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.520;expected_reduction=0.708"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.52,
+            "normalized_entropy": 0.691859,
+            "expected_reduction": 0.708
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 2,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 4,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0035",
+        "scenario_type": "boundary",
+        "observable_route": "browsing",
+        "attribute": "category",
+        "question_turn": 1,
+        "evaluator_follow_up": "decline",
+        "runtime_resolution_after_follow_up": "declined",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "walking",
+              "athletic socks",
+              "active hoodies",
+              "active shorts"
+            ],
+            "expected_reduction": 0.708,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.520;expected_reduction=0.708"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.52,
+            "normalized_entropy": 0.691859,
+            "expected_reduction": 0.708
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 2,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 4,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0044",
+        "scenario_type": "buying",
+        "observable_route": "buying",
+        "attribute": "category",
+        "question_turn": 1,
+        "evaluator_follow_up": "not_observed_session_ended",
+        "runtime_resolution_after_follow_up": "not_observed_session_ended",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "jammers",
+              "keyrings & keychains",
+              "keyrings, keychains & charms",
+              "t-shirts"
+            ],
+            "expected_reduction": 0.8896,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.300;expected_reduction=0.890"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.3,
+            "normalized_entropy": 0.856264,
+            "expected_reduction": 0.8896
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": true,
+          "first_hit_turn": 1,
+          "best_rank": 1
+        },
+        "issue_5c": {
+          "hit": true,
+          "first_hit_turn": 1,
+          "best_rank": 1
+        },
+        "later_recommendation_changes": [],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0051",
+        "scenario_type": "browsing",
+        "observable_route": "browsing",
+        "attribute": "category",
+        "question_turn": 1,
+        "evaluator_follow_up": "decline",
+        "runtime_resolution_after_follow_up": "declined",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "walking",
+              "athletic socks",
+              "active hoodies",
+              "active shorts"
+            ],
+            "expected_reduction": 0.708,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.520;expected_reduction=0.708"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.52,
+            "normalized_entropy": 0.691859,
+            "expected_reduction": 0.708
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 2,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 4,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0053",
+        "scenario_type": "buying",
+        "observable_route": "buying",
+        "attribute": "category",
+        "question_turn": 1,
+        "evaluator_follow_up": "decline",
+        "runtime_resolution_after_follow_up": "declined",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "passport covers",
+              "travel wallets",
+              "passport wallets",
+              "wallets"
+            ],
+            "expected_reduction": 0.8584,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.260;expected_reduction=0.858"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.26,
+            "normalized_entropy": 0.858956,
+            "expected_reduction": 0.8584
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0064",
+        "scenario_type": "intent_override",
+        "observable_route": "buying",
+        "attribute": "feature",
+        "question_turn": 1,
+        "evaluator_follow_up": "explicit_answer",
+        "runtime_resolution_after_follow_up": "unresolved",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "feature",
+            "options": [
+              "not:pull on closure",
+              "pull on closure"
+            ],
+            "expected_reduction": 0.5,
+            "reason": "selected:feature;coverage=1.000;dominant_share=0.500;expected_reduction=0.500"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "feature",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.5,
+            "normalized_entropy": 1.0,
+            "expected_reduction": 0.5
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0066",
+        "scenario_type": "buying",
+        "observable_route": "buying",
+        "attribute": "feature",
+        "question_turn": 1,
+        "evaluator_follow_up": "explicit_answer",
+        "runtime_resolution_after_follow_up": "unresolved",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "feature",
+            "options": [
+              "100% polyester",
+              "not:100% polyester"
+            ],
+            "expected_reduction": 0.5,
+            "reason": "selected:feature;coverage=1.000;dominant_share=0.500;expected_reduction=0.500"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "feature",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.5,
+            "normalized_entropy": 1.0,
+            "expected_reduction": 0.5
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0070",
+        "scenario_type": "browsing",
+        "observable_route": "browsing",
+        "attribute": "category",
+        "question_turn": 1,
+        "evaluator_follow_up": "decline",
+        "runtime_resolution_after_follow_up": "declined",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "wallets",
+              "travel wallets",
+              "passport wallets",
+              "coin purses & pouches"
+            ],
+            "expected_reduction": 0.6344,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.540;expected_reduction=0.634"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.54,
+            "normalized_entropy": 0.63521,
+            "expected_reduction": 0.6344
+          }
+        },
+        "comparison": "regressed",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": true,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": true,
+          "first_hit_turn": 10,
+          "best_rank": 9
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 2,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 4,
+            "champion_target_rank": 9,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": {
+          "champion_turns_after_question": [
+            {
+              "turn": 2,
+              "user_message": "Those options are not quite right yet. Ask me about one specific attribute.",
+              "target_rank": null
+            },
+            {
+              "turn": 3,
+              "user_message": "Those options are not quite right yet. Ask me about one specific attribute.",
+              "target_rank": null
+            },
+            {
+              "turn": 4,
+              "user_message": "Those options are not quite right yet. Ask me about one specific attribute.",
+              "target_rank": null
+            },
+            {
+              "turn": 5,
+              "user_message": "Those options are not quite right yet. Ask me about one specific attribute.",
+              "target_rank": null
+            },
+            {
+              "turn": 6,
+              "user_message": "Those options are not quite right yet. Ask me about one specific attribute.",
+              "target_rank": null
+            },
+            {
+              "turn": 7,
+              "user_message": "Those options are not quite right yet. Ask me about one specific attribute.",
+              "target_rank": null
+            },
+            {
+              "turn": 8,
+              "user_message": "Those options are not quite right yet. Ask me about one specific attribute.",
+              "target_rank": null
+            },
+            {
+              "turn": 9,
+              "user_message": "Those options are not quite right yet. Ask me about one specific attribute.",
+              "target_rank": null
+            },
+            {
+              "turn": 10,
+              "user_message": "Those options are not quite right yet. Ask me about one specific attribute.",
+              "target_rank": 9
+            }
+          ],
+          "issue_5c_turns_after_question": [
+            {
+              "turn": 2,
+              "user_message": "I don't have an additional preference for category.",
+              "target_rank": null
+            },
+            {
+              "turn": 3,
+              "user_message": "Those options are not quite right yet. Ask me about one specific attribute.",
+              "target_rank": null
+            },
+            {
+              "turn": 4,
+              "user_message": "Those options are not quite right yet. Ask me about one specific attribute.",
+              "target_rank": null
+            },
+            {
+              "turn": 5,
+              "user_message": "Those options are not quite right yet. Ask me about one specific attribute.",
+              "target_rank": null
+            },
+            {
+              "turn": 6,
+              "user_message": "Those options are not quite right yet. Ask me about one specific attribute.",
+              "target_rank": null
+            },
+            {
+              "turn": 7,
+              "user_message": "Those options are not quite right yet. Ask me about one specific attribute.",
+              "target_rank": null
+            },
+            {
+              "turn": 8,
+              "user_message": "Those options are not quite right yet. Ask me about one specific attribute.",
+              "target_rank": null
+            },
+            {
+              "turn": 9,
+              "user_message": "Those options are not quite right yet. Ask me about one specific attribute.",
+              "target_rank": null
+            },
+            {
+              "turn": 10,
+              "user_message": "Those options are not quite right yet. Ask me about one specific attribute.",
+              "target_rank": null
+            }
+          ]
+        }
+      },
+      {
+        "sample_id": "public_0074",
+        "scenario_type": "browsing",
+        "observable_route": "browsing",
+        "attribute": "category",
+        "question_turn": 1,
+        "evaluator_follow_up": "decline",
+        "runtime_resolution_after_follow_up": "declined",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "walking",
+              "athletic socks",
+              "active hoodies",
+              "active shorts"
+            ],
+            "expected_reduction": 0.708,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.520;expected_reduction=0.708"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.52,
+            "normalized_entropy": 0.691859,
+            "expected_reduction": 0.708
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 2,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 4,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0088",
+        "scenario_type": "buying",
+        "observable_route": "buying",
+        "attribute": "category",
+        "question_turn": 1,
+        "evaluator_follow_up": "not_observed_session_ended",
+        "runtime_resolution_after_follow_up": "not_observed_session_ended",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "bikinis",
+              "briefs",
+              "hipsters",
+              "boy shorts"
+            ],
+            "expected_reduction": 0.7256,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.480;expected_reduction=0.726"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.48,
+            "normalized_entropy": 0.747383,
+            "expected_reduction": 0.7256
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": true,
+          "first_hit_turn": 1,
+          "best_rank": 7
+        },
+        "issue_5c": {
+          "hit": true,
+          "first_hit_turn": 1,
+          "best_rank": 7
+        },
+        "later_recommendation_changes": [],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0093",
+        "scenario_type": "buying",
+        "observable_route": "buying",
+        "attribute": "category",
+        "question_turn": 1,
+        "evaluator_follow_up": "decline",
+        "runtime_resolution_after_follow_up": "declined",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "briefs",
+              "hipsters",
+              "panties",
+              "boy shorts"
+            ],
+            "expected_reduction": 0.7328,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.460;expected_reduction=0.733"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.46,
+            "normalized_entropy": 0.740471,
+            "expected_reduction": 0.7328
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0095",
+        "scenario_type": "buying",
+        "observable_route": "buying",
+        "attribute": "category",
+        "question_turn": 1,
+        "evaluator_follow_up": "decline",
+        "runtime_resolution_after_follow_up": "declined",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "leggings",
+              "keyrings, keychains & charms",
+              "active shorts",
+              "blouses & button-down shirts"
+            ],
+            "expected_reduction": 0.876,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.320;expected_reduction=0.876"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.32,
+            "normalized_entropy": 0.841181,
+            "expected_reduction": 0.876
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0097",
+        "scenario_type": "buying",
+        "observable_route": "buying",
+        "attribute": "category",
+        "question_turn": 1,
+        "evaluator_follow_up": "decline",
+        "runtime_resolution_after_follow_up": "declined",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "leggings",
+              "keyrings, keychains & charms",
+              "active shorts",
+              "blouses & button-down shirts"
+            ],
+            "expected_reduction": 0.876,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.320;expected_reduction=0.876"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.32,
+            "normalized_entropy": 0.841181,
+            "expected_reduction": 0.876
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0098",
+        "scenario_type": "browsing",
+        "observable_route": "browsing",
+        "attribute": "feature",
+        "question_turn": 1,
+        "evaluator_follow_up": "explicit_answer",
+        "runtime_resolution_after_follow_up": "unresolved",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "feature",
+            "options": [
+              "not:imported",
+              "imported"
+            ],
+            "expected_reduction": 0.267429,
+            "reason": "selected:feature;coverage=0.700;dominant_share=0.743;expected_reduction=0.267"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "feature",
+            "candidate_count": 50,
+            "usable_count": 35,
+            "coverage": 0.7,
+            "dominant_share": 0.742857,
+            "normalized_entropy": 0.822404,
+            "expected_reduction": 0.267429
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 2,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 4,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0101",
+        "scenario_type": "buying",
+        "observable_route": "buying",
+        "attribute": "category",
+        "question_turn": 1,
+        "evaluator_follow_up": "decline",
+        "runtime_resolution_after_follow_up": "declined",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "scrub bottoms",
+              "scrub sets",
+              "scrub tops",
+              "scrub jackets"
+            ],
+            "expected_reduction": 0.5656,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.620;expected_reduction=0.566"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.62,
+            "normalized_entropy": 0.774933,
+            "expected_reduction": 0.5656
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0102",
+        "scenario_type": "browsing",
+        "observable_route": "browsing",
+        "attribute": "feature",
+        "question_turn": 1,
+        "evaluator_follow_up": "explicit_answer",
+        "runtime_resolution_after_follow_up": "unresolved",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "feature",
+            "options": [
+              "hand wash only",
+              "not:hand wash only"
+            ],
+            "expected_reduction": 0.4,
+            "reason": "selected:feature;coverage=0.800;dominant_share=0.500;expected_reduction=0.400"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "feature",
+            "candidate_count": 50,
+            "usable_count": 40,
+            "coverage": 0.8,
+            "dominant_share": 0.5,
+            "normalized_entropy": 1.0,
+            "expected_reduction": 0.4
+          }
+        },
+        "comparison": "improved",
+        "flags": {
+          "new_hit": true,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": true,
+          "first_hit_turn": 2,
+          "best_rank": 1
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": 1
+          }
+        ],
+        "mechanism_trace": {
+          "champion_turns_after_question": [
+            {
+              "turn": 2,
+              "user_message": "Those options are not quite right yet. Ask me about one specific attribute.",
+              "target_rank": null
+            },
+            {
+              "turn": 3,
+              "user_message": "Those options are not quite right yet. Ask me about one specific attribute.",
+              "target_rank": null
+            },
+            {
+              "turn": 4,
+              "user_message": "Those options are not quite right yet. Ask me about one specific attribute.",
+              "target_rank": null
+            },
+            {
+              "turn": 5,
+              "user_message": "Those options are not quite right yet. Ask me about one specific attribute.",
+              "target_rank": null
+            },
+            {
+              "turn": 6,
+              "user_message": "Those options are not quite right yet. Ask me about one specific attribute.",
+              "target_rank": null
+            },
+            {
+              "turn": 7,
+              "user_message": "Those options are not quite right yet. Ask me about one specific attribute.",
+              "target_rank": null
+            },
+            {
+              "turn": 8,
+              "user_message": "Those options are not quite right yet. Ask me about one specific attribute.",
+              "target_rank": null
+            },
+            {
+              "turn": 9,
+              "user_message": "Those options are not quite right yet. Ask me about one specific attribute.",
+              "target_rank": null
+            },
+            {
+              "turn": 10,
+              "user_message": "Those options are not quite right yet. Ask me about one specific attribute.",
+              "target_rank": null
+            }
+          ],
+          "issue_5c_turns_after_question": [
+            {
+              "turn": 2,
+              "user_message": "For that, what matters is: Hand Wash Only; Push Up Bra, A/B/C cup 3 centimeters Thickness Pad inside. But noted that D cup is thin cup,lightly padded.",
+              "target_rank": 1
+            }
+          ]
+        }
+      },
+      {
+        "sample_id": "public_0107",
+        "scenario_type": "buying",
+        "observable_route": "buying",
+        "attribute": "category",
+        "question_turn": 1,
+        "evaluator_follow_up": "not_observed_session_ended",
+        "runtime_resolution_after_follow_up": "not_observed_session_ended",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "raincoats",
+              "trench coats",
+              "anoraks"
+            ],
+            "expected_reduction": 0.5976,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.540;expected_reduction=0.598"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.54,
+            "normalized_entropy": 0.908268,
+            "expected_reduction": 0.5976
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": true,
+          "first_hit_turn": 1,
+          "best_rank": 10
+        },
+        "issue_5c": {
+          "hit": true,
+          "first_hit_turn": 1,
+          "best_rank": 10
+        },
+        "later_recommendation_changes": [],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0112",
+        "scenario_type": "boundary",
+        "observable_route": "browsing",
+        "attribute": "category",
+        "question_turn": 1,
+        "evaluator_follow_up": "decline",
+        "runtime_resolution_after_follow_up": "declined",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "walking",
+              "athletic socks",
+              "active hoodies",
+              "active shorts"
+            ],
+            "expected_reduction": 0.708,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.520;expected_reduction=0.708"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.52,
+            "normalized_entropy": 0.691859,
+            "expected_reduction": 0.708
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 2,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 4,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0121",
+        "scenario_type": "browsing",
+        "observable_route": "browsing",
+        "attribute": "feature",
+        "question_turn": 1,
+        "evaluator_follow_up": "decline",
+        "runtime_resolution_after_follow_up": "declined",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "feature",
+            "options": [
+              "hand wash only",
+              "not:hand wash only"
+            ],
+            "expected_reduction": 0.4,
+            "reason": "selected:feature;coverage=0.800;dominant_share=0.500;expected_reduction=0.400"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "feature",
+            "candidate_count": 50,
+            "usable_count": 40,
+            "coverage": 0.8,
+            "dominant_share": 0.5,
+            "normalized_entropy": 1.0,
+            "expected_reduction": 0.4
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 1,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 3,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 5,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0142",
+        "scenario_type": "intent_override",
+        "observable_route": "buying",
+        "attribute": "style",
+        "question_turn": 1,
+        "evaluator_follow_up": "decline",
+        "runtime_resolution_after_follow_up": "declined",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "style",
+            "options": [
+              "chain",
+              "chain,gold plated",
+              "fashion",
+              "01"
+            ],
+            "expected_reduction": 0.734737,
+            "reason": "selected:style;coverage=0.760;dominant_share=0.079;expected_reduction=0.735"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "style",
+            "candidate_count": 50,
+            "usable_count": 38,
+            "coverage": 0.76,
+            "dominant_share": 0.078947,
+            "normalized_entropy": 0.986255,
+            "expected_reduction": 0.734737
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": true,
+          "first_hit_turn": 4,
+          "best_rank": 1
+        },
+        "issue_5c": {
+          "hit": true,
+          "first_hit_turn": 4,
+          "best_rank": 1
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0148",
+        "scenario_type": "buying",
+        "observable_route": "buying",
+        "attribute": "category",
+        "question_turn": 1,
+        "evaluator_follow_up": "not_observed_session_ended",
+        "runtime_resolution_after_follow_up": "not_observed_session_ended",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "bikinis",
+              "briefs",
+              "hipsters",
+              "boy shorts"
+            ],
+            "expected_reduction": 0.7256,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.480;expected_reduction=0.726"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.48,
+            "normalized_entropy": 0.747383,
+            "expected_reduction": 0.7256
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": true,
+          "first_hit_turn": 1,
+          "best_rank": 8
+        },
+        "issue_5c": {
+          "hit": true,
+          "first_hit_turn": 1,
+          "best_rank": 8
+        },
+        "later_recommendation_changes": [],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0151",
+        "scenario_type": "browsing",
+        "observable_route": "browsing",
+        "attribute": "category",
+        "question_turn": 1,
+        "evaluator_follow_up": "decline",
+        "runtime_resolution_after_follow_up": "declined",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "work & safety",
+              "shoes",
+              "outerwear",
+              "pants"
+            ],
+            "expected_reduction": 0.7256,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.420;expected_reduction=0.726"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.42,
+            "normalized_entropy": 0.677491,
+            "expected_reduction": 0.7256
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 2,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 4,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0154",
+        "scenario_type": "buying",
+        "observable_route": "buying",
+        "attribute": "category",
+        "question_turn": 2,
+        "evaluator_follow_up": "decline",
+        "runtime_resolution_after_follow_up": "declined",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "one-pieces",
+              "belts",
+              "one-piece suits",
+              "pullovers"
+            ],
+            "expected_reduction": 0.9552,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.140;expected_reduction=0.955"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.14,
+            "normalized_entropy": 0.953486,
+            "expected_reduction": 0.9552
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0157",
+        "scenario_type": "buying",
+        "observable_route": "buying",
+        "attribute": "category",
+        "question_turn": 2,
+        "evaluator_follow_up": "decline",
+        "runtime_resolution_after_follow_up": "declined",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "one-pieces",
+              "belts",
+              "one-piece suits",
+              "pullovers"
+            ],
+            "expected_reduction": 0.9552,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.140;expected_reduction=0.955"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.14,
+            "normalized_entropy": 0.953486,
+            "expected_reduction": 0.9552
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0159",
+        "scenario_type": "buying",
+        "observable_route": "buying",
+        "attribute": "category",
+        "question_turn": 1,
+        "evaluator_follow_up": "decline",
+        "runtime_resolution_after_follow_up": "declined",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "sleep bottoms",
+              "bottoms",
+              "robes"
+            ],
+            "expected_reduction": 0.5192,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.500;expected_reduction=0.519"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.5,
+            "normalized_entropy": 0.707364,
+            "expected_reduction": 0.5192
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0163",
+        "scenario_type": "buying",
+        "observable_route": "buying",
+        "attribute": "category",
+        "question_turn": 1,
+        "evaluator_follow_up": "decline",
+        "runtime_resolution_after_follow_up": "declined",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "walking",
+              "running",
+              "road running",
+              "trail running"
+            ],
+            "expected_reduction": 0.5792,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.640;expected_reduction=0.579"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.64,
+            "normalized_entropy": 0.580707,
+            "expected_reduction": 0.5792
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0166",
+        "scenario_type": "intent_override",
+        "observable_route": "buying",
+        "attribute": "feature",
+        "question_turn": 4,
+        "evaluator_follow_up": "not_observed_session_ended",
+        "runtime_resolution_after_follow_up": "not_observed_session_ended",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "feature",
+            "options": [
+              "not:rubber sole",
+              "rubber sole"
+            ],
+            "expected_reduction": 0.5,
+            "reason": "selected:feature;coverage=1.000;dominant_share=0.500;expected_reduction=0.500"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "feature",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.5,
+            "normalized_entropy": 1.0,
+            "expected_reduction": 0.5
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": true,
+          "first_hit_turn": 4,
+          "best_rank": 1
+        },
+        "issue_5c": {
+          "hit": true,
+          "first_hit_turn": 4,
+          "best_rank": 1
+        },
+        "later_recommendation_changes": [],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0167",
+        "scenario_type": "browsing",
+        "observable_route": "browsing",
+        "attribute": "feature",
+        "question_turn": 1,
+        "evaluator_follow_up": "explicit_answer",
+        "runtime_resolution_after_follow_up": "unresolved",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "feature",
+            "options": [
+              "not:pull-on closure",
+              "pull-on closure"
+            ],
+            "expected_reduction": 0.384,
+            "reason": "selected:feature;coverage=0.800;dominant_share=0.600;expected_reduction=0.384"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "feature",
+            "candidate_count": 50,
+            "usable_count": 40,
+            "coverage": 0.8,
+            "dominant_share": 0.6,
+            "normalized_entropy": 0.970951,
+            "expected_reduction": 0.384
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 1,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 1,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 1,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 3,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 5,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0176",
+        "scenario_type": "browsing",
+        "observable_route": "browsing",
+        "attribute": "category",
+        "question_turn": 1,
+        "evaluator_follow_up": "decline",
+        "runtime_resolution_after_follow_up": "declined",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "waist packs",
+              "casual daypacks",
+              "packing organizers",
+              "travel duffels"
+            ],
+            "expected_reduction": 0.7,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.520;expected_reduction=0.700"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.52,
+            "normalized_entropy": 0.689739,
+            "expected_reduction": 0.7
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 2,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 4,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0179",
+        "scenario_type": "buying",
+        "observable_route": "buying",
+        "attribute": "feature",
+        "question_turn": 1,
+        "evaluator_follow_up": "explicit_answer",
+        "runtime_resolution_after_follow_up": "unresolved",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "feature",
+            "options": [
+              "not:pull on closure",
+              "pull on closure"
+            ],
+            "expected_reduction": 0.5,
+            "reason": "selected:feature;coverage=1.000;dominant_share=0.500;expected_reduction=0.500"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "feature",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.5,
+            "normalized_entropy": 1.0,
+            "expected_reduction": 0.5
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0190",
+        "scenario_type": "buying",
+        "observable_route": "buying",
+        "attribute": "category",
+        "question_turn": 1,
+        "evaluator_follow_up": "not_observed_session_ended",
+        "runtime_resolution_after_follow_up": "not_observed_session_ended",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "scrub bottoms",
+              "scrub sets",
+              "scrub tops",
+              "scrub jackets"
+            ],
+            "expected_reduction": 0.5656,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.620;expected_reduction=0.566"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.62,
+            "normalized_entropy": 0.774933,
+            "expected_reduction": 0.5656
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": true,
+          "first_hit_turn": 1,
+          "best_rank": 1
+        },
+        "issue_5c": {
+          "hit": true,
+          "first_hit_turn": 1,
+          "best_rank": 1
+        },
+        "later_recommendation_changes": [],
+        "mechanism_trace": null
+      },
+      {
+        "sample_id": "public_0199",
+        "scenario_type": "buying",
+        "observable_route": "buying",
+        "attribute": "category",
+        "question_turn": 1,
+        "evaluator_follow_up": "decline",
+        "runtime_resolution_after_follow_up": "declined",
+        "ambiguity": {
+          "candidate_count": 50,
+          "opportunity": {
+            "should_ask": true,
+            "attribute": "category",
+            "options": [
+              "boxer briefs",
+              "briefs",
+              "westlake",
+              "panties"
+            ],
+            "expected_reduction": 0.7264,
+            "reason": "selected:category;coverage=1.000;dominant_share=0.440;expected_reduction=0.726"
+          },
+          "selected_attribute_statistics": {
+            "attribute": "category",
+            "candidate_count": 50,
+            "usable_count": 50,
+            "coverage": 1.0,
+            "dominant_share": 0.44,
+            "normalized_entropy": 0.736933,
+            "expected_reduction": 0.7264
+          }
+        },
+        "comparison": "unchanged",
+        "flags": {
+          "new_hit": false,
+          "lost_hit": false,
+          "earlier_hit": false,
+          "later_hit": false,
+          "better_rank": false,
+          "worse_rank": false
+        },
+        "champion": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "issue_5c": {
+          "hit": false,
+          "first_hit_turn": null,
+          "best_rank": null
+        },
+        "later_recommendation_changes": [
+          {
+            "turn": 2,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 3,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 4,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 5,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 6,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 7,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 8,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 9,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          },
+          {
+            "turn": 10,
+            "same_recommendation_set": false,
+            "shared_recommendation_count": 0,
+            "champion_target_rank": null,
+            "issue_5c_target_rank": null
+          }
+        ],
+        "mechanism_trace": null
+      }
+    ]
+  },
+  "reproduction_command": "python3 -m benchmarks.analyze_clarification_pairs --output docs/results/issue_6a/paired_diagnosis.json"
+}

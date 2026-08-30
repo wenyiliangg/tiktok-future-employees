@@ -20,8 +20,10 @@ session and `respond` once per turn. `Agent.reset` initializes a clean
 4. `IntentRouter` uses active state plus preserved raw intent. Only Browsing
    permits dense evidence to compete for the final two positions. Ranking and
    identity tie-breaks are deterministic.
-5. The agent returns the identifiers with a fixed message, no clarification
-   attribute, and zero model-token usage.
+5. The selected declarative policy analyzes at most 50 already-ranked candidates
+   and may attach one clarification only on the runtime-observable Browsing
+   route. Recommendation identities/order and zero model-token usage are
+   preserved on the question turn.
 
 Raw turns are retained separately from structured state. They are never
 concatenated blindly; an active raw intent is replaced on intent override.
@@ -144,10 +146,10 @@ quality/runtime tables therefore describe the earlier pre-reranker agent.
 
 ## Clarification strategy
 
-`starter.ambiguity_analysis.AmbiguityAnalyzer` is a completed analysis
-foundation, not a user-facing question system. Given candidates, catalog
-metadata, and known state, it excludes known attributes and scores each usable
-missing attribute with a coverage-adjusted Gini split:
+`starter.ambiguity_analysis.AmbiguityAnalyzer` is integrated behind the selected
+clarification policy. Given candidates, catalog metadata, and known state, it
+excludes known attributes and scores each usable missing attribute with a
+coverage-adjusted Gini split:
 
 ```text
 expected_reduction = metadata_coverage * (1 - sum(value_share ** 2))
@@ -158,9 +160,12 @@ minimum pool size, distinct values, dominant share, reduction threshold, price
 buckets, and tie priority are configurable. It rejects sparse metadata and
 attributes that barely divide the pool.
 
-The analyzer is not called by `Agent`; question wording, asked-question history,
-and evaluator integration do not exist. The current response always returns
-`ask_attribute: null`.
+`ClarificationController` enforces at most one question per session, prevents
+turn-10 and repeated questions, and tracks explicit answers or declines.
+`config/clarification_policies.json` selects
+`clarification.browsing-only.v1`; `contextual.browsing-dense.v1` remains the
+clarification-disabled rollback. Clarification-only failures fall back to the
+unchanged recommendation response.
 
 ## Configuration boundaries
 
@@ -178,6 +183,7 @@ and evaluator integration do not exist. The current response always returns
   diversity dimensions/caps/penalties, and price buckets.
 - `AmbiguityConfig`: eligible attributes, metadata/pool thresholds, reduction
   threshold, dominance limit, price buckets, and deterministic priority.
+- `config/clarification_policies.json`: named eligibility/controller values,
+  fixed evaluator seed, fingerprints, selected default, and rollback policy.
 
-Clarification configuration has no evaluator effect until it is connected to
-`starter.agent.Agent`; route-aware fallback and reranking require explicit flags.
+Route-aware fallback and reranking continue to require explicit flags.

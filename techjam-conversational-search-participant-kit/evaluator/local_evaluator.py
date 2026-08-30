@@ -15,13 +15,14 @@ from dataclasses import asdict
 from pathlib import Path
 
 from starter.agent import Agent
+from starter.clarification_controller import ClarificationController
+from starter.clarification_policies import load_clarification_policy_registry
 from starter.contextual_retrieval import (
     ContextualRetrievalPolicy,
     contextual_policy_candidates,
     policy_by_id,
 )
 from starter.hybrid_retrieval import HybridRetrievalConfig, RetrievalMode
-from starter.selective_clarification import SelectiveClarificationConfig
 
 try:
     import resource
@@ -534,6 +535,7 @@ def evaluate(
             "average_response_latency_ms": round(
                 statistics.fmean(response_latencies_ms), 6
             ),
+            "p50_response_latency_ms": round(statistics.median(ordered_latencies), 6),
             "p95_response_latency_ms": round(ordered_latencies[p95_index], 6),
         },
         "response_contract_diagnostics": {
@@ -555,6 +557,7 @@ def evaluate(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="TechJam public-set local evaluator")
+    clarification_registry = load_clarification_policy_registry()
     parser.add_argument("--catalog", default="data/catalog.jsonl")
     parser.add_argument("--dataset", default="data/public_set.jsonl")
     parser.add_argument("--output", default="results.json")
@@ -577,10 +580,16 @@ def main() -> None:
     parser.add_argument(
         "--dense-cache", default="data/.dense-retrieval/catalog-minilm.npz"
     )
-    parser.add_argument(
+    clarification_group = parser.add_mutually_exclusive_group()
+    clarification_group.add_argument(
+        "--clarification-policy",
+        choices=[policy.policy_id for policy in clarification_registry.policies],
+        help="Use one predeclared clarification policy and its fixed seed.",
+    )
+    clarification_group.add_argument(
         "--enable-selective-clarification",
         action="store_true",
-        help="Enable the Issue 5C experiment without changing the runtime default.",
+        help="Compatibility alias for --clarification-policy clarification.issue-5c.v1.",
     )
     args = parser.parse_args()
     samples = load_jsonl(args.dataset)
@@ -595,9 +604,14 @@ def main() -> None:
         rrf_k=args.rrf_k,
     )
     startup_started = time.perf_counter()
-    clarification_config = SelectiveClarificationConfig(
-        enabled=args.enable_selective_clarification
+    clarification_policy_id = (
+        "clarification.issue-5c.v1"
+        if args.enable_selective_clarification
+        else args.clarification_policy or clarification_registry.runtime_default_policy
     )
+    clarification_policy = clarification_registry.policy_by_id(clarification_policy_id)
+    random.seed(clarification_policy.evaluation_seed)
+    clarification_config = clarification_policy.clarification
     contextual_policy = policy_by_id(args.contextual_policy)
     agent = Agent(
         args.catalog,
@@ -605,6 +619,9 @@ def main() -> None:
         dense_cache_path=args.dense_cache,
         contextual_policy=contextual_policy,
         clarification_config=clarification_config,
+        clarification_controller=ClarificationController(
+            clarification_policy.controller
+        ),
     )
     agent_startup_seconds = time.perf_counter() - startup_started
     result = evaluate(agent, samples, catalog_ids, categories, products)
@@ -616,6 +633,8 @@ def main() -> None:
             "sentence-transformer model loading remains lazy until the first dense query"
         ),
         "latency_scope": "wall-clock time inside Agent.respond, including first-query model loading",
+        "warmup_response_count": 0,
+        "memory_method": "peak resident set size for the evaluator process",
     }
     fingerprint, fingerprint_payload = retrieval_configuration_fingerprint(
         config, contextual_policy
@@ -624,6 +643,11 @@ def main() -> None:
         **fingerprint_payload,
         "fingerprint_sha256": fingerprint,
         "selective_clarification": asdict(clarification_config),
+    }
+    result["finalist_configuration"] = {
+        **clarification_policy.fingerprint_payload(),
+        "rationale": clarification_policy.rationale,
+        "fingerprint_sha256": clarification_policy.fingerprint_sha256,
     }
     result["clarification_diagnostics"] = agent.clarification_diagnostics_snapshot()
     Path(args.output).write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
