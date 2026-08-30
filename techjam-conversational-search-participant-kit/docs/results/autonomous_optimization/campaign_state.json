@@ -30,13 +30,11 @@
   },
   "champion_response_hash": "9e50a9e37aea0e149bfaff346266d24628679558c1999bde36146681d67bca6d",
   "champion_session_hash": "ee2d7a3a683273d17dcb2e8a9d0dcc1ab7c05816c4c611a43be9070133e45e67",
-  "current_experiment_id": "H1-open-evidence-questions-v1",
-  "current_hypothesis": "A protocol-aware open evidence question using the legal other attribute can reveal up to two target-derived constraints and outperform the current low-yield category/feature clarification behavior without changing retrieval.",
-  "current_stage": "official_rejected_pending_revert",
-  "experiment_start_commit": "4d7af4eea2cfb8626fc858452ba4d0ab7f2cc509",
-  "experiment_commits": [
-    "f725ee3050a2a7b3b931a64d0c7f4b2831d7c82c"
-  ],
+  "current_experiment_id": "H2-catalog-signature-index-v1",
+  "current_hypothesis": "A participant-visible offline catalog signature index can turn one or two disclosed phrases into exact-product hypotheses and improve rank-one identification without evaluator coupling.",
+  "current_stage": "preliminary_gates_passed",
+  "experiment_start_commit": "9b62271a1426913e0c3b8721a08d1799fe06984b",
+  "experiment_commits": [],
   "completed_hypotheses": [
     "H0-feedback-memory-bm25",
     "H1-open-evidence-questions-v1"
@@ -53,8 +51,8 @@
   "official_runs_remaining": 11,
   "fixed_seed": 20260830,
   "run_start_utc": "2026-08-30T08:20:45Z",
-  "last_checkpoint_utc": "2026-08-30T09:02:16Z",
+  "last_checkpoint_utc": "2026-08-30T12:36:16Z",
   "pause_reason": null,
   "stop_reason": null,
-  "next_action": "Commit H1 rejection evidence, revert only the H1 candidate implementation while retaining campaign infrastructure, verify the 4d7af4e champion is restored, then write the H2 catalog-signature experiment card."
+  "next_action": "Commit the H2 evidence and isolated runtime candidate, verify the clean-tree and immutable-input gates, then run one official evaluation with contextual.signature-head.v1 and clarification.feedback-memory.v1."
 }

@@ -563,8 +563,6 @@ def robustness_checks() -> dict[str, bool]:
         config = SelectiveClarificationConfig(
             enabled=True,
             eligible_routes=("browsing",),
-            question_priority=("other", "feature"),
-            priority_min_candidates=4,
         )
         missing_cache = Agent(
             catalog,
@@ -616,12 +614,13 @@ def _agent(
     dense_cache_path: Path,
     clarification: SelectiveClarificationConfig,
     controller: ClarificationControllerConfig,
+    contextual_policy_id: str = "contextual.feedback-memory.v1",
 ) -> Agent:
     return Agent(
         catalog_path,
         config=HybridRetrievalConfig(mode=RetrievalMode.CONTEXTUAL),
         dense_cache_path=dense_cache_path,
-        contextual_policy=policy_by_id("contextual.feedback-memory.v1"),
+        contextual_policy=policy_by_id(contextual_policy_id),
         clarification_config=clarification,
         clarification_controller=ClarificationController(controller),
     )
@@ -637,6 +636,10 @@ def main() -> None:
     parser.add_argument("--sample-count", type=int, default=64)
     parser.add_argument("--output")
     parser.add_argument("--diagnostic-only", action="store_true")
+    parser.add_argument(
+        "--candidate-contextual-policy",
+        default="contextual.feedback-memory.v1",
+    )
     args = parser.parse_args()
 
     catalog_path = Path(args.catalog)
@@ -698,6 +701,7 @@ def main() -> None:
             Path(args.dense_cache),
             candidate_policy.clarification,
             candidate_policy.controller,
+            args.candidate_contextual_policy,
         )
         candidate = evaluate_shadow(candidate_agent, samples, frozenset(products))
         del candidate_agent
@@ -708,6 +712,7 @@ def main() -> None:
             Path(args.dense_cache),
             candidate_policy.clarification,
             candidate_policy.controller,
+            args.candidate_contextual_policy,
         )
         repeat = evaluate_shadow(repeat_agent, samples, frozenset(products))
         result.update(
