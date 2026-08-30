@@ -41,9 +41,11 @@
   "champion_session_hash": "cb648d582f23270d03fe74fe76ba7ac728aa6581509e840b8283954007887bf8",
   "current_experiment_id": "P2-answerability-utility-questions-v1",
   "current_hypothesis": "Answerability-aware open and feature questions, correct pending resolution, decline recovery, and a two-question cap can convert P1 candidate evidence into earlier and higher-ranked hits without sacrificing P1 coverage.",
-  "current_stage": "preimplementation_recorded",
+  "current_stage": "preliminary_gates_passed_awaiting_official_next_invocation",
   "experiment_start_commit": "5b7b6cd230770815db727dacb158009cbf8c5614",
-  "experiment_commits": [],
+  "experiment_commits": [
+    "7ba0a7c769954d758e1c6db6e70cde3cac214bb5"
+  ],
   "completed_hypotheses": [
     "H0-feedback-memory-bm25",
     "H1-open-evidence-questions-v1",
@@ -69,8 +71,8 @@
   "official_runs_remaining": 6,
   "fixed_seed": 20260830,
   "run_start_utc": "2026-08-30T14:44:51Z",
-  "last_checkpoint_utc": "2026-08-30T15:57:03Z",
+  "last_checkpoint_utc": "2026-08-30T16:07:19Z",
   "pause_reason": null,
   "stop_reason": null,
-  "next_action": "Build P2 label-free answerability and expected-utility diagnostics first, then implement only behind a new P1-compatible clarification policy; use shadow evaluation only because this invocation's official-run allowance is exhausted."
+  "next_action": "At the next invocation, verify the diagnostic evaluator wrapper and run one official P2 finalist using contextual.category-evidence.v1 plus clarification.category-evidence-utility.v1; pair against the promoted P1 artifact before any promotion."
 }
