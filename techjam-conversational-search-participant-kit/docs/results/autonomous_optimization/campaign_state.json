@@ -3,36 +3,39 @@
   "campaign_status": "running",
   "campaign_base_commit": "c57dfce8f7aeb44cb366ab3a90c11e9ac613cf07",
   "campaign_branch": "experiment/bounded-technicalscore-optimization",
-  "champion_commit": "4d7af4eea2cfb8626fc858452ba4d0ab7f2cc509",
+  "champion_commit": "1172b6a3a3361e6848fdeb169915c66662a9f8b0",
   "champion_configuration": {
     "retrieval_mode": "contextual",
-    "retrieval_policy": "contextual.feedback-memory.v1",
+    "retrieval_policy": "contextual.override-history-tail.v1",
     "clarification_policy": "clarification.feedback-memory.v1",
     "bm25_candidate_count": 100,
     "dense_candidate_count": 200,
     "final_candidate_count": 10,
     "protected_lexical_count": 8,
     "dense_weight": 0.5,
+    "override_history_phrase_limit": 1,
+    "override_history_tail_weight": 0.5,
     "fixed_seed": 20260830
   },
   "champion_fingerprint": {
-    "retrieval": "9feee454891b5557c268bfe1e5942f04047a83896ba9ffdad5b59ed2b887a9be",
+    "retrieval": "3e3fbcb9624e7ffd4a76a90914c9166e9e94a4f0510a2f8319da60046ae79c6e",
+    "override_history": "f1eff95d936386efe560c927ec1ecb3392fa970d5a1ad830759d30dc016fee1c",
     "clarification": "56550e0f09f152db8be1a3988bacda499955e8b5683e95eedad44b3ce19fb7a5"
   },
   "champion_metrics": {
     "sample_count": 200,
-    "hit_rate_at_10": 0.405,
-    "mrr": 0.15331,
-    "mttc": 8.125,
-    "efficiency": 0.2875,
-    "technical_score": 0.305993,
+    "hit_rate_at_10": 0.45,
+    "mrr": 0.157976,
+    "mttc": 8.045,
+    "efficiency": 0.2955,
+    "technical_score": 0.331493,
     "clarification_questions": 13
   },
-  "champion_response_hash": "9e50a9e37aea0e149bfaff346266d24628679558c1999bde36146681d67bca6d",
-  "champion_session_hash": "ee2d7a3a683273d17dcb2e8a9d0dcc1ab7c05816c4c611a43be9070133e45e67",
+  "champion_response_hash": "edd299e5bb9d9f40fa4753c345228c68cdfb0a16b38e438e0509915820c912cc",
+  "champion_session_hash": "d58ec1b9edf7f68a8d63cb30597ed0721bf32142233f6880cc43fcecbcaef013",
   "current_experiment_id": "H3-override-history-tail-v1",
   "current_hypothesis": "Pre-override raw text can remain useful as low-confidence product-identification evidence when it is kept separate from authoritative active requirements and fused only into the unprotected recommendation tail.",
-  "current_stage": "candidate_committed_pre_official",
+  "current_stage": "official_retained",
   "experiment_start_commit": "7b8e471903b0a1cb699810a8d46730d7828f5f66",
   "experiment_commits": [
     "1d397024d35df5c09b4022ac7db8a6eb396347b9",
@@ -41,23 +44,25 @@
   "completed_hypotheses": [
     "H0-feedback-memory-bm25",
     "H1-open-evidence-questions-v1",
-    "H2-catalog-signature-index-v1"
+    "H2-catalog-signature-index-v1",
+    "H3-override-history-tail-v1"
   ],
   "retained_hypotheses": [
-    "H0-feedback-memory-bm25"
+    "H0-feedback-memory-bm25",
+    "H3-override-history-tail-v1"
   ],
   "rejected_hypotheses": [
     "H1-open-evidence-questions-v1",
     "H2-catalog-signature-index-v1"
   ],
-  "consecutive_rejections": 2,
+  "consecutive_rejections": 0,
   "consecutive_small_improvements": 0,
-  "official_runs_used": 3,
-  "official_runs_remaining": 9,
+  "official_runs_used": 4,
+  "official_runs_remaining": 8,
   "fixed_seed": 20260830,
   "run_start_utc": "2026-08-30T12:59:34Z",
-  "last_checkpoint_utc": "2026-08-30T13:30:17Z",
+  "last_checkpoint_utc": "2026-08-30T13:31:52Z",
   "pause_reason": null,
   "stop_reason": null,
-  "next_action": "Commit the H3 preliminary evidence and isolated runtime candidate, verify clean-tree and immutable-input gates, then run one official contextual.override-history-tail.v1 evaluation and paired bootstrap."
+  "next_action": "Commit H3 retention evidence, then write the H4 conjunctive-posterior experiment card and build a benchmark-only feature/conjunction diagnostic before runtime changes."
 }

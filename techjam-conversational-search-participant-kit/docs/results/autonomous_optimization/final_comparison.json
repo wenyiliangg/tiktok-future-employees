@@ -17,16 +17,17 @@
     "efficiency": 0.119
   },
   "champion": {
-    "commit": "4d7af4eea2cfb8626fc858452ba4d0ab7f2cc509",
-    "configuration": "contextual.feedback-memory.v1 + clarification.feedback-memory.v1",
-    "technical_score": 0.305993,
-    "hit_rate_at_10": 0.405,
-    "mrr": 0.15331,
-    "mttc": 8.125,
-    "efficiency": 0.2875,
-    "delta_vs_campaign_base": 0.188333
+    "commit": "1172b6a3a3361e6848fdeb169915c66662a9f8b0",
+    "configuration": "contextual.override-history-tail.v1 + clarification.feedback-memory.v1",
+    "technical_score": 0.331493,
+    "hit_rate_at_10": 0.45,
+    "mrr": 0.157976,
+    "mttc": 8.045,
+    "efficiency": 0.2955,
+    "delta_vs_campaign_base": 0.213833
   },
   "final_reproduction": {
+    "status": "superseded by retained H3 champion; reproduction belongs to the prior H2 stop checkpoint",
     "technical_score": 0.305993,
     "hit_rate_at_10": 0.405,
     "mrr": 0.15331,
@@ -47,6 +48,18 @@
       "experiment_id": "H0-feedback-memory-bm25",
       "commit": "4d7af4eea2cfb8626fc858452ba4d0ab7f2cc509",
       "technical_score": 0.305993
+    },
+    {
+      "experiment_id": "H3-override-history-tail-v1",
+      "commit": "1172b6a3a3361e6848fdeb169915c66662a9f8b0",
+      "technical_score": 0.331493,
+      "delta_vs_previous_champion": 0.0255,
+      "gained_hits": 9,
+      "lost_hits": 0,
+      "paired_95_percent_ci": [
+        0.011166667,
+        0.042383333
+      ]
     }
   ],
   "rejected_experiments": [
@@ -83,8 +96,8 @@
     "status": "external public claim; not independently reproduced or paired",
     "used_as_implementation_source": false
   },
-  "official_runs_used": 3,
-  "official_runs_remaining": 9,
+  "official_runs_used": 4,
+  "official_runs_remaining": 8,
   "stop_reason": null,
   "resumed_after_h2_utc": "2026-08-30T12:59:34Z",
   "limitations": [
@@ -92,5 +105,5 @@
     "The external 0.906151 reference is a public claim and was not independently reproduced or paired.",
     "Non-public shadow suites reduce but do not eliminate public-set selection and distribution-shift risk."
   ],
-  "last_updated_utc": "2026-08-30T12:59:34Z"
+  "last_updated_utc": "2026-08-30T13:31:52Z"
 }

@@ -373,15 +373,36 @@ runtime commits are checkpointed.
 The preliminary evidence is checkpointed at `1d39702`, and the isolated H3
 runtime candidate is checkpointed at `1172b6a`.
 
+## H3 official result and retention
+
+The single official H3 run scored `0.331493`, improving TechnicalScore by
+`+0.025500` over the `0.305993` feedback-memory champion. HR@10 rose from
+`0.405` to `0.450`, MRR from `0.153310` to `0.157976`, MTTC fell from `8.125`
+to `8.045`, and Efficiency rose from `0.2875` to `0.2955`. Buying, Browsing,
+and Boundary were exactly unchanged. Intent Override HR@10 rose from
+`0.166667` to `0.466667`, MRR from `0.109722` to `0.140833`, and MTTC fell
+from `9.900` to `9.366667`.
+
+The paired comparison found nine gained hits, zero lost hits, one earlier
+shared hit, 80 unchanged hits, and 110 unchanged misses. Its 10,000-resample
+mean was `+0.025500`, with a fully positive 95% interval of
+`[0.011166667, 0.042383333]` and positive probability `1.0`. All correctness
+counters were zero. H3 therefore passes both aggregate and paired promotion
+rules and becomes the new retained champion at runtime commit `1172b6a`.
+Mean response latency was `17.488197ms`, p95 was `26.069125ms`, startup was
+`5.432080s`, full evaluator time was `26.331934s`, and peak RSS was
+`1106.218750 MiB`.
+
 ## Evaluation budget
 
-- New campaign official runs used: 3.
-- New campaign official runs remaining: 9.
+- New campaign official runs used: 4.
+- New campaign official runs remaining: 8.
 - The reserved final reproduction run has been consumed.
 - Fixed seed: `20260830`.
 
 ## Immediate next action
 
-Commit the H3 preliminary evidence and isolated runtime candidate, verify the
-clean-tree and immutable-input gates, then spend one official run on the exact
-fingerprinted configuration followed by the fixed-seed paired bootstrap.
+Record the retained H3 champion, then write the H4 conjunctive-posterior
+experiment card. Build a benchmark-only feature/conjunction diagnostic before
+changing runtime ranking, preserving the H3 protected-prefix and override
+history behavior underneath.
