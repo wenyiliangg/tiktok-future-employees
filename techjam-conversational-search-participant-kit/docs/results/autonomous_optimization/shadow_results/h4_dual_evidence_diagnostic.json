@@ -1,0 +1,536 @@
+{
+  "schema_version": 1,
+  "experiment_id": "H4-dual-evidence-conjunction-v1",
+  "seed": 20260830,
+  "sample_count": 64,
+  "public_target_overlap": 0,
+  "configuration": {
+    "max_document_frequency": 1000,
+    "minimum_side_support": 2.5,
+    "minimum_margin": 0.25,
+    "shared_evidence_tokens_removed": true,
+    "candidate_scope": "H3 Top 10"
+  },
+  "counts": {
+    "better_rank": 1,
+    "unchanged_hit": 20,
+    "unchanged_miss": 43
+  },
+  "promotions_applied": 8,
+  "promotions_selecting_target": 6,
+  "mean_reciprocal_rank_delta": 0.0078125,
+  "sessions": [
+    {
+      "sample_id": "shadow_0003",
+      "comparison": "unchanged_hit",
+      "baseline_rank": 10,
+      "candidate_rank": 10,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0007",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0011",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0015",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0019",
+      "comparison": "unchanged_hit",
+      "baseline_rank": 9,
+      "candidate_rank": 9,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0023",
+      "comparison": "unchanged_hit",
+      "baseline_rank": 1,
+      "candidate_rank": 1,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0027",
+      "comparison": "unchanged_hit",
+      "baseline_rank": 1,
+      "candidate_rank": 1,
+      "selected_as_target": true,
+      "promotion_applied": true
+    },
+    {
+      "sample_id": "shadow_0031",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0035",
+      "comparison": "unchanged_hit",
+      "baseline_rank": 1,
+      "candidate_rank": 1,
+      "selected_as_target": true,
+      "promotion_applied": true
+    },
+    {
+      "sample_id": "shadow_0039",
+      "comparison": "unchanged_hit",
+      "baseline_rank": 10,
+      "candidate_rank": 10,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0043",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0047",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0051",
+      "comparison": "unchanged_hit",
+      "baseline_rank": 1,
+      "candidate_rank": 1,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0055",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0059",
+      "comparison": "unchanged_hit",
+      "baseline_rank": 1,
+      "candidate_rank": 1,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0063",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0067",
+      "comparison": "unchanged_hit",
+      "baseline_rank": 1,
+      "candidate_rank": 1,
+      "selected_as_target": true,
+      "promotion_applied": true
+    },
+    {
+      "sample_id": "shadow_0071",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0075",
+      "comparison": "unchanged_hit",
+      "baseline_rank": 9,
+      "candidate_rank": 9,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0079",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0083",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0087",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0091",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0095",
+      "comparison": "better_rank",
+      "baseline_rank": 2,
+      "candidate_rank": 1,
+      "selected_as_target": true,
+      "promotion_applied": true
+    },
+    {
+      "sample_id": "shadow_0099",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0103",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0107",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0111",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0115",
+      "comparison": "unchanged_hit",
+      "baseline_rank": 9,
+      "candidate_rank": 9,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0119",
+      "comparison": "unchanged_hit",
+      "baseline_rank": 1,
+      "candidate_rank": 1,
+      "selected_as_target": true,
+      "promotion_applied": true
+    },
+    {
+      "sample_id": "shadow_0123",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0127",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0131",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0135",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0139",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0143",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0147",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0151",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0155",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0159",
+      "comparison": "unchanged_hit",
+      "baseline_rank": 9,
+      "candidate_rank": 9,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0163",
+      "comparison": "unchanged_hit",
+      "baseline_rank": 9,
+      "candidate_rank": 9,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0167",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0171",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0175",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0179",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": true
+    },
+    {
+      "sample_id": "shadow_0183",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0187",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0191",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0195",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0199",
+      "comparison": "unchanged_hit",
+      "baseline_rank": 1,
+      "candidate_rank": 1,
+      "selected_as_target": true,
+      "promotion_applied": true
+    },
+    {
+      "sample_id": "shadow_0203",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0207",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0211",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": true
+    },
+    {
+      "sample_id": "shadow_0215",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0219",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0223",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0227",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0231",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0235",
+      "comparison": "unchanged_miss",
+      "baseline_rank": null,
+      "candidate_rank": null,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0239",
+      "comparison": "unchanged_hit",
+      "baseline_rank": 1,
+      "candidate_rank": 1,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0243",
+      "comparison": "unchanged_hit",
+      "baseline_rank": 9,
+      "candidate_rank": 9,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0247",
+      "comparison": "unchanged_hit",
+      "baseline_rank": 1,
+      "candidate_rank": 1,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0251",
+      "comparison": "unchanged_hit",
+      "baseline_rank": 9,
+      "candidate_rank": 9,
+      "selected_as_target": false,
+      "promotion_applied": false
+    },
+    {
+      "sample_id": "shadow_0255",
+      "comparison": "unchanged_hit",
+      "baseline_rank": 9,
+      "candidate_rank": 9,
+      "selected_as_target": false,
+      "promotion_applied": false
+    }
+  ]
+}

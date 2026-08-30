@@ -439,6 +439,35 @@ unresolved result rejects only H4 and advances to H5.
 Rollback: checkpoint diagnostics separately and isolate the H4 ranker/integration
 commit so rejection can revert only runtime behavior while retaining evidence.
 
+## H4 preliminary evidence
+
+The strict initial non-public diagnostic was safe but inert. Two predeclared
+bounded relaxations were then tested. The narrower selected variant uses token
+document frequency at most `1000`, per-evidence support at least `2.5`, and a
+unique-best margin of `0.25`. On 64 non-public Intent Override targets, it
+applied eight promotions, selected the target six times, improved one target
+from rank 2 to rank 1, worsened none, and changed mean reciprocal rank by
+`+0.0078125` within that scenario slice.
+
+The initial balanced 64-session integration was neutral because the improved
+sample lay outside that slice. The smallest balanced suite containing it (96
+sessions) reproduced exactly one change: sample 95 moved from rank 2 to rank 1,
+with every other session identical to H3. H4 shadow TechnicalScore was
+`0.457159` versus H3 `0.455596` (`+0.001563`); HR@10 and MTTC were identical.
+All correctness and robustness gates passed.
+
+The complete suite passes (`254` tests), Ruff and focused MyPy pass, and compile
+checks pass. The H4 fingerprints are retrieval
+`3edbfbc97749842deacc1afcfafb9ee764b0fa045a1b02b260ff4b9f727b270e`,
+override-history
+`b17c12d5a666a7060f8cdf2f876120b66c09c3a232b918c64e661a0590d69078`,
+dual-evidence
+`56331c512dce48ba7d9687bad3dbe652ed72c203d6e6fa4fdea21b73934456e8`,
+and clarification
+`56550e0f09f152db8be1a3988bacda499955e8b5683e95eedad44b3ce19fb7a5`.
+The effect is small but strictly positive and regression-free, so H4 qualifies
+for one official run and paired decision under the smaller-gain rule.
+
 ## Evaluation budget
 
 - New campaign official runs used: 4.
@@ -448,6 +477,6 @@ commit so rejection can revert only runtime behavior while retaining evidence.
 
 ## Immediate next action
 
-Build a benchmark-only dual-evidence conjunction diagnostic on non-public H3
-Top-10 outcomes. Reject H4 before runtime integration unless it improves MRR
-without a single worse rank; otherwise implement and run the full shadow gate.
+Commit the H4 evidence and isolated runtime candidate, recheck immutable inputs
+and the clean tree, then spend the invocation's second and final official run
+followed by the fixed-seed paired bootstrap.
