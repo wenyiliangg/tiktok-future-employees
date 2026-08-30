@@ -46,6 +46,20 @@
         0.054877411
       ],
       "reason": "Rejected despite a strong aggregate delta because seven champion hits were lost and the paired interval crossed zero."
+    },
+    {
+      "experiment_id": "H2-catalog-signature-index-v1",
+      "candidate_commit": "c6979a129be50694029ff77476c711e65f1bf509",
+      "technical_score": 0.305243,
+      "delta_vs_champion": -0.00075,
+      "gained_hits": 0,
+      "lost_hits": 0,
+      "worse_ranks": 1,
+      "paired_95_percent_ci": [
+        -0.00225,
+        0.0
+      ],
+      "reason": "Rejected because aggregate and paired TechnicalScore decreased; one Intent Override hit moved to a worse rank and no session improved."
     }
   ],
   "external_reference": {
@@ -53,5 +67,5 @@
     "status": "external public claim; not independently reproduced or paired",
     "used_as_implementation_source": false
   },
-  "last_updated_utc": "2026-08-30T09:02:16Z"
+  "last_updated_utc": "2026-08-30T12:49:02Z"
 }

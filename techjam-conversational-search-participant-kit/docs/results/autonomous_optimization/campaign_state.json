@@ -32,7 +32,7 @@
   "champion_session_hash": "ee2d7a3a683273d17dcb2e8a9d0dcc1ab7c05816c4c611a43be9070133e45e67",
   "current_experiment_id": "H2-catalog-signature-index-v1",
   "current_hypothesis": "A participant-visible offline catalog signature index can turn one or two disclosed phrases into exact-product hypotheses and improve rank-one identification without evaluator coupling.",
-  "current_stage": "preliminary_gates_passed_candidate_committed",
+  "current_stage": "official_rejected_pending_revert",
   "experiment_start_commit": "9b62271a1426913e0c3b8721a08d1799fe06984b",
   "experiment_commits": [
     "df239c856366d28fdab46810ca64548420e250a2",
@@ -40,22 +40,24 @@
   ],
   "completed_hypotheses": [
     "H0-feedback-memory-bm25",
-    "H1-open-evidence-questions-v1"
+    "H1-open-evidence-questions-v1",
+    "H2-catalog-signature-index-v1"
   ],
   "retained_hypotheses": [
     "H0-feedback-memory-bm25"
   ],
   "rejected_hypotheses": [
-    "H1-open-evidence-questions-v1"
+    "H1-open-evidence-questions-v1",
+    "H2-catalog-signature-index-v1"
   ],
-  "consecutive_rejections": 1,
+  "consecutive_rejections": 2,
   "consecutive_small_improvements": 0,
-  "official_runs_used": 1,
-  "official_runs_remaining": 11,
+  "official_runs_used": 2,
+  "official_runs_remaining": 10,
   "fixed_seed": 20260830,
   "run_start_utc": "2026-08-30T12:46:41Z",
-  "last_checkpoint_utc": "2026-08-30T12:46:41Z",
+  "last_checkpoint_utc": "2026-08-30T12:49:02Z",
   "pause_reason": null,
   "stop_reason": null,
-  "next_action": "Verify commit c6979a1 and the immutable-input gates, run one official evaluation with contextual.signature-head.v1 and clarification.feedback-memory.v1, run the fixed-seed paired bootstrap against the 4d7af4e champion, decide H2, then stop the campaign at the user's request."
+  "next_action": "Commit H2 rejection evidence, revert only candidate runtime commit c6979a1, verify the 4d7af4e champion implementation is restored, then stop the campaign at the user's request."
 }

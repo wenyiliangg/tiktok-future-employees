@@ -224,18 +224,33 @@ and no public-set identifiers or evaluator imports in runtime code. The
 invocation then reached its mandatory `4h15m` wall-clock limit, so no H2
 official run was started. This is a time pause, not an H2 rejection.
 
+## H2 official result and rejection
+
+The single official H2 run scored `0.305243`, a decrease of `-0.000750` from
+the `0.305993` feedback-memory champion. HR@10 remained `0.405`, MTTC remained
+`8.125`, and Efficiency remained `0.2875`, but MRR fell from `0.153310` to
+`0.150810`. Buying, Browsing, and Boundary aggregate outcomes were unchanged;
+Intent Override MRR fell from `0.109722` to `0.093056`. The run had zero
+exceptions, invalid responses, invalid ASINs, duplicates, repeated questions,
+or contract violations.
+
+The paired comparison found 80 unchanged hits, 119 unchanged misses, and one
+worse-rank Intent Override session. It gained and lost no hits. The 10,000
+resample paired bootstrap mean was `-0.000750`, with a 95% interval of
+`[-0.002250, 0.000000]` and zero probability of a positive delta in the
+resamples. The exact-signature mechanism therefore fails the predeclared
+promotion threshold and is rejected. Its isolated runtime commit is reverted;
+the diagnostic, shadow, official, paired, and campaign evidence is retained.
+
 ## Evaluation budget
 
-- New campaign official runs used: 1.
-- New campaign official runs remaining: 11.
+- New campaign official runs used: 2.
+- New campaign official runs remaining: 10.
 - One of the remaining runs is reserved for final reproduction.
 - Fixed seed: `20260830`.
 
 ## Immediate next action
 
-Commit the H2 preliminary evidence and isolated runtime candidate, recheck the
-immutable inputs and clean worktree in the next non-overlapping invocation,
-then spend one official run on commit `c6979a1` with
-`contextual.signature-head.v1` and `clarification.feedback-memory.v1`. Compare
-every session with the retained feedback-memory champion using the fixed-seed
-paired bootstrap before deciding retention or rejection.
+Commit the H2 rejection evidence, revert only runtime commit `c6979a1`, verify
+that the evaluator-facing implementation exactly restores champion `4d7af4e`,
+then stop the campaign at the user's request with a clean local branch.
