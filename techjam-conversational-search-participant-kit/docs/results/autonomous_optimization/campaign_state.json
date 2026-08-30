@@ -32,7 +32,7 @@
   "champion_session_hash": "ee2d7a3a683273d17dcb2e8a9d0dcc1ab7c05816c4c611a43be9070133e45e67",
   "current_experiment_id": "H1-open-evidence-questions-v1",
   "current_hypothesis": "A protocol-aware open evidence question using the legal other attribute can reveal up to two target-derived constraints and outperform the current low-yield category/feature clarification behavior without changing retrieval.",
-  "current_stage": "experiment_card_written",
+  "current_stage": "preliminary_gates_passed",
   "experiment_start_commit": "4d7af4eea2cfb8626fc858452ba4d0ab7f2cc509",
   "experiment_commits": [],
   "completed_hypotheses": [
@@ -48,8 +48,8 @@
   "official_runs_remaining": 12,
   "fixed_seed": 20260830,
   "run_start_utc": "2026-08-30T08:20:45Z",
-  "last_checkpoint_utc": "2026-08-30T08:23:01Z",
+  "last_checkpoint_utc": "2026-08-30T08:44:54Z",
   "pause_reason": null,
   "stop_reason": null,
-  "next_action": "Build the deterministic shadow suite and benchmark-only question-yield diagnostic, then implement the minimal H1 policy if preliminary evidence supports it."
+  "next_action": "Commit the H1 preliminary checkpoint, recheck immutable inputs, and spend one campaign official run on the qualified candidate."
 }

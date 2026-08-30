@@ -8,7 +8,10 @@ from types import SimpleNamespace
 
 from starter.agent import Agent
 from starter.ambiguity_analysis import ClarificationOpportunity
-from starter.clarification_controller import ClarificationController
+from starter.clarification_controller import (
+    ClarificationController,
+    ClarificationControllerConfig,
+)
 from starter.hybrid_retrieval import HybridRetrievalConfig, RetrievalMode
 from starter.selective_clarification import SelectiveClarificationConfig
 
@@ -130,6 +133,30 @@ class SelectiveClarificationIntegrationTest(unittest.TestCase):
             clarification_controller=controller,
         )
         return agent, anchor, dense
+
+    def build_priority_agent(
+        self, parent_asins: list[str], *, route: str = "browsing"
+    ) -> tuple[Agent, ClarificationController, RecordingAnalyzer]:
+        analyzer = RecordingAnalyzer(error=AssertionError("must not be invoked"))
+        controller = ClarificationController(
+            ClarificationControllerConfig(max_questions_per_session=2)
+        )
+        agent = Agent(
+            self.catalog_path,
+            config=HybridRetrievalConfig(mode=RetrievalMode.CONTEXTUAL),
+            anchor_retriever=CountingRetriever(retrieval_results(parent_asins)),
+            dense_retriever=CountingRetriever([]),
+            router=FixedRouter(route),
+            clarification_config=SelectiveClarificationConfig(
+                enabled=True,
+                eligible_routes=("browsing", "buying", "boundary"),
+                question_priority=("other", "feature"),
+                priority_min_candidates=4,
+            ),
+            ambiguity_analyzer=analyzer,
+            clarification_controller=controller,
+        )
+        return agent, controller, analyzer
 
     def test_feature_flag_off_has_exact_champion_response_parity(self) -> None:
         parent_asins = self.write_catalog(10)
@@ -370,6 +397,58 @@ class SelectiveClarificationIntegrationTest(unittest.TestCase):
         self.assertEqual(len(asins), len(set(asins)))
         self.assertTrue(set(asins).issubset(parent_asins))
 
+    def test_priority_strategy_asks_open_then_feature_without_analyzer(self) -> None:
+        parent_asins = self.write_catalog(10)
+        agent, controller, analyzer = self.build_priority_agent(parent_asins)
+        agent.reset("priority", {})
+
+        first = agent.respond("priority", "I'm browsing shoes", 1, 10)
+        second = agent.respond(
+            "priority", "For that, what matters is: canvas; lightweight.", 2, 10
+        )
+
+        self.assertEqual(first["ask_attribute"], "other")
+        self.assertEqual(second["ask_attribute"], "feature")
+        self.assertEqual(analyzer.candidate_counts, [])
+        state = controller.state_for("priority")
+        assert state is not None
+        self.assertEqual(state.answered_attributes, frozenset({"other"}))
+        self.assertEqual(state.pending_attribute, "feature")
+
+    def test_priority_strategy_handles_boundary_decline_and_override_interrupt(
+        self,
+    ) -> None:
+        parent_asins = self.write_catalog(10)
+        agent, controller, _ = self.build_priority_agent(parent_asins, route="boundary")
+        agent.reset("boundary", {})
+
+        first = agent.respond("boundary", "Show me something", 1, 10)
+        second = agent.respond(
+            "boundary",
+            "I don't have a preference for other; use your judgment.",
+            2,
+            10,
+        )
+        third = agent.respond(
+            "boundary",
+            "Actually, ignore my earlier preference. What I need is: red.",
+            3,
+            10,
+        )
+
+        self.assertEqual(first["ask_attribute"], "other")
+        self.assertEqual(second["ask_attribute"], "feature")
+        self.assertIsNone(third["ask_attribute"])
+        state = controller.state_for("boundary")
+        assert state is not None
+        self.assertEqual(state.declined_attributes, frozenset({"other"}))
+        self.assertNotIn("feature", state.answered_attributes)
+        self.assertIsNone(state.pending_attribute)
+        self.assertEqual(
+            agent.clarification_diagnostics_snapshot()["resolution_counts"],
+            {"declined": 1, "interrupted": 1},
+        )
+
 
 class SelectiveClarificationConfigTest(unittest.TestCase):
     def test_default_is_disabled_and_buying_gate_is_stricter(self) -> None:
@@ -383,6 +462,20 @@ class SelectiveClarificationConfigTest(unittest.TestCase):
         self.assertGreaterEqual(
             config.buying_min_candidates, config.browsing_min_candidates
         )
+
+    def test_priority_strategy_is_explicit_and_validated(self) -> None:
+        config = SelectiveClarificationConfig(
+            enabled=True,
+            eligible_routes=("browsing", "boundary"),
+            question_priority=("other", "feature"),
+            priority_min_candidates=4,
+        )
+
+        self.assertTrue(config.uses_priority_strategy)
+        self.assertTrue(config.priority_is_eligible("browsing", 4))
+        self.assertFalse(config.priority_is_eligible("buying", 50))
+        with self.assertRaisesRegex(ValueError, "question_priority"):
+            SelectiveClarificationConfig(question_priority=("other", "other"))
 
 
 if __name__ == "__main__":

@@ -100,6 +100,31 @@ then improve official TechnicalScore by at least `0.010`, lose no more than one
 champion hit, and introduce no correctness violation. Otherwise reject and
 revert only the H1 implementation commit.
 
+## H1 preliminary evidence
+
+The deterministic shadow suite uses 64 catalog targets excluded from all 200
+public targets, balanced 16 per scenario. It includes four independent dialogue
+templates, case and punctuation variants, 22 partial-disclosure sessions,
+catalog reorder verification, malformed metadata and price cases, missing-cache
+and component-failure fallbacks, and consecutive-session isolation.
+
+The question-yield diagnostic found potential disclosure counts of `128` for
+`other` and `125` for `feature`, compared with zero target-derived disclosures
+for `category` and `brand`. The first candidate also asked on Buying and exposed
+a route-specific regression. H1 was therefore narrowed, without using public
+outcomes, to the observable Browsing and Boundary routes.
+
+The refined candidate improved shadow TechnicalScore from `0.386477` to
+`0.458534` (`+0.072057`), gained five hits, lost none, and exactly preserved
+Buying and Intent Override outcomes. Its repeat transcript was deterministic;
+all correctness counters and all four robustness checks were zero/pass. The
+complete artifacts are under `docs/results/autonomous_optimization/shadow_results/`.
+
+The complete test suite passes (`238` tests), lint passes, immutable public and
+catalog hashes match the campaign baseline, runtime code contains no benchmark
+identifiers or evaluator imports, and the evaluator has no campaign diff. H1 is
+therefore qualified for one official full run.
+
 ## Evaluation budget
 
 - New campaign official runs used: 0.

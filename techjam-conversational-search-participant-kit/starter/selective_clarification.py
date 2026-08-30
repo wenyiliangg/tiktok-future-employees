@@ -13,6 +13,22 @@ from dataclasses import dataclass
 from .ambiguity_analysis import ClarificationOpportunity
 
 
+PRIORITY_ATTRIBUTES = frozenset(
+    {
+        "category",
+        "material",
+        "color",
+        "size",
+        "style",
+        "brand",
+        "budget",
+        "feature",
+        "use_case",
+        "other",
+    }
+)
+
+
 @dataclass(frozen=True, slots=True)
 class SelectiveClarificationConfig:
     """Conservative, deterministic gates layered on top of Issue 5A."""
@@ -25,6 +41,8 @@ class SelectiveClarificationConfig:
     buying_min_candidates: int = 8
     buying_min_expected_reduction: float = 0.50
     eligible_routes: tuple[str, ...] = ("browsing", "buying")
+    question_priority: tuple[str, ...] = ()
+    priority_min_candidates: int = 1
 
     def __post_init__(self) -> None:
         if not isinstance(self.enabled, bool):
@@ -35,6 +53,7 @@ class SelectiveClarificationConfig:
             "analysis_candidate_limit",
             "browsing_min_candidates",
             "buying_min_candidates",
+            "priority_min_candidates",
         ):
             value = getattr(self, name)
             if not isinstance(value, int) or isinstance(value, bool) or value < 1:
@@ -61,6 +80,28 @@ class SelectiveClarificationConfig:
             for route in self.eligible_routes
         ):
             raise ValueError("eligible_routes contains an unsupported observable route")
+        if len(set(self.question_priority)) != len(self.question_priority) or any(
+            attribute not in PRIORITY_ATTRIBUTES for attribute in self.question_priority
+        ):
+            raise ValueError(
+                "question_priority contains a duplicate or unsupported attribute"
+            )
+
+    @property
+    def uses_priority_strategy(self) -> bool:
+        """Return whether the opt-in ordered question strategy is active."""
+
+        return bool(self.question_priority)
+
+    def priority_is_eligible(self, route: str, candidate_count: int) -> bool:
+        """Apply runtime-only route and pool gates for an ordered question policy."""
+
+        return (
+            self.enabled
+            and self.uses_priority_strategy
+            and route in self.eligible_routes
+            and candidate_count >= self.priority_min_candidates
+        )
 
     def is_eligible(
         self,
