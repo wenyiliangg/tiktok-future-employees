@@ -35,9 +35,11 @@
   "champion_session_hash": "d58ec1b9edf7f68a8d63cb30597ed0721bf32142233f6880cc43fcecbcaef013",
   "current_experiment_id": "P1-category-evidence-pipeline-v1",
   "current_hypothesis": "A catalog-derived category pool plus exact phrase, rare-token, structured current-evidence, bounded prior, and deterministic conjunctive ranking can materially improve both candidate recall and rank-one conversion while preserving H3 evidence as inputs rather than an immutable head.",
-  "current_stage": "preimplementation_recorded",
+  "current_stage": "preliminary_gates_passed_official_finalist",
   "experiment_start_commit": "82d3959f376e40aae05cb1ae857dacf5ca1dd44b",
-  "experiment_commits": [],
+  "experiment_commits": [
+    "1179c8bf70bf4994420599a8f70b05af70230a59"
+  ],
   "completed_hypotheses": [
     "H0-feedback-memory-bm25",
     "H1-open-evidence-questions-v1",
@@ -61,8 +63,8 @@
   "official_runs_remaining": 8,
   "fixed_seed": 20260830,
   "run_start_utc": "2026-08-30T14:44:51Z",
-  "last_checkpoint_utc": "2026-08-30T15:10:31Z",
+  "last_checkpoint_utc": "2026-08-30T15:45:45Z",
   "pause_reason": null,
   "stop_reason": null,
-  "next_action": "Implement P1 behind an opt-in contextual policy with independently toggleable category, phrase, rare-token, structured, popularity, and conjunction components; run focused tests and label-free diagnostics before any official run."
+  "next_action": "Verify official evaluator integrity, then run committed P1 once with contextual.category-evidence.v1 and clarification.feedback-memory.v1; compare paired outcomes against H3 before promotion."
 }
