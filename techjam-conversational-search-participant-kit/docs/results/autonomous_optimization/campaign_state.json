@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "campaign_status": "running",
+  "campaign_base_commit": "c57dfce8f7aeb44cb366ab3a90c11e9ac613cf07",
+  "campaign_branch": "experiment/bounded-technicalscore-optimization",
+  "champion_commit": "4d7af4eea2cfb8626fc858452ba4d0ab7f2cc509",
+  "champion_configuration": {
+    "retrieval_mode": "contextual",
+    "retrieval_policy": "contextual.feedback-memory.v1",
+    "clarification_policy": "clarification.feedback-memory.v1",
+    "bm25_candidate_count": 100,
+    "dense_candidate_count": 200,
+    "final_candidate_count": 10,
+    "protected_lexical_count": 8,
+    "dense_weight": 0.5,
+    "fixed_seed": 20260830
+  },
+  "champion_fingerprint": {
+    "retrieval": "9feee454891b5557c268bfe1e5942f04047a83896ba9ffdad5b59ed2b887a9be",
+    "clarification": "56550e0f09f152db8be1a3988bacda499955e8b5683e95eedad44b3ce19fb7a5"
+  },
+  "champion_metrics": {
+    "sample_count": 200,
+    "hit_rate_at_10": 0.405,
+    "mrr": 0.15331,
+    "mttc": 8.125,
+    "efficiency": 0.2875,
+    "technical_score": 0.305993,
+    "clarification_questions": 13
+  },
+  "champion_response_hash": "9e50a9e37aea0e149bfaff346266d24628679558c1999bde36146681d67bca6d",
+  "champion_session_hash": "ee2d7a3a683273d17dcb2e8a9d0dcc1ab7c05816c4c611a43be9070133e45e67",
+  "current_experiment_id": "H1-open-evidence-questions-v1",
+  "current_hypothesis": "A protocol-aware open evidence question using the legal other attribute can reveal up to two target-derived constraints and outperform the current low-yield category/feature clarification behavior without changing retrieval.",
+  "current_stage": "experiment_card_written",
+  "experiment_start_commit": "4d7af4eea2cfb8626fc858452ba4d0ab7f2cc509",
+  "experiment_commits": [],
+  "completed_hypotheses": [
+    "H0-feedback-memory-bm25"
+  ],
+  "retained_hypotheses": [
+    "H0-feedback-memory-bm25"
+  ],
+  "rejected_hypotheses": [],
+  "consecutive_rejections": 0,
+  "consecutive_small_improvements": 0,
+  "official_runs_used": 0,
+  "official_runs_remaining": 12,
+  "fixed_seed": 20260830,
+  "run_start_utc": "2026-08-30T08:20:45Z",
+  "last_checkpoint_utc": "2026-08-30T08:23:01Z",
+  "pause_reason": null,
+  "stop_reason": null,
+  "next_action": "Build the deterministic shadow suite and benchmark-only question-yield diagnostic, then implement the minimal H1 policy if preliminary evidence supports it."
+}

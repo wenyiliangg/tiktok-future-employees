@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "campaign_status": "running",
+  "campaign_base": {
+    "commit": "c57dfce8f7aeb44cb366ab3a90c11e9ac613cf07",
+    "technical_score": 0.11766,
+    "hit_rate_at_10": 0.14,
+    "mrr": 0.074867,
+    "mttc": 9.74,
+    "efficiency": 0.126
+  },
+  "bm25_baseline": {
+    "technical_score": 0.10671,
+    "hit_rate_at_10": 0.125,
+    "mrr": 0.068034,
+    "mttc": 9.81,
+    "efficiency": 0.119
+  },
+  "champion": {
+    "commit": "4d7af4eea2cfb8626fc858452ba4d0ab7f2cc509",
+    "configuration": "contextual.feedback-memory.v1 + clarification.feedback-memory.v1",
+    "technical_score": 0.305993,
+    "hit_rate_at_10": 0.405,
+    "mrr": 0.15331,
+    "mttc": 8.125,
+    "efficiency": 0.2875,
+    "delta_vs_campaign_base": 0.188333
+  },
+  "retained_champions": [
+    {
+      "experiment_id": "H0-feedback-memory-bm25",
+      "commit": "4d7af4eea2cfb8626fc858452ba4d0ab7f2cc509",
+      "technical_score": 0.305993
+    }
+  ],
+  "external_reference": {
+    "technical_score": 0.906151,
+    "status": "external public claim; not independently reproduced or paired",
+    "used_as_implementation_source": false
+  },
+  "last_updated_utc": "2026-08-30T08:23:01Z"
+}
