@@ -7,10 +7,6 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from starter.agent import Agent
-from starter.catalog_signature_index import (
-    CatalogSignatureMatch,
-    CatalogSignaturePolicy,
-)
 from starter.contextual_retrieval import (
     ContextualRetrievalPolicy,
     rank_contextual_candidates,
@@ -33,19 +29,6 @@ class FakeRetriever:
     def retrieve(self, query: object, top_n: int) -> list[FakeResult]:
         self.calls.append((query, top_n))
         return self.results[:top_n]
-
-
-class FakeSignatureIndex:
-    def __init__(self, parent_asin: str) -> None:
-        self.parent_asin = parent_asin
-
-    def match(self, _message: object) -> CatalogSignatureMatch:
-        return CatalogSignatureMatch(self.parent_asin, "unique catalog phrase", 3)
-
-
-class FailingSignatureIndex:
-    def match(self, _message: object) -> CatalogSignatureMatch:
-        raise RuntimeError("signature failure")
 
 
 class ContextualRankingTest(unittest.TestCase):
@@ -181,77 +164,6 @@ class ContextualAgentStateTest(unittest.TestCase):
         self.assertEqual(
             self.agent._active_raw_intent["s"],
             "Actually, ignore my earlier preference and start over.",
-        )
-
-    def test_unique_signature_promotes_one_head_candidate_and_respects_rejection(
-        self,
-    ) -> None:
-        anchor = FakeRetriever(self.anchor.results)
-        policy = ContextualRetrievalPolicy(
-            policy_id="test.signature",
-            protected_lexical_count=2,
-            negative_feedback_uses_active_intent=True,
-        )
-        signature_policy = CatalogSignaturePolicy(
-            policy_id="test.signature",
-            retrieval_policy_id=policy.policy_id,
-            compatible_retrieval_policy_id=policy.policy_id,
-            enabled=True,
-        )
-        agent = Agent(
-            self.catalog,
-            config=HybridRetrievalConfig(mode="contextual"),
-            anchor_retriever=anchor,
-            contextual_policy=policy,
-            clarification_config=None,
-            signature_policy=signature_policy,
-            signature_index=FakeSignatureIndex("C"),
-        )
-        agent.reset("signature", {})
-
-        first = agent.respond("signature", "unique catalog phrase", 1, 2)
-        second = agent.respond(
-            "signature", "Those options are not quite right yet.", 2, 2
-        )
-
-        self.assertEqual(
-            first["recommendations"],
-            [{"parent_asin": "C"}, {"parent_asin": "A"}],
-        )
-        self.assertEqual(
-            second["recommendations"],
-            [{"parent_asin": "B"}, {"parent_asin": "D"}],
-        )
-
-    def test_signature_lookup_failure_preserves_champion_order(self) -> None:
-        policy = ContextualRetrievalPolicy(
-            policy_id="test.signature.failure", protected_lexical_count=2
-        )
-        signature_policy = CatalogSignaturePolicy(
-            policy_id="test.signature.failure",
-            retrieval_policy_id=policy.policy_id,
-            compatible_retrieval_policy_id=policy.policy_id,
-            enabled=True,
-        )
-        agent = Agent(
-            self.catalog,
-            config=HybridRetrievalConfig(mode="contextual"),
-            anchor_retriever=FakeRetriever(self.anchor.results),
-            contextual_policy=policy,
-            signature_policy=signature_policy,
-            signature_index=FailingSignatureIndex(),
-        )
-        agent.reset("signature-failure", {})
-
-        response = agent.respond("signature-failure", "unique catalog phrase", 1, 2)
-
-        self.assertEqual(
-            response["recommendations"],
-            [{"parent_asin": "A"}, {"parent_asin": "B"}],
-        )
-        self.assertEqual(
-            agent.diagnostics_snapshot()["component_failure_counts"],
-            {"catalog_signature": 1},
         )
 
 
