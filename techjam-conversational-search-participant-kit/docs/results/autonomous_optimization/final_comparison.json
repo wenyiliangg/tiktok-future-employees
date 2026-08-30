@@ -33,10 +33,25 @@
       "technical_score": 0.305993
     }
   ],
+  "rejected_experiments": [
+    {
+      "experiment_id": "H1-open-evidence-questions-v1",
+      "candidate_commit": "f725ee3050a2a7b3b931a64d0c7f4b2831d7c82c",
+      "technical_score": 0.328091,
+      "delta_vs_champion": 0.022098,
+      "gained_hits": 9,
+      "lost_hits": 7,
+      "paired_95_percent_ci": [
+        -0.009625625,
+        0.054877411
+      ],
+      "reason": "Rejected despite a strong aggregate delta because seven champion hits were lost and the paired interval crossed zero."
+    }
+  ],
   "external_reference": {
     "technical_score": 0.906151,
     "status": "external public claim; not independently reproduced or paired",
     "used_as_implementation_source": false
   },
-  "last_updated_utc": "2026-08-30T08:23:01Z"
+  "last_updated_utc": "2026-08-30T09:02:16Z"
 }

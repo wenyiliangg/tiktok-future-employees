@@ -125,16 +125,34 @@ catalog hashes match the campaign baseline, runtime code contains no benchmark
 identifiers or evaluator imports, and the evaluator has no campaign diff. H1 is
 therefore qualified for one official full run.
 
+## H1 official result and rejection
+
+The single official candidate run scored `0.328091`, an aggregate improvement
+of `+0.022098` over the feedback-memory champion. HR@10 rose from `0.405` to
+`0.415`, MRR from `0.153310` to `0.189637`, MTTC fell from `8.125` to `7.815`,
+and Efficiency rose from `0.2875` to `0.3185`. Buying, Intent Override, and
+Boundary aggregate outcomes were exactly unchanged; the aggregate gain came
+from Browsing. The run had zero exceptions, invalid responses, invalid ASINs,
+duplicates, repeated questions, or contract violations.
+
+The required paired analysis rejects H1. It recorded nine new hits but seven
+lost champion hits, exceeding the predeclared maximum of one. There were 15
+improved sessions, nine regressed sessions, and 176 unchanged sessions. The
+10,000-resample paired bootstrap TechnicalScore interval was `[-0.009625625,
+0.054877411]`, with `0.9072` of resamples positive; the interval crosses zero.
+The mechanism is useful but not sufficiently resolved or HR-preserving in this
+isolated form. H1 is therefore rejected, and only its implementation is
+reverted. The general shadow and paired-analysis infrastructure is retained.
+
 ## Evaluation budget
 
-- New campaign official runs used: 0.
-- New campaign official runs remaining: 12.
+- New campaign official runs used: 1.
+- New campaign official runs remaining: 11.
 - One of the remaining runs is reserved for final reproduction.
 - Fixed seed: `20260830`.
 
 ## Immediate next action
 
-Create the deterministic benchmark-only shadow suite and an independent
-question-answerability diagnostic. Implement H1 only if those preliminary
-artifacts support the experiment card. Do not spend an official run before the
-candidate passes those gates.
+Record the H1 rejection and restore the feedback-memory champion exactly. Then
+write the H2 catalog-signature-index experiment card and build a benchmark-only
+uniqueness diagnostic before changing runtime retrieval.

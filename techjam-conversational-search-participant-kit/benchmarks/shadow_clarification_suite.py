@@ -1,8 +1,11 @@
-"""Deterministic, non-public shadow evaluation for clarification experiments.
+"""Deterministic, non-public shadow evaluation for campaign experiments.
 
 The suite excludes every public target before deterministic target selection.
 It uses independently written dialogue templates and perturbations, and keeps
 all target identities inside this benchmark layer.
+
+This general robustness screen is retained even when an individual candidate
+fails an official promotion guardrail.
 """
 
 from __future__ import annotations

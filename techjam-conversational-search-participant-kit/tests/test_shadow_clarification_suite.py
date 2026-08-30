@@ -1,3 +1,5 @@
+"""Tests for campaign-level non-public shadow infrastructure."""
+
 from __future__ import annotations
 
 import unittest

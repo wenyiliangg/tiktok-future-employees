@@ -1,5 +1,7 @@
 {
   "schema_version": 1,
+  "experiment_id": "H1-open-evidence-questions-v1",
+  "official_decision": "rejected",
   "seed": 20260830,
   "suite": {
     "sample_count": 64,
