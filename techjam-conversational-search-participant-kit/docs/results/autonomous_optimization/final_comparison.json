@@ -17,14 +17,14 @@
     "efficiency": 0.119
   },
   "champion": {
-    "commit": "1172b6a3a3361e6848fdeb169915c66662a9f8b0",
-    "configuration": "contextual.override-history-tail.v1 + clarification.feedback-memory.v1",
-    "technical_score": 0.331493,
-    "hit_rate_at_10": 0.45,
-    "mrr": 0.157976,
-    "mttc": 8.045,
-    "efficiency": 0.2955,
-    "delta_vs_campaign_base": 0.213833
+    "commit": "1179c8bf70bf4994420599a8f70b05af70230a59",
+    "configuration": "contextual.category-evidence.v1 + clarification.feedback-memory.v1",
+    "technical_score": 0.507985,
+    "hit_rate_at_10": 0.68,
+    "mrr": 0.240615,
+    "mttc": 6.21,
+    "efficiency": 0.479,
+    "delta_vs_campaign_base": 0.390325
   },
   "final_reproduction": {
     "status": "superseded by retained H3 champion; reproduction belongs to the prior H2 stop checkpoint",
@@ -60,6 +60,18 @@
         0.011166667,
         0.042383333
       ]
+    },
+    {
+      "experiment_id": "P1-category-evidence-pipeline-v1",
+      "commit": "1179c8bf70bf4994420599a8f70b05af70230a59",
+      "technical_score": 0.507985,
+      "delta_vs_previous_champion": 0.176492,
+      "gained_hits": 68,
+      "lost_hits": 22,
+      "paired_95_percent_ci": [
+        0.112498467,
+        0.239312336
+      ]
     }
   ],
   "rejected_experiments": [
@@ -92,18 +104,18 @@
     }
   ],
   "external_reference": {
-    "technical_score": 0.906151,
-    "status": "external public claim; not independently reproduced or paired",
+    "technical_score": 0.963323,
+    "status": "verified current reference checkout in two exact runs; retained only as a behavioral parity target",
     "used_as_implementation_source": false
   },
-  "official_runs_used": 4,
-  "official_runs_remaining": 8,
+  "official_runs_used": 6,
+  "official_runs_remaining": 6,
   "stop_reason": null,
   "resumed_after_h2_utc": "2026-08-30T12:59:34Z",
   "limitations": [
     "The selected score is measured on the official public set and is not a private-set claim.",
-    "The external 0.906151 reference is a public claim and was not independently reproduced or paired.",
+    "The verified 0.963323 reference score is not paired with our sessions and its source is not used after the sanitization barrier.",
     "Non-public shadow suites reduce but do not eliminate public-set selection and distribution-shift risk."
   ],
-  "last_updated_utc": "2026-08-30T13:31:52Z"
+  "last_updated_utc": "2026-08-30T15:51:47Z"
 }

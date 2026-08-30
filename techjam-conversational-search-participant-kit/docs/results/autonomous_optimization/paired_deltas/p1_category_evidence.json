@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "experiment_id": "P1-category-evidence-pipeline-v1",
+  "inputs": {
+    "h3_paired_checkpoint_sha256": "454dab809d2df3347469859729836905c8d591c9da9c4e4e97a44b926e7c23a2",
+    "p1_official_run1_sha256": "7c69b967e39400ada7962dc07566248dccf2b47ec6909e9e148bbd62b08e9025",
+    "p1_official_run2_sha256": "076c10eb1e1e85061bd8ed31a17fcff672762fa4575e4fa7013fcda6f5f4d638"
+  },
+  "champion": {
+    "commit": "1172b6a3a3361e6848fdeb169915c66662a9f8b0",
+    "hit_rate_at_10": 0.45,
+    "mrr": 0.157976,
+    "mttc": 8.045,
+    "efficiency": 0.2955,
+    "technical_score": 0.331493
+  },
+  "candidate": {
+    "commit": "1179c8bf70bf4994420599a8f70b05af70230a59",
+    "hit_rate_at_10": 0.68,
+    "mrr": 0.240615,
+    "mttc": 6.21,
+    "efficiency": 0.479,
+    "technical_score": 0.507985,
+    "scenario_metrics": {
+      "boundary": {"hit_rate_at_10": 0.7, "mrr": 0.1175, "mttc": 6.5},
+      "browsing": {"hit_rate_at_10": 0.75, "mrr": 0.189444, "mttc": 5.525},
+      "buying": {"hit_rate_at_10": 0.6875, "mrr": 0.284856, "mttc": 6.2},
+      "intent_override": {"hit_rate_at_10": 0.466667, "mrr": 0.300132, "mttc": 7.966667}
+    },
+    "correctness": {
+      "response_exceptions": 0,
+      "invalid_responses": 0,
+      "invalid_ask_attributes": 0,
+      "invalid_asins": 0,
+      "duplicate_recommendations": 0,
+      "repeated_questions": 0
+    },
+    "question_counts_and_yield": {
+      "questions": 13,
+      "category_questions": 13,
+      "declined": 13
+    },
+    "determinism": {
+      "metrics_and_diagnostic_hashes_match_across_two_runs": true,
+      "normalized_response_sha256": "6fb17d8312bd84ebfe3d0d57595ad9f891d1eaa3fab942c3759148c1335f398c",
+      "session_outcome_sha256": "cb648d582f23270d03fe74fe76ba7ac728aa6581509e840b8283954007887bf8"
+    },
+    "performance": {
+      "run1_startup_seconds": 16.521353,
+      "run2_startup_seconds": 16.860325,
+      "run1_full_evaluator_wall_seconds": 50.994313,
+      "run2_full_evaluator_wall_seconds": 50.895249,
+      "average_response_latency_ms": 43.115577,
+      "p50_response_latency_ms": 28.584,
+      "p95_response_latency_ms": 83.992875,
+      "maximum_response_latency_ms": 512.430125,
+      "run1_peak_rss_mib": 695.859375,
+      "run2_peak_rss_mib": 675.15625
+    }
+  },
+  "comparison": {
+    "technical_score_delta": 0.176492,
+    "counts": {
+      "gained_hits": 68,
+      "lost_hits": 22,
+      "earlier_hits": 34,
+      "later_hits": 15,
+      "better_ranks": 9,
+      "worse_ranks": 2,
+      "unchanged_hits": 8,
+      "unchanged_misses": 42
+    },
+    "scenario_hit_transitions": {
+      "boundary": {"gained_hits": 5, "lost_hits": 2},
+      "browsing": {"gained_hits": 39, "lost_hits": 4},
+      "buying": {"gained_hits": 19, "lost_hits": 11},
+      "intent_override": {"gained_hits": 5, "lost_hits": 5}
+    },
+    "scenario_mean_contribution_deltas": {
+      "boundary": 0.195916667,
+      "browsing": 0.318224702,
+      "buying": 0.07009375,
+      "intent_override": 0.075789683
+    },
+    "paired_bootstrap": {
+      "seed": 20260830,
+      "resamples": 10000,
+      "confidence_level": 0.95,
+      "observed_mean_delta": 0.176491667,
+      "lower": 0.112498467,
+      "upper": 0.239312336,
+      "probability_delta_positive": 1.0
+    }
+  },
+  "decision": "retained_and_promoted",
+  "retention_reason": "P1 clears the 0.50 milestone, is deterministic across two official runs, has zero correctness violations, improves every scenario contribution, and has a fully positive paired confidence interval. H3 remains the explicit rollback."
+}
