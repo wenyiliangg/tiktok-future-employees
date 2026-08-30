@@ -2,7 +2,7 @@
 
 ## Campaign status
 
-The campaign is running on local branch
+The campaign is stopped on local branch
 `experiment/bounded-technicalscore-optimization`. The hardened campaign base is
 `c57dfce8f7aeb44cb366ab3a90c11e9ac613cf07`, which contains Issue 6B commit
 `d7ffe14ef5dbe8b6a8ceea23ed18c68d7618a70c` and exactly reproduces the selected
@@ -242,15 +242,62 @@ resamples. The exact-signature mechanism therefore fails the predeclared
 promotion threshold and is rejected. Its isolated runtime commit is reverted;
 the diagnostic, shadow, official, paired, and campaign evidence is retained.
 
+H1 evidence was checkpointed at `169b2c8` and its implementation was reverted
+at `9b62271`. H2 rejection evidence was checkpointed at `dd13f5c` and its
+implementation was reverted at `d2a671d`. Both rejected mechanisms remain
+fully documented without remaining in evaluator-facing runtime code.
+
+## Final verification and campaign stop
+
+After the H2 revert, `starter/`, `config/`, and `evaluator/` exactly match the
+selected `4d7af4e` champion. The final retained suite passes (`239` tests), Ruff
+passes, and focused MyPy passes on the clarification, response-validation,
+conversation-state, and evaluator boundary. Public and catalog hashes remain
+unchanged, the evaluator has no campaign modification, and runtime contains no
+public-set identifiers, evaluator imports, benchmark coupling, competitor code,
+or hosted-service dependency.
+
+The reserved official reproduction run exactly reproduced TechnicalScore
+`0.305993`, HR@10 `0.405`, MRR `0.153310`, MTTC `8.125`, and Efficiency
+`0.2875`. Response hash
+`9e50a9e37aea0e149bfaff346266d24628679558c1999bde36146681d67bca6d`
+and session hash
+`ee2d7a3a683273d17dcb2e8a9d0dcc1ab7c05816c4c611a43be9070133e45e67`
+also matched exactly. There were zero exceptions, invalid responses, invalid
+ASINs, duplicate recommendations, repeated questions, or contract violations.
+Cold startup was `5.617351s`, full evaluator wall time was `23.602872s`, mean
+response latency was `15.595118ms`, p95 was `22.324583ms`, and peak RSS was
+`1157.171875 MiB`.
+
+The final reproduction command was:
+
+```bash
+python -m evaluator.local_evaluator \
+  --catalog data/catalog.jsonl \
+  --dataset data/public_set.jsonl \
+  --retrieval-mode contextual \
+  --contextual-policy contextual.feedback-memory.v1 \
+  --clarification-policy clarification.feedback-memory.v1 \
+  --dense-cache data/.dense-retrieval/catalog-minilm.npz \
+  --output /tmp/technical-score-final-champion-reproduction.json
+```
+
+The campaign stops after H2 at the user's request. The final recommendation is
+to retain `contextual.feedback-memory.v1` with
+`clarification.feedback-memory.v1` from commit `4d7af4e`. The score is an
+official public-set result, not a private-set claim. The large gap to the
+external `0.906151` reference remains unresolved, and public-set selection risk
+remains despite non-public shadow diagnostics and mechanism-level guardrails.
+
 ## Evaluation budget
 
-- New campaign official runs used: 2.
-- New campaign official runs remaining: 10.
-- One of the remaining runs is reserved for final reproduction.
+- New campaign official runs used: 3.
+- New campaign official runs remaining: 9.
+- The reserved final reproduction run has been consumed.
 - Fixed seed: `20260830`.
 
 ## Immediate next action
 
-Commit the H2 rejection evidence, revert only runtime commit `c6979a1`, verify
-that the evaluator-facing implementation exactly restores champion `4d7af4e`,
-then stop the campaign at the user's request with a clean local branch.
+Campaign stopped. Human-review the retained `4d7af4e` champion and the complete
+H1/H2 evidence before any manual push or merge. Do not promote either rejected
+runtime mechanism without new independent evidence.

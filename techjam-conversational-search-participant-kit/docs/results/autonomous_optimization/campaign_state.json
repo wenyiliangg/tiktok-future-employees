@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "campaign_status": "running",
+  "campaign_status": "stopped",
   "campaign_base_commit": "c57dfce8f7aeb44cb366ab3a90c11e9ac613cf07",
   "campaign_branch": "experiment/bounded-technicalscore-optimization",
   "champion_commit": "4d7af4eea2cfb8626fc858452ba4d0ab7f2cc509",
@@ -32,11 +32,13 @@
   "champion_session_hash": "ee2d7a3a683273d17dcb2e8a9d0dcc1ab7c05816c4c611a43be9070133e45e67",
   "current_experiment_id": "H2-catalog-signature-index-v1",
   "current_hypothesis": "A participant-visible offline catalog signature index can turn one or two disclosed phrases into exact-product hypotheses and improve rank-one identification without evaluator coupling.",
-  "current_stage": "official_rejected_pending_revert",
+  "current_stage": "official_rejected_reverted_final_verified",
   "experiment_start_commit": "9b62271a1426913e0c3b8721a08d1799fe06984b",
   "experiment_commits": [
     "df239c856366d28fdab46810ca64548420e250a2",
-    "c6979a129be50694029ff77476c711e65f1bf509"
+    "c6979a129be50694029ff77476c711e65f1bf509",
+    "dd13f5c58d7f6a4d6b78aece3318c16c574736a3",
+    "d2a671de39fff76733de4461179bf74cc0190cb6"
   ],
   "completed_hypotheses": [
     "H0-feedback-memory-bm25",
@@ -52,12 +54,12 @@
   ],
   "consecutive_rejections": 2,
   "consecutive_small_improvements": 0,
-  "official_runs_used": 2,
-  "official_runs_remaining": 10,
+  "official_runs_used": 3,
+  "official_runs_remaining": 9,
   "fixed_seed": 20260830,
   "run_start_utc": "2026-08-30T12:46:41Z",
-  "last_checkpoint_utc": "2026-08-30T12:49:02Z",
+  "last_checkpoint_utc": "2026-08-30T12:52:43Z",
   "pause_reason": null,
-  "stop_reason": null,
-  "next_action": "Commit H2 rejection evidence, revert only candidate runtime commit c6979a1, verify the 4d7af4e champion implementation is restored, then stop the campaign at the user's request."
+  "stop_reason": "User explicitly requested that the campaign stop after H2 was completed.",
+  "next_action": "Human review of the retained 4d7af4e champion and H1/H2 evidence; push or merge only manually if approved."
 }
