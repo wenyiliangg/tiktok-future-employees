@@ -39,13 +39,11 @@
   },
   "champion_response_hash": "6fb17d8312bd84ebfe3d0d57595ad9f891d1eaa3fab942c3759148c1335f398c",
   "champion_session_hash": "cb648d582f23270d03fe74fe76ba7ac728aa6581509e840b8283954007887bf8",
-  "current_experiment_id": null,
-  "current_hypothesis": null,
-  "current_stage": "p1_promoted_p2_ready",
-  "experiment_start_commit": "82d3959f376e40aae05cb1ae857dacf5ca1dd44b",
-  "experiment_commits": [
-    "1179c8bf70bf4994420599a8f70b05af70230a59"
-  ],
+  "current_experiment_id": "P2-answerability-utility-questions-v1",
+  "current_hypothesis": "Answerability-aware open and feature questions, correct pending resolution, decline recovery, and a two-question cap can convert P1 candidate evidence into earlier and higher-ranked hits without sacrificing P1 coverage.",
+  "current_stage": "preimplementation_recorded",
+  "experiment_start_commit": "5b7b6cd230770815db727dacb158009cbf8c5614",
+  "experiment_commits": [],
   "completed_hypotheses": [
     "H0-feedback-memory-bm25",
     "H1-open-evidence-questions-v1",
@@ -71,8 +69,8 @@
   "official_runs_remaining": 6,
   "fixed_seed": 20260830,
   "run_start_utc": "2026-08-30T14:44:51Z",
-  "last_checkpoint_utc": "2026-08-30T15:51:47Z",
+  "last_checkpoint_utc": "2026-08-30T15:57:03Z",
   "pause_reason": null,
   "stop_reason": null,
-  "next_action": "Begin P2 with label-free answerability and expected-utility question diagnostics, using P1 as the rollback champion; no additional official run is permitted in this invocation."
+  "next_action": "Build P2 label-free answerability and expected-utility diagnostics first, then implement only behind a new P1-compatible clarification policy; use shadow evaluation only because this invocation's official-run allowance is exhausted."
 }
