@@ -1,0 +1,292 @@
+{
+  "schema_version": 1,
+  "issue": "6A",
+  "created_date": "2026-08-30",
+  "starting_main_commit": "a027eacec8cfc63a288afa2560f604d7c90bc58b",
+  "dataset": {
+    "path": "data/public_set.jsonl",
+    "sample_count": 200,
+    "sha256": "857259f7a438e6188ac63e18995b6ff4489bfcfc4a716a798b9a2aa0ee8f7579"
+  },
+  "catalog": {
+    "path": "data/catalog.jsonl",
+    "row_count": 50000,
+    "sha256": "da979b05a68af864cb0dcf9ee6a81c010c7e66a57978ad286c7a2e005fc69a67"
+  },
+  "dense_cache": {
+    "path": "data/.dense-retrieval/catalog-minilm.npz",
+    "sha256": "dffc05e41866913f169c3a51ef295b47f43859a0da6bb0c6a4c19de77fd1a5f6"
+  },
+  "comparability_rule": "Official quality metrics are comparable when the frozen 200-session dataset and official scoring semantics match. Historical latency and peak-memory results are not compared with Issue 6A fresh measurements when the host, dependency versions, process isolation, or harness differs.",
+  "variants": [
+    {
+      "variant_name": "official.weak-bm25",
+      "category": "official BM25 baseline",
+      "source_artifact": "docs/baseline_results.json",
+      "source_commit": "166bae74147a2e7aa5dcbedee14f96b24418a0bf",
+      "configuration": "raw current message; SQLite FTS5 title/categories/features/details/store/description weights 6/4/2.5/2.5/1.5/1; direct Top-10",
+      "configuration_fingerprint": "not recorded",
+      "seed": "not recorded; evaluator behavior is deterministically materialized from sample_id and scenario_type",
+      "reproduction_command": "python3 -m evaluator.local_evaluator --retrieval-mode bm25 --output results.json",
+      "metrics": {
+        "hit_rate_at_10": 0.125,
+        "mrr": 0.068034,
+        "mttc": 9.81,
+        "efficiency": 0.119,
+        "technical_score": 0.10671
+      },
+      "scenario_hit_rate_at_10": {
+        "buying": 0.2375,
+        "browsing": 0.025,
+        "intent_override": 0.133333,
+        "boundary": 0.0
+      },
+      "latency": "not recorded",
+      "peak_process_memory": "not recorded",
+      "evidence_kind": "stored aggregate plus reconstruction documented in docs/retrieval_regression_audit.md",
+      "comparable_with_current_evaluator": true
+    },
+    {
+      "variant_name": "issue-2b.field-aware-lexical",
+      "category": "stateful/field-aware lexical",
+      "source_artifact": "docs/results/issue_2b/lexical.json",
+      "source_commit": "36a99745b512a68e0378dc808cc8479d64ad638b",
+      "configuration": "ConversationStateManager SearchQuery; field-aware LexicalRetriever; 200 candidates; direct Top-10",
+      "configuration_fingerprint": "not recorded",
+      "seed": "not recorded; evaluator behavior is deterministically materialized from sample_id and scenario_type",
+      "reproduction_command": "python3 -m evaluator.local_evaluator --retrieval-mode lexical --output docs/results/issue_2b/lexical.json",
+      "metrics": {
+        "hit_rate_at_10": 0.0,
+        "mrr": 0.0,
+        "mttc": 11.0,
+        "efficiency": 0.0,
+        "technical_score": 0.0
+      },
+      "scenario_metrics": "recorded in source artifact",
+      "latency": {
+        "mean_ms": 31.315752,
+        "p50_ms": "not recorded",
+        "p95_ms": 80.342542
+      },
+      "peak_process_memory_bytes": 1249492992,
+      "evidence_kind": "stored raw 200-session output",
+      "comparable_with_current_evaluator": true,
+      "performance_comparable_with_issue_6a": false
+    },
+    {
+      "variant_name": "issue-2b.dense-only",
+      "category": "dense-only retrieval",
+      "source_artifact": "docs/results/issue_2b/dense.json",
+      "source_commit": "36a99745b512a68e0378dc808cc8479d64ad638b",
+      "configuration": "SearchQuery.text; all-MiniLM-L6-v2 exact cosine; Top-200 to Top-10",
+      "configuration_fingerprint": "not recorded",
+      "seed": "not recorded; evaluator behavior is deterministically materialized from sample_id and scenario_type",
+      "reproduction_command": "python3 -m evaluator.local_evaluator --retrieval-mode dense --output docs/results/issue_2b/dense.json",
+      "metrics": {
+        "hit_rate_at_10": 0.025,
+        "mrr": 0.008798,
+        "mttc": 10.775,
+        "efficiency": 0.0225,
+        "technical_score": 0.019639
+      },
+      "scenario_metrics": "recorded in source artifact",
+      "latency": {
+        "mean_ms": 17.684961,
+        "p50_ms": "not recorded",
+        "p95_ms": 17.162792
+      },
+      "peak_process_memory_bytes": 830259200,
+      "evidence_kind": "stored raw 200-session output",
+      "comparable_with_current_evaluator": true,
+      "performance_comparable_with_issue_6a": false
+    },
+    {
+      "variant_name": "issue-2b.equal-weight-fixed-hybrid",
+      "category": "fixed hybrid retrieval",
+      "source_artifact": "docs/results/issue_2b/hybrid.json",
+      "source_commit": "36a99745b512a68e0378dc808cc8479d64ad638b",
+      "configuration": "200 lexical + 200 dense; equal-weight RRF; k=60; direct Top-10",
+      "configuration_fingerprint": "not recorded",
+      "seed": "not recorded; evaluator behavior is deterministically materialized from sample_id and scenario_type",
+      "reproduction_command": "python3 -m evaluator.local_evaluator --retrieval-mode hybrid --lexical-candidates 200 --dense-candidates 200 --final-candidates 10 --lexical-weight 1.0 --dense-weight 1.0 --rrf-k 60 --output docs/results/issue_2b/hybrid.json",
+      "metrics": {
+        "hit_rate_at_10": 0.02,
+        "mrr": 0.00727,
+        "mttc": 10.815,
+        "efficiency": 0.0185,
+        "technical_score": 0.015881
+      },
+      "scenario_metrics": "recorded in source artifact",
+      "latency": {
+        "mean_ms": 51.666117,
+        "p50_ms": "not recorded",
+        "p95_ms": 96.407
+      },
+      "peak_process_memory_bytes": 1578991616,
+      "evidence_kind": "stored raw 200-session output",
+      "comparable_with_current_evaluator": true,
+      "performance_comparable_with_issue_6a": false
+    },
+    {
+      "variant_name": "issue-3c.fixed-hybrid-plus-feature-reranker",
+      "category": "deterministic feature reranking",
+      "source_artifact": "git:8fb7f27:techjam-conversational-search-participant-kit/docs/results/issue_3c/fixed_hybrid.json",
+      "source_commit": "8fb7f27",
+      "configuration": "equal-weight fixed hybrid Top-100 followed by deterministic feature reranker with hard-filter policy",
+      "configuration_fingerprint": "not recorded",
+      "seed": "not recorded; evaluator behavior is deterministically materialized from sample_id and scenario_type",
+      "reproduction_command": "python3 -m benchmarks.evaluate_route_aware --retrieval-mode hybrid --lexical-candidates 200 --dense-candidates 200 --final-candidates 10 --lexical-weight 1.0 --dense-weight 1.0 --rrf-k 60 --output docs/results/issue_3c/fixed_hybrid.json",
+      "metrics": {
+        "hit_rate_at_10": 0.02,
+        "mrr": 0.0075,
+        "mttc": 10.815,
+        "efficiency": 0.0185,
+        "technical_score": 0.01595
+      },
+      "scenario_metrics": "recorded in historical Git artifact and verified in docs/retrieval_regression_audit.md",
+      "latency": {
+        "mean_ms": 61.647544,
+        "p50_ms": "not recorded",
+        "p95_ms": 105.677583
+      },
+      "peak_process_memory_bytes": 1911570432,
+      "evidence_kind": "historical Git-object raw output plus current-tree reconstructed audit",
+      "comparable_with_current_evaluator": true,
+      "performance_comparable_with_issue_6a": false
+    },
+    {
+      "variant_name": "issue-3c.route-aware-boundary-fallback",
+      "category": "route-aware retrieval and Boundary fallback",
+      "source_artifact": "git:8fb7f27:techjam-conversational-search-participant-kit/docs/results/issue_3c/route_aware.json",
+      "source_commit": "8fb7f27",
+      "configuration": "route-specific pools/weights and hard filtering; unconditional v1 Boundary fallback; no feature reranker",
+      "configuration_fingerprint": "not recorded",
+      "seed": "not recorded; evaluator behavior is deterministically materialized from sample_id and scenario_type",
+      "reproduction_command": "python3 -m benchmarks.evaluate_route_aware --retrieval-mode route-aware --output docs/results/issue_3c/route_aware.json",
+      "metrics": {
+        "hit_rate_at_10": 0.015,
+        "mrr": 0.006833,
+        "mttc": 10.865,
+        "efficiency": 0.0135,
+        "technical_score": 0.01225
+      },
+      "scenario_metrics": "recorded in historical Git artifact and verified in docs/retrieval_regression_audit.md",
+      "latency": {
+        "mean_ms": 235.433495,
+        "p50_ms": "not recorded",
+        "p95_ms": 130.108708
+      },
+      "peak_process_memory_bytes": 2575253504,
+      "evidence_kind": "historical Git-object raw output plus current-tree reconstructed audit",
+      "comparable_with_current_evaluator": true,
+      "performance_comparable_with_issue_6a": false
+    },
+    {
+      "variant_name": "issue-4b.cross-encoder-reranker",
+      "category": "cross-encoder reranking",
+      "source_artifact": "git:3b21a0836dada31dbc74dcba03cc268ebe345283:techjam-conversational-search-participant-kit/docs/results/issue_4b/comparison.json",
+      "source_commit": "3b21a0836dada31dbc74dcba03cc268ebe345283",
+      "configuration": "equal-weight fixed hybrid Top-50; cross-encoder/ms-marco-MiniLM-L6-v2; batch 16; max length 256",
+      "configuration_fingerprint": "not recorded",
+      "seed": "not recorded; evaluator behavior is deterministically materialized from sample_id and scenario_type",
+      "reproduction_command": "python3 -m benchmarks.benchmark_semantic_reranker --catalog data/catalog.jsonl --dataset data/public_set.jsonl --dense-cache data/.dense-retrieval/catalog-minilm.npz --semantic-model cross-encoder/ms-marco-MiniLM-L6-v2 --semantic-candidates 50 --semantic-batch-size 16",
+      "metrics": {
+        "hit_rate_at_10": 0.02,
+        "mrr": 0.003964,
+        "mttc": 10.815,
+        "efficiency": 0.0185,
+        "technical_score": 0.014889
+      },
+      "scenario_metrics": "recorded in historical Git artifact and verified in docs/retrieval_regression_audit.md",
+      "latency": {
+        "mean_ms": 446.216479,
+        "p50_ms": "not recorded",
+        "p95_ms": 667.520458
+      },
+      "peak_process_memory_bytes": 2054340608,
+      "evidence_kind": "historical Git-object comparison plus current-tree reconstructed audit",
+      "comparable_with_current_evaluator": true,
+      "performance_comparable_with_issue_6a": false
+    },
+    {
+      "variant_name": "contextual.browsing-dense.v1",
+      "category": "stable champion and rollback",
+      "source_artifact": "docs/results/recovery/contextual_policy_selection.json",
+      "source_commit": "e56de7b7f7b81a5fe95025277d566caafa18b334",
+      "configuration": {
+        "protected_lexical_count": 8,
+        "candidate_count": 100,
+        "state_lexical_weight": 0.0,
+        "dense_weight": 0.5,
+        "dense_routes": [
+          "browsing"
+        ],
+        "rrf_k": 60.0,
+        "clarification_enabled": false
+      },
+      "configuration_fingerprint": "972158c9e3905e4d0bb5390eb7224fe3fe00b9f5444337099b3422960bf0448a",
+      "seed": "not recorded; evaluator behavior is deterministically materialized from sample_id and scenario_type",
+      "reproduction_command": "python3 -m evaluator.local_evaluator --retrieval-mode contextual --contextual-policy contextual.browsing-dense.v1 --output diagnostics/retrieval_regression/contextual_full_200.json",
+      "metrics": {
+        "hit_rate_at_10": 0.14,
+        "mrr": 0.070423,
+        "mttc": 9.78,
+        "efficiency": 0.122,
+        "technical_score": 0.115527
+      },
+      "scenario_metrics": "not recorded in committed recovery artifacts",
+      "latency": "not recorded",
+      "peak_process_memory": "not recorded",
+      "evidence_kind": "stored policy-selector result and stored aggregate evaluator confirmation",
+      "comparable_with_current_evaluator": true
+    },
+    {
+      "variant_name": "clarification.issue-5c.v1",
+      "category": "Issue 5C clarification",
+      "source_artifact": "docs/results/issue_5c/selective_clarification.json",
+      "source_commit": "557826554af4c00459aa112efe8283a3a8eca762",
+      "configuration": {
+        "required_retrieval_policy_id": "contextual.browsing-dense.v1",
+        "analysis_candidate_limit": 50,
+        "browsing_min_candidates": 4,
+        "browsing_min_expected_reduction": 0.2,
+        "buying_min_candidates": 8,
+        "buying_min_expected_reduction": 0.5,
+        "eligible_routes": [
+          "browsing",
+          "buying"
+        ],
+        "max_questions_per_session": 1,
+        "turn_10_questions_allowed": false
+      },
+      "configuration_fingerprint": "retrieval-only fingerprint 972158c9e3905e4d0bb5390eb7224fe3fe00b9f5444337099b3422960bf0448a; full clarification fingerprint not recorded",
+      "seed": "not recorded; evaluator behavior is deterministically materialized from sample_id and scenario_type",
+      "reproduction_command": "python3 -m evaluator.local_evaluator --retrieval-mode contextual --contextual-policy contextual.browsing-dense.v1 --enable-selective-clarification --output diagnostics/retrieval_regression/issue_5c_clarification_enabled_200.json",
+      "metrics": {
+        "hit_rate_at_10": 0.14,
+        "mrr": 0.074867,
+        "mttc": 9.74,
+        "efficiency": 0.126,
+        "technical_score": 0.11766
+      },
+      "scenario_metrics": "recorded in source artifact",
+      "latency": {
+        "mean_ms": 27.251815,
+        "p50_ms": "not recorded",
+        "p95_ms": 25.694792
+      },
+      "peak_process_memory_bytes": 1079312384,
+      "evidence_kind": "stored aggregate/scenario result plus ignored local raw 200-session trace",
+      "comparable_with_current_evaluator": true,
+      "performance_comparable_with_issue_6a": false
+    }
+  ],
+  "known_missing_or_incompatible_evidence": [
+    "Historical configuration fingerprints and numeric/global seeds were not recorded except for the promoted contextual retrieval configuration.",
+    "The committed champion artifact lacks per-scenario metrics, response latency, peak memory, and exact per-hit turn/rank trace.",
+    "Historical p50 response latency was not recorded.",
+    "Issue 3C and 4B raw artifacts are reachable from their source commits but are not present in the current main tree.",
+    "Historical latency and memory figures are not comparable with fresh Issue 6A finalists because measurement environments and harness/process details differ.",
+    "No exact standalone deterministic-feature-reranker result exists outside the Issue 3C fixed-hybrid-plus-feature pipeline."
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "evaluation_seed": 20260830,
+  "runtime_default_policy": "clarification.browsing-only.v1",
+  "selected_for_issue_6b": "clarification.browsing-only.v1",
+  "selection_status": "selected_after_issue_6a_evidence_complete",
+  "policies": [
+    {
+      "policy_id": "contextual.browsing-dense.v1",
+      "fingerprint_sha256": "04a16f9cec5162ab8a3d6ecff098c0342d205a37d24b5665a36316ba4f64f8a6",
+      "rationale": "Immutable stable champion control and rollback with clarification disabled.",
+      "retrieval_policy_id": "contextual.browsing-dense.v1",
+      "clarification": {
+        "enabled": false,
+        "required_retrieval_policy_id": "contextual.browsing-dense.v1",
+        "analysis_candidate_limit": 50,
+        "browsing_min_candidates": 4,
+        "browsing_min_expected_reduction": 0.2,
+        "buying_min_candidates": 8,
+        "buying_min_expected_reduction": 0.5,
+        "eligible_routes": [
+          "browsing",
+          "buying"
+        ]
+      },
+      "controller": {
+        "max_questions_per_session": 1,
+        "max_turns": 10
+      }
+    },
+    {
+      "policy_id": "clarification.issue-5c.v1",
+      "fingerprint_sha256": "307822c299d9c3614f06215ecb5118107a5264f1d2efb7b704cf3787018ce1ed",
+      "rationale": "Exact immutable Issue 5C configuration reconstructed from the stored artifact.",
+      "retrieval_policy_id": "contextual.browsing-dense.v1",
+      "clarification": {
+        "enabled": true,
+        "required_retrieval_policy_id": "contextual.browsing-dense.v1",
+        "analysis_candidate_limit": 50,
+        "browsing_min_candidates": 4,
+        "browsing_min_expected_reduction": 0.2,
+        "buying_min_candidates": 8,
+        "buying_min_expected_reduction": 0.5,
+        "eligible_routes": [
+          "browsing",
+          "buying"
+        ]
+      },
+      "controller": {
+        "max_questions_per_session": 1,
+        "max_turns": 10
+      }
+    },
+    {
+      "policy_id": "clarification.browsing-only.v1",
+      "fingerprint_sha256": "405c3ff441211cc6073b3732e1bd60b7aa8e85698c8ceb7d7931fed8eeaeb6fd",
+      "rationale": "Retain the exact Issue 5C gates but ask only on the runtime-observable Browsing route because all observed gains and regressions were Browsing while 25 Buying questions were outcome-neutral.",
+      "retrieval_policy_id": "contextual.browsing-dense.v1",
+      "clarification": {
+        "enabled": true,
+        "required_retrieval_policy_id": "contextual.browsing-dense.v1",
+        "analysis_candidate_limit": 50,
+        "browsing_min_candidates": 4,
+        "browsing_min_expected_reduction": 0.2,
+        "buying_min_candidates": 8,
+        "buying_min_expected_reduction": 0.5,
+        "eligible_routes": [
+          "browsing"
+        ]
+      },
+      "controller": {
+        "max_questions_per_session": 1,
+        "max_turns": 10
+      }
+    }
+  ]
+}

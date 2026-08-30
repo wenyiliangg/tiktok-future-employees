@@ -345,7 +345,7 @@ class ClarificationResponseCompositionTest(unittest.TestCase):
 
 
 class DefaultAgentClarificationTest(unittest.TestCase):
-    def test_default_agent_remains_inactive(self) -> None:
+    def test_selected_default_handles_empty_pool_without_question(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             catalog_path = Path(directory) / "catalog.jsonl"
             catalog_path.write_text("", encoding="utf-8")
@@ -360,6 +360,7 @@ class DefaultAgentClarificationTest(unittest.TestCase):
 
         self.assertIsNone(response["ask_attribute"])
         self.assertEqual(response["message"], "Here are the closest matches I found.")
+        self.assertTrue(agent.clarification_diagnostics_snapshot()["enabled"])
 
 
 if __name__ == "__main__":

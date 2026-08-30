@@ -25,6 +25,7 @@ from .clarification_controller import (
     is_explicit_no_preference,
     normalize_attribute,
 )
+from .clarification_policies import load_clarification_policy_registry
 from .contextual_retrieval import (
     ContextualRetrievalPolicy,
     policy_by_id,
@@ -107,12 +108,19 @@ class Agent:
         self._contextual_policy = contextual_policy or policy_by_id(
             "contextual.browsing-dense.v1"
         )
-        self._clarification_config = (
-            clarification_config or SelectiveClarificationConfig()
-        )
+        if clarification_config is None:
+            default_clarification_policy = (
+                load_clarification_policy_registry().runtime_default
+            )
+            self._clarification_config = default_clarification_policy.clarification
+            default_controller_config = default_clarification_policy.controller
+        else:
+            self._clarification_config = clarification_config
+            default_controller_config = None
         self._ambiguity_analyzer = ambiguity_analyzer or AmbiguityAnalyzer()
         self._clarification_controller = (
-            clarification_controller or ClarificationController()
+            clarification_controller
+            or ClarificationController(default_controller_config)
         )
         self._known_negative_ids: dict[str, set[str]] = {}
         self._last_recommended_ids: dict[str, tuple[str, ...]] = {}
