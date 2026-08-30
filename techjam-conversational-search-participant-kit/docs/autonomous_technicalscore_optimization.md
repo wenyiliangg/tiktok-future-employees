@@ -370,6 +370,9 @@ and clarification
 H3 is qualified for one official full run after its evidence and isolated
 runtime commits are checkpointed.
 
+The preliminary evidence is checkpointed at `1d39702`, and the isolated H3
+runtime candidate is checkpointed at `1172b6a`.
+
 ## Evaluation budget
 
 - New campaign official runs used: 3.
