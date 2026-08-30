@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "campaign_status": "stopped",
+  "campaign_status": "running",
   "campaign_base": {
     "commit": "c57dfce8f7aeb44cb366ab3a90c11e9ac613cf07",
     "technical_score": 0.11766,
@@ -85,11 +85,12 @@
   },
   "official_runs_used": 3,
   "official_runs_remaining": 9,
-  "stop_reason": "User explicitly requested that the campaign stop after H2 was completed.",
+  "stop_reason": null,
+  "resumed_after_h2_utc": "2026-08-30T12:59:34Z",
   "limitations": [
     "The selected score is measured on the official public set and is not a private-set claim.",
     "The external 0.906151 reference is a public claim and was not independently reproduced or paired.",
     "Non-public shadow suites reduce but do not eliminate public-set selection and distribution-shift risk."
   ],
-  "last_updated_utc": "2026-08-30T12:52:43Z"
+  "last_updated_utc": "2026-08-30T12:59:34Z"
 }

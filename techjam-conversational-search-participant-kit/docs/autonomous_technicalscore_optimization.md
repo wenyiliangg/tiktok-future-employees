@@ -2,7 +2,7 @@
 
 ## Campaign status
 
-The campaign is stopped on local branch
+The campaign is running on local branch
 `experiment/bounded-technicalscore-optimization`. The hardened campaign base is
 `c57dfce8f7aeb44cb366ab3a90c11e9ac613cf07`, which contains Issue 6B commit
 `d7ffe14ef5dbe8b6a8ceea23ed18c68d7618a70c` and exactly reproduces the selected
@@ -282,12 +282,60 @@ python -m evaluator.local_evaluator \
   --output /tmp/technical-score-final-champion-reproduction.json
 ```
 
-The campaign stops after H2 at the user's request. The final recommendation is
-to retain `contextual.feedback-memory.v1` with
+The campaign initially stopped after H2 at the user's request. The user then
+clarified that a worse result should stop only that experiment and that the
+campaign should continue to the next distinct iteration. The retained champion
+remains `contextual.feedback-memory.v1` with
 `clarification.feedback-memory.v1` from commit `4d7af4e`. The score is an
 official public-set result, not a private-set claim. The large gap to the
 external `0.906151` reference remains unresolved, and public-set selection risk
 remains despite non-public shadow diagnostics and mechanism-level guardrails.
+
+## H3 experiment card: override-history tail evidence
+
+Experiment ID: `H3-override-history-tail-v1`
+
+Hypothesis: Intent Override currently replaces the active raw request entirely,
+even though the earlier raw phrase can contain legitimate target-derived
+product-identification evidence. Storing that phrase separately and using it
+only as a low-confidence BM25 source in the unprotected recommendation tail can
+improve Intent Override HR/MRR without treating obsolete preferences as active
+requirements or changing the champion's protected current-request prefix.
+
+Expected metric changes: Intent Override only; preserve ranks 1-8 from the
+current request, improve target recovery or rank in positions 9-10, and leave
+Buying, Browsing, and Boundary exactly unchanged. HR@10 and MRR are primary;
+MTTC may improve if a recovered tail hit appears earlier.
+
+Minimal implementation:
+
+1. Add an opt-in declarative contextual policy with one configurable historical
+   evidence weight and an eight-result current-request protected prefix.
+2. On an explicit override, archive the prior active raw request separately
+   before replacing active intent and clearing known-negative product IDs.
+3. Retrieve archived text only after an override and fuse it only in the
+   unprotected tail; never place it in active constraints, routing, dense query,
+   clarification state, or contradiction filters.
+4. Bound history to one phrase per session, reset it between sessions, and
+   preserve all champion behavior when the policy is disabled or retrieval
+   fails.
+
+Risks: obsolete preferences can identify a plausible but wrong product;
+boilerplate history can disturb tail coverage; repeated overrides can retain
+the wrong phrase; a low-weight source may be too weak to matter. The mechanism
+must remain semantically subordinate to the current request.
+
+Falsifiable threshold: a deterministic non-public Intent Override shadow must
+show a positive TechnicalScore delta with no lost champion hits and no change
+to non-override scenarios. Full correctness, isolation, failure-fallback,
+integrity, and leakage gates must pass before one official run. Official
+promotion still requires at least `+0.010`, or a smaller positive delta whose
+paired 95% interval lower bound is above zero, with no material shadow
+regression. A worse or unresolved result rejects only H3 and advances the
+campaign to H4.
+
+Rollback: commit the isolated history-policy runtime change separately; on
+rejection, retain its evidence and revert only that implementation commit.
 
 ## Evaluation budget
 
@@ -298,6 +346,7 @@ remains despite non-public shadow diagnostics and mechanism-level guardrails.
 
 ## Immediate next action
 
-Campaign stopped. Human-review the retained `4d7af4e` champion and the complete
-H1/H2 evidence before any manual push or merge. Do not promote either rejected
-runtime mechanism without new independent evidence.
+Build a benchmark-only Intent Override history diagnostic and a deterministic
+non-public shadow candidate. Implement only the narrow protected-prefix/tail
+mechanism, reject H3 without an official run if preliminary gates fail, and
+otherwise spend one official run followed by the fixed-seed paired bootstrap.
