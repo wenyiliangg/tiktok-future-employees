@@ -3,10 +3,13 @@ from __future__ import annotations
 import copy
 import inspect
 import json
+import sys
 import tempfile
 import unittest
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence
+from types import ModuleType
+from unittest.mock import patch
 
 import numpy as np
 
@@ -15,8 +18,8 @@ from dense_retrieval import (
     DenseRetriever,
     EmbeddingValidationError,
     ProductTextBuilder,
+    core,
 )
-from dense_retrieval import core
 
 
 class FakeEncoder:
@@ -45,6 +48,30 @@ class FailingEncoder(FakeEncoder):
 
 
 class DenseRetrievalTest(unittest.TestCase):
+    def test_production_encoder_loads_only_verified_local_model_files(self) -> None:
+        captured: dict[str, object] = {}
+
+        class FakeSentenceTransformer:
+            def __init__(self, model_name: str, **kwargs: object) -> None:
+                captured["model_name"] = model_name
+                captured.update(kwargs)
+
+            def get_embedding_dimension(self) -> int:
+                return 384
+
+            def __len__(self) -> int:
+                return 0
+
+        module = ModuleType("sentence_transformers")
+        module.SentenceTransformer = FakeSentenceTransformer  # type: ignore[attr-defined]
+        encoder = core.SentenceTransformerEncoder()
+        with patch.dict(sys.modules, {"sentence_transformers": module}):
+            encoder._load_model()
+
+        self.assertIs(captured["local_files_only"], True)
+        self.assertIs(captured["trust_remote_code"], False)
+        self.assertEqual(captured["revision"], core.DEFAULT_MODEL_REVISION)
+
     def setUp(self) -> None:
         self.temporary_directory = tempfile.TemporaryDirectory()
         self.root = Path(self.temporary_directory.name)
@@ -121,7 +148,9 @@ class DenseRetrievalTest(unittest.TestCase):
         encoder: FakeEncoder | None = None,
         **kwargs: object,
     ) -> tuple[DenseRetriever, FakeEncoder]:
-        selected_encoder = encoder or FakeEncoder(self._vectors({"query": [2.0, 0.0, 0.0]}))
+        selected_encoder = encoder or FakeEncoder(
+            self._vectors({"query": [2.0, 0.0, 0.0]})
+        )
         retriever = DenseRetriever.from_catalog(
             self.catalog_path,
             cache_path=self.cache_path,
@@ -139,7 +168,9 @@ class DenseRetrievalTest(unittest.TestCase):
         omit: str | None = None,
     ) -> None:
         with np.load(self.cache_path, allow_pickle=False) as archive:
-            values = {name: np.array(archive[name], copy=True) for name in archive.files}
+            values = {
+                name: np.array(archive[name], copy=True) for name in archive.files
+            }
         if embeddings is not None:
             values["embeddings"] = embeddings
         if metadata_updates is not None:
@@ -201,7 +232,9 @@ class DenseRetrievalTest(unittest.TestCase):
         self.assertEqual(retriever.embedding_nbytes, 36)
         self.assertEqual(len(encoder.calls), 1)
         with np.load(self.cache_path, allow_pickle=False) as archive:
-            self.assertEqual(archive["parent_asins"].tolist(), ["ASIN-A", "ASIN-B", "ASIN-C"])
+            self.assertEqual(
+                archive["parent_asins"].tolist(), ["ASIN-A", "ASIN-B", "ASIN-C"]
+            )
             self.assertEqual(archive["embeddings"].dtype, np.float32)
             np.testing.assert_allclose(
                 np.linalg.norm(archive["embeddings"], axis=1), np.ones(3), atol=1e-6
@@ -233,7 +266,11 @@ class DenseRetrievalTest(unittest.TestCase):
         changed_products[0]["title"] = "Changed title"
         self._write_catalog(changed_products)
         changed_vectors = self._vectors()
-        changed_vectors[ProductTextBuilder().build(changed_products[0])] = [3.0, 0.0, 0.0]
+        changed_vectors[ProductTextBuilder().build(changed_products[0])] = [
+            3.0,
+            0.0,
+            0.0,
+        ]
         changed_catalog_encoder = FakeEncoder(changed_vectors)
         self._build(changed_catalog_encoder)
         self.assertEqual(len(changed_catalog_encoder.calls), 1)
@@ -268,7 +305,9 @@ class DenseRetrievalTest(unittest.TestCase):
         self._build(builder_encoder, text_builder=changed_builder)
         self.assertEqual(len(builder_encoder.calls), 1)
 
-    def test_cache_invalidates_for_dimension_normalization_and_incomplete_data(self) -> None:
+    def test_cache_invalidates_for_dimension_normalization_and_incomplete_data(
+        self,
+    ) -> None:
         cases = ("dimension", "normalization", "normalization_metadata", "incomplete")
         for case in cases:
             with self.subTest(case=case):
@@ -288,7 +327,9 @@ class DenseRetrievalTest(unittest.TestCase):
                 self._build(encoder)
                 self.assertEqual(len(encoder.calls), 1)
 
-    def test_corrupt_cache_rebuilds_and_failed_rebuild_preserves_old_artifact(self) -> None:
+    def test_corrupt_cache_rebuilds_and_failed_rebuild_preserves_old_artifact(
+        self,
+    ) -> None:
         self.cache_path.parent.mkdir(parents=True)
         self.cache_path.write_bytes(b"not an npz archive")
         encoder = FakeEncoder(self._vectors())
@@ -309,7 +350,9 @@ class DenseRetrievalTest(unittest.TestCase):
             FakeEncoder(self._vectors({"query": [9.0, 9.0, 0.0]}))
         )
         results = retriever.retrieve("  query  ", top_n=3)
-        self.assertEqual([item.parent_asin for item in results], ["ASIN-C", "ASIN-A", "ASIN-B"])
+        self.assertEqual(
+            [item.parent_asin for item in results], ["ASIN-C", "ASIN-A", "ASIN-B"]
+        )
         self.assertEqual([item.rank for item in results], [1, 2, 3])
         self.assertAlmostEqual(results[0].score, 1.0, places=6)
         self.assertAlmostEqual(results[1].score, results[2].score, places=6)
@@ -321,9 +364,14 @@ class DenseRetrievalTest(unittest.TestCase):
             with self.subTest(top_n=top_n):
                 results = retriever.retrieve("query", top_n=top_n)
                 self.assertEqual(len(results), expected_count)
-                self.assertEqual(len({item.parent_asin for item in results}), expected_count)
+                self.assertEqual(
+                    len({item.parent_asin for item in results}), expected_count
+                )
                 self.assertTrue(
-                    all(item.parent_asin in {"ASIN-A", "ASIN-B", "ASIN-C"} for item in results)
+                    all(
+                        item.parent_asin in {"ASIN-A", "ASIN-B", "ASIN-C"}
+                        for item in results
+                    )
                 )
 
     def test_invalid_queries_and_query_embeddings_are_rejected(self) -> None:
@@ -353,7 +401,10 @@ class DenseRetrievalTest(unittest.TestCase):
         for vector in ([0.0, 0.0, 0.0], [np.inf, 0.0, 0.0]):
             vectors = self._vectors()
             vectors[builder.build(self.products[1])] = vector
-            with self.subTest(vector=vector), self.assertRaises(EmbeddingValidationError):
+            with (
+                self.subTest(vector=vector),
+                self.assertRaises(EmbeddingValidationError),
+            ):
                 self._build(FakeEncoder(vectors), rebuild_cache=True)
 
     def test_production_search_is_numpy_exact_without_vector_database(self) -> None:
