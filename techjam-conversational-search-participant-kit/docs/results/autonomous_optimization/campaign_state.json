@@ -48,10 +48,10 @@
   },
   "champion_response_hash": "921cbfe879262cae0c5332db632920544bb0b90c562ae91cf450a7252617e7f5",
   "champion_session_hash": "9513a906150178fc4ae5e829129cfd50b699c98b1f040d641dae91bb40847deb",
-  "current_experiment_id": "P3-bounded-confidence-exposure-v1",
-  "current_hypothesis": "A rank-1-only exposure window bounded by runtime evidence and turn 2 can improve reciprocal rank without changing P2 ranking, retrieval, clarification, or eventual list width.",
-  "current_stage": "predeclared_awaiting_implementation",
-  "experiment_start_commit": "b450250362c3cab3be3a1d06d18ff3e363aeadac",
+  "current_experiment_id": null,
+  "current_hypothesis": null,
+  "current_stage": "P3_rejected_shadow_retain_P2",
+  "experiment_start_commit": null,
   "experiment_commits": [],
   "completed_hypotheses": [
     "H0-feedback-memory-bm25",
@@ -59,7 +59,8 @@
     "H2-catalog-signature-index-v1",
     "H3-override-history-tail-v1",
     "P1-category-evidence-pipeline-v1",
-    "P2-answerability-utility-questions-v1"
+    "P2-answerability-utility-questions-v1",
+    "P3-bounded-confidence-exposure-v1"
   ],
   "retained_hypotheses": [
     "H0-feedback-memory-bm25",
@@ -69,19 +70,20 @@
   ],
   "rejected_hypotheses": [
     "H1-open-evidence-questions-v1",
-    "H2-catalog-signature-index-v1"
+    "H2-catalog-signature-index-v1",
+    "P3-bounded-confidence-exposure-v1"
   ],
   "superseded_hypotheses": [
     "H4-dual-evidence-conjunction-v1"
   ],
-  "consecutive_rejections": 0,
+  "consecutive_rejections": 1,
   "consecutive_small_improvements": 0,
   "official_runs_used": 8,
   "official_runs_remaining": 4,
   "fixed_seed": 20260830,
   "run_start_utc": "2026-08-30T14:44:51Z",
-  "last_checkpoint_utc": "2026-08-31T02:57:17Z",
+  "last_checkpoint_utc": "2026-08-31T03:17:10Z",
   "pause_reason": null,
   "stop_reason": null,
-  "next_action": "Implement the predeclared P3 prefix-only exposure policies, pass target-independent and disabled-parity gates, then run the fixed shadow matrix once without consuming an official run."
+  "next_action": "Retain P2 and do not authorize an official run for P3. If optimization continues in a later invocation, begin with a new independent predeclaration rather than tuning or reusing the rejected exposure thresholds; keep all four official runs reserved."
 }

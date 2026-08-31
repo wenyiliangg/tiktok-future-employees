@@ -564,14 +564,29 @@ def comparison(
     paired = paired_compare(champion, candidate, seed=SEED, resamples=10_000)
     counts = paired["counts"]
     assert isinstance(counts, Mapping)
-    changed_labels = {
-        "gained_hit",
-        "lost_hit",
-        "earlier_hit",
-        "later_hit",
-        "better_rank",
-        "worse_rank",
+    before = {
+        str(row["sample_id"]): row
+        for row in cast(list[dict[str, object]], champion["sessions"])
     }
+    after = {
+        str(row["sample_id"]): row
+        for row in cast(list[dict[str, object]], candidate["sessions"])
+    }
+    earlier = later = better_rank = worse_rank = affected = 0
+    for sample_id in sorted(before):
+        left, right = before[sample_id], after[sample_id]
+        changed = bool(left["hit"]) != bool(right["hit"])
+        if left["hit"] and right["hit"]:
+            left_turn = cast(int, left["first_hit_turn"])
+            right_turn = cast(int, right["first_hit_turn"])
+            left_rank = cast(int, left["best_rank"])
+            right_rank = cast(int, right["best_rank"])
+            earlier += right_turn < left_turn
+            later += right_turn > left_turn
+            better_rank += right_rank < left_rank
+            worse_rank += right_rank > left_rank
+            changed |= right_turn != left_turn or right_rank != left_rank
+        affected += changed
     return {
         "technical_score_delta": round(
             float(cast(float, candidate["technical_score"]))
@@ -599,13 +614,11 @@ def comparison(
         ),
         "gained_hits": int(cast(int, counts.get("gained_hit", 0))),
         "lost_hits": int(cast(int, counts.get("lost_hit", 0))),
-        "earlier_shared_hits": int(cast(int, counts.get("earlier_hit", 0))),
-        "later_shared_hits": int(cast(int, counts.get("later_hit", 0))),
-        "better_shared_ranks": int(cast(int, counts.get("better_rank", 0))),
-        "worse_shared_ranks": int(cast(int, counts.get("worse_rank", 0))),
-        "affected_session_count": sum(
-            int(cast(int, counts.get(label, 0))) for label in changed_labels
-        ),
+        "earlier_shared_hits": earlier,
+        "later_shared_hits": later,
+        "better_shared_ranks": better_rank,
+        "worse_shared_ranks": worse_rank,
+        "affected_session_count": affected,
         "scenario_mean_contribution_deltas": paired[
             "scenario_mean_contribution_deltas"
         ],
