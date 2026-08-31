@@ -1,5 +1,11 @@
 # TechJam Conversational E-Commerce Search
 
+> **Final P5 documentation:** this file contains the earlier component and
+> ablation record and predates the promoted P5 configuration. Use the repository
+> [root README](../README.md) for the current introduction, setup, user guide,
+> architecture, final `0.733983` result, and score-improvement history. Use the
+> [demo runbook](../DEMO.md) for the presentation flow.
+
 This project is a deterministic conversational product-search system for the
 TechJam challenge. Given an anonymized shopper profile and a sequence of
 messages, the agent maintains active preferences and returns up to ten Amazon
