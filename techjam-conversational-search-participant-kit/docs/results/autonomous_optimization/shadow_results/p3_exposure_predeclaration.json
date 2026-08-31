@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "record_type": "predeclaration",
+  "experiment_id": "P3-bounded-confidence-exposure-v1",
+  "parent_champion": "7ba0a7c769954d758e1c6db6e70cde3cac214bb5",
+  "hypothesis": "Publishing the full P2 list while runtime evidence is weak can lock in a low reciprocal rank before clarification adds useful evidence. Exposing only P2 rank 1 for a strictly bounded low-confidence window may improve MRR while preserving P2 ranking, recall, and dialogue behavior.",
+  "primary_policy": {
+    "policy_id": "exposure.constraint-release-cap2.v1",
+    "promotion_eligible": true,
+    "enabled": true,
+    "gated_width": 1,
+    "max_gated_turn": 2,
+    "minimum_active_normalized_constraints": 2,
+    "release_on_answered_clarification": true,
+    "eligible_routes": [
+      "browsing",
+      "boundary"
+    ],
+    "failure_behavior": "fail_open_to_full_p2_response"
+  },
+  "boundary_sanity_variants": [
+    {
+      "policy_id": "exposure.constraint-release-cap1.v1",
+      "promotion_eligible": false,
+      "enabled": true,
+      "gated_width": 1,
+      "max_gated_turn": 1,
+      "minimum_active_normalized_constraints": 2,
+      "release_on_answered_clarification": true,
+      "eligible_routes": [
+        "browsing",
+        "boundary"
+      ],
+      "failure_behavior": "fail_open_to_full_p2_response"
+    },
+    {
+      "policy_id": "exposure.constraint-release-min3.v1",
+      "promotion_eligible": false,
+      "enabled": true,
+      "gated_width": 1,
+      "max_gated_turn": 2,
+      "minimum_active_normalized_constraints": 3,
+      "release_on_answered_clarification": true,
+      "eligible_routes": [
+        "browsing",
+        "boundary"
+      ],
+      "failure_behavior": "fail_open_to_full_p2_response"
+    }
+  ],
+  "runtime_confidence_inputs": [
+    "current_turn",
+    "active_normalized_constraint_count",
+    "observable_route",
+    "answered_clarification_presence",
+    "available_recommendation_count"
+  ],
+  "prohibited_inputs": [
+    "session_id_value",
+    "target_asin",
+    "target_rank",
+    "public_label",
+    "future_turn",
+    "public_session_characteristic"
+  ],
+  "invariants": [
+    "When candidates exist, expose at least one recommendation.",
+    "Never expose more than requested top_k.",
+    "Preserve the exact P2 ranking and truncate only its prefix.",
+    "Do not rerun retrieval, scan the catalog, invent candidates, or change usage accounting.",
+    "Release to the normal P2 width no later than turn 3 for the primary policy.",
+    "Invalid configuration or policy failure returns the unchanged validated P2 response.",
+    "Disabled mode is byte-equivalent to P2 responses and outcomes."
+  ],
+  "primary_falsification_conditions": {
+    "minimum_shadow_technical_score_delta": 0.005,
+    "minimum_shadow_mrr_delta": 0.01,
+    "paired_95_percent_confidence_interval_must_exclude_zero": true,
+    "minimum_probability_delta_positive": 0.975,
+    "maximum_lost_p2_hits": 0,
+    "maximum_overall_hit_rate_regression": 0.0,
+    "maximum_scenario_hit_rate_regression": 0.0,
+    "maximum_permanently_gated_sessions": 0,
+    "maximum_zero_result_sessions_caused_by_policy": 0,
+    "maximum_correctness_or_fallback_failures": 0,
+    "deterministic_replay_required": true,
+    "disabled_exact_parity_required": true,
+    "target_independent_robustness_required": true
+  },
+  "qualification_rule": "Only the primary policy may qualify. Both fixed variants are sensitivity diagnostics and cannot replace or tune the primary after outcomes are observed. Any failed primary condition retains P2 and ends this mechanism.",
+  "user_utility_cost": "During at most the first two low-confidence turns, positions 2 through top_k are hidden. This reduces immediate choice breadth and can delay discovery of a relevant non-rank-1 item; the answered-clarification and constraint releases plus the turn-3 hard cap bound that cost.",
+  "official_run_policy": "Consume zero official runs in this invocation. A qualifying primary may only be checkpointed for separate authorization.",
+  "seed": 20260830,
+  "timestamps": {
+    "predeclared_utc": "2026-08-31T02:57:17Z"
+  }
+}

@@ -48,10 +48,10 @@
   },
   "champion_response_hash": "921cbfe879262cae0c5332db632920544bb0b90c562ae91cf450a7252617e7f5",
   "champion_session_hash": "9513a906150178fc4ae5e829129cfd50b699c98b1f040d641dae91bb40847deb",
-  "current_experiment_id": null,
-  "current_hypothesis": null,
-  "current_stage": "P2_promoted_invocation_complete",
-  "experiment_start_commit": null,
+  "current_experiment_id": "P3-bounded-confidence-exposure-v1",
+  "current_hypothesis": "A rank-1-only exposure window bounded by runtime evidence and turn 2 can improve reciprocal rank without changing P2 ranking, retrieval, clarification, or eventual list width.",
+  "current_stage": "predeclared_awaiting_implementation",
+  "experiment_start_commit": "b450250362c3cab3be3a1d06d18ff3e363aeadac",
   "experiment_commits": [],
   "completed_hypotheses": [
     "H0-feedback-memory-bm25",
@@ -80,8 +80,8 @@
   "official_runs_remaining": 4,
   "fixed_seed": 20260830,
   "run_start_utc": "2026-08-30T14:44:51Z",
-  "last_checkpoint_utc": "2026-08-30T19:18:17Z",
+  "last_checkpoint_utc": "2026-08-31T02:57:17Z",
   "pause_reason": null,
   "stop_reason": null,
-  "next_action": "In a later invocation, predeclare and shadow-test a separate P3 confidence/list-exposure policy against P2 without changing P2; preserve the four remaining official runs until a coherent finalist passes preliminary gates."
+  "next_action": "Implement the predeclared P3 prefix-only exposure policies, pass target-independent and disabled-parity gates, then run the fixed shadow matrix once without consuming an official run."
 }
