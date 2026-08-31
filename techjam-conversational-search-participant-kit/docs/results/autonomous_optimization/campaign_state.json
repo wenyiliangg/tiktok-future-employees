@@ -52,11 +52,12 @@
   "champion_session_hash": "654dbb33898ec07a742b88c04129519faf82b3c032a0fa5b7f7888e5df24989e",
   "current_experiment_id": "P8-proxy-clarification-fallback-v1",
   "current_hypothesis": "A catalog-derived one-time fallback question can acquire missing information on under-specified negative-feedback turns where P5 emits no useful question.",
-  "current_stage": "P8C_variants_implemented_and_ready_to_freeze_before_proxy_generation",
+  "current_stage": "P8D_development_harness_frozen_before_proxy_generation",
   "experiment_start_commit": "f18f169e4e1fa112009f1c4128e195b341273b4a",
   "experiment_commits": [
     "dbdcf73894eed9f10fd6c580c680bc918acbf8c4",
-    "279293055a1ea6a15ae72b951df1385090c7986d"
+    "279293055a1ea6a15ae72b951df1385090c7986d",
+    "67222de722db1789d3aa26780702578a95cbd66c"
   ],
   "completed_hypotheses": [
     "H0-feedback-memory-bm25",
@@ -98,5 +99,5 @@
   "last_checkpoint_utc": "2026-08-31T13:37:47Z",
   "pause_reason": null,
   "stop_reason": null,
-  "next_action": "Commit the tested disabled/A/B implementation as the frozen development candidate, then generate the predeclared disjoint proxy manifests and evaluate development exactly once per policy."
+  "next_action": "Commit the benchmark-only proxy harness before outcomes, then generate only the predeclared development set and evaluate exact P5, Variant A, and Variant B once each."
 }
