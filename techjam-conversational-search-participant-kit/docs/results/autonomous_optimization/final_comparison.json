@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "campaign_status": "paused_for_final_submission_verification",
+  "campaign_status": "completed_p7_rejected_p5_packaged",
   "campaign_base": {
     "commit": "c57dfce8f7aeb44cb366ab3a90c11e9ac613cf07",
     "technical_score": 0.11766,
@@ -142,6 +142,21 @@
       "conservative_realizable_technical_score_gain": 0.011205,
       "official_runs_consumed": 0,
       "reason": "Rejected before candidate selection because category C failed both predeclared continuation thresholds after P5; no alternative mechanism was attempted."
+    },
+    {
+      "experiment_id": "P7-constraint-coverage-ordering-v1",
+      "candidate_commit": "5084d36a1544d6517167162e9ef3b60787c369ce",
+      "selected_family": "D",
+      "shadow_technical_score": 0.801542,
+      "shadow_delta_vs_p5": 0.003666,
+      "gained_hits": 0,
+      "lost_hits": 0,
+      "paired_95_percent_ci": [
+        -0.010084542,
+        0.018257673
+      ],
+      "official_runs_consumed": 0,
+      "reason": "Rejected because the shadow gain was below +0.015, the paired interval crossed zero, probability positive was 0.6924, net hit gain was zero, and Buying plus Intent Override exceeded the -0.005 scenario regression limit."
     }
   ],
   "external_reference": {
@@ -151,12 +166,20 @@
   },
   "official_runs_used": 10,
   "official_runs_remaining": 2,
-  "stop_reason": "P6 failed its frozen diagnostic continuation gate; P5 is the final champion and the remaining two runs are reserved for packaged-submission verification.",
+  "final_package_integrity": {
+    "runtime_tree_matches_p5_promotion_checkpoint": true,
+    "runtime_comparison_checkpoint": "e6550afd1f0368314db8461faa6ffca5cedf7464",
+    "p7_runtime_retained": false,
+    "p7_runtime_historical_commit": "5084d36a1544d6517167162e9ef3b60787c369ce",
+    "evaluator_wrapper_sha256": "3a7da928f190b907a3e8047f1570ac91d0b83feaa88d13394b06c18631565318",
+    "public_set_sha256": "857259f7a438e6188ac63e18995b6ff4489bfcfc4a716a798b9a2aa0ee8f7579"
+  },
+  "stop_reason": "P7 failed five frozen shadow gates; P5 is the final champion, no official run was consumed, two runs remain unused, and P8 is forbidden.",
   "resumed_after_h2_utc": "2026-08-30T12:59:34Z",
   "limitations": [
     "The selected score is measured on the official public set and is not a private-set claim.",
     "The verified 0.963323 reference score is not paired with our sessions and its source is not used after the sanitization barrier.",
     "Non-public shadow suites reduce but do not eliminate public-set selection and distribution-shift risk."
   ],
-  "last_updated_utc": "2026-08-31T10:30:09Z"
+  "last_updated_utc": "2026-08-31T12:26:00Z"
 }

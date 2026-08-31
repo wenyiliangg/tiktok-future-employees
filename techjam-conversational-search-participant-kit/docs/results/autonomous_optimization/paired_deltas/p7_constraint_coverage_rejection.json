@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "record_type": "shadow_rejection",
+  "experiment_id": "P7-constraint-coverage-ordering-v1",
+  "parent_champion": "f4992683cff2fe0cb6e4e756edeb361f1f29f6b0",
+  "commit_hashes": {
+    "selection_predeclaration": "7618dfa8859f30d86fa9207a96fbce968767a732",
+    "selection_and_mechanism_predeclaration": "9de9913fbf9d65db7755737ad93697bdcb94bce6",
+    "implementation": "5084d36a1544d6517167162e9ef3b60787c369ce"
+  },
+  "selected_family": {
+    "id": "D",
+    "label": "constraint-ranking defect",
+    "session_count": 12,
+    "conservative_realizable_technical_score_gain": 0.01612
+  },
+  "configuration": {
+    "policy_id": "category-evidence.constraint-coverage.v1",
+    "fingerprint_sha256": "792d2e2993185b195d4ba6d1589521a5d23089875aac008630b63fc3bc08b29a",
+    "mechanism": "stable monotonic disclosed-constraint coverage ordering within the existing P5 bounded candidate list",
+    "p3_exposure_enabled": false
+  },
+  "shadow_inputs": {
+    "sample_count": 64,
+    "public_target_overlap": 0,
+    "catalog_reorder_invariant": true,
+    "target_selection_sha256": "431d63ad07e902b5e65db068cb584fd3089df0390e4213a8dbf8f686d467be80",
+    "predeclaration_sha256": "793201a71aefcd1997122b4ecb919a4f19d0e44f1948d3577bebace684c4c13e",
+    "result_sha256": "68a33ff97d57649a62dd112e02d3155e6ebb10bb79422fcd3dd659ba46cab36a"
+  },
+  "p5_shadow": {
+    "hit_rate_at_10": 0.921875,
+    "mrr": 0.618961,
+    "mttc": 3.4375,
+    "efficiency": 0.75625,
+    "technical_score": 0.797876,
+    "normalized_transcript_sha256": "33f51cc6f6eb7eff627c116ff919b02a7bbb50fe6b24ddaef7efc9a00e693e92"
+  },
+  "p7_shadow": {
+    "hit_rate_at_10": 0.921875,
+    "mrr": 0.625973,
+    "mttc": 3.359375,
+    "efficiency": 0.764062,
+    "technical_score": 0.801542,
+    "normalized_transcript_sha256": "f34d6fde4b85340936b3acec2d8741f5efeaa8a1ac25f78511128845045c5dcc",
+    "deterministic_replay": true
+  },
+  "paired_session_deltas": {
+    "technical_score_delta": 0.003666,
+    "hit_rate_delta": 0.0,
+    "mrr_delta": 0.007012,
+    "mttc_delta": -0.078125,
+    "efficiency_delta": 0.007812,
+    "gained_hits": 0,
+    "lost_hits": 0,
+    "net_hits": 0,
+    "earlier_hits": 2,
+    "later_hits": 0,
+    "better_ranks": 6,
+    "worse_ranks": 3,
+    "affected_sessions": 9
+  },
+  "paired_confidence_interval": {
+    "seed": 20260830,
+    "resamples": 10000,
+    "confidence_level": 0.95,
+    "observed_mean_delta": 0.003666295,
+    "lower": -0.010084542,
+    "upper": 0.018257673,
+    "probability_delta_positive": 0.6924
+  },
+  "scenario_technical_score_deltas": {
+    "boundary": 0.032113,
+    "browsing": 0.0,
+    "buying": -0.007135,
+    "intent_override": -0.010313
+  },
+  "correctness_counters": {
+    "response_exceptions": 0,
+    "invalid_responses": 0,
+    "invalid_ask_attributes": 0,
+    "invalid_asins": 0,
+    "duplicate_recommendations": 0,
+    "repeated_questions": 0,
+    "clarification_failures": 0,
+    "routing_failures": 0,
+    "exposure_failures": 0,
+    "fallback_attempts": 0
+  },
+  "passed_gates": [
+    "hit_rate_nondecrease",
+    "mechanism_attribution",
+    "target-independent proxy and heavy-paraphrase checks",
+    "disabled exact P5 parity",
+    "zero correctness and reliability failures",
+    "deterministic replay",
+    "safe resource usage"
+  ],
+  "failed_gates": [
+    "TechnicalScore delta +0.003666 was below +0.015",
+    "paired interval lower bound -0.010084542 did not exceed zero",
+    "probability positive 0.6924 was below 0.975",
+    "net hit gain was zero rather than positive",
+    "buying and intent-override TechnicalScore regressions exceeded -0.005"
+  ],
+  "decision": "rejected_retain_p5_end_campaign_no_p8",
+  "rejection_reason": "P7 was deterministic, attributable, hit-preserving, and correct, but the improvement was too small and statistically unresolved, produced no net hit gain, and violated two scenario-safety gates.",
+  "final_champion": "f4992683cff2fe0cb6e4e756edeb361f1f29f6b0",
+  "final_package_integrity": {
+    "runtime_tree_matches_p5_promotion_checkpoint": true,
+    "runtime_comparison_checkpoint": "e6550afd1f0368314db8461faa6ffca5cedf7464",
+    "compared_paths": [
+      "starter",
+      "config",
+      "evaluator",
+      "tests",
+      "data"
+    ],
+    "evaluator_wrapper_sha256": "3a7da928f190b907a3e8047f1570ac91d0b83feaa88d13394b06c18631565318",
+    "public_set_sha256": "857259f7a438e6188ac63e18995b6ff4489bfcfc4a716a798b9a2aa0ee8f7579",
+    "p7_runtime_retained_in_final_package": false,
+    "p7_runtime_historical_commit": "5084d36a1544d6517167162e9ef3b60787c369ce"
+  },
+  "clean_room_access_report": {
+    "reference_checkout_accessed": false,
+    "reference_snapshots_or_unsanitized_artifacts_accessed": false,
+    "inputs_used": "participant repository, official participant catalog/public-set fingerprints, and existing participant-generated sanitized audit artifacts only"
+  },
+  "official_run_budget": {
+    "used_before": 10,
+    "consumed_by_p7": 0,
+    "used_after": 10,
+    "remaining": 2
+  },
+  "timestamps": {
+    "shadow_completed_utc": "2026-08-31T12:26:00Z"
+  }
+}
