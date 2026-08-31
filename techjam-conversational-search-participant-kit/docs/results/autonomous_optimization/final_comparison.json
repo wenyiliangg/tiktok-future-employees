@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "campaign_status": "running",
+  "campaign_status": "paused_for_final_submission_verification",
   "campaign_base": {
     "commit": "c57dfce8f7aeb44cb366ab3a90c11e9ac613cf07",
     "technical_score": 0.11766,
@@ -17,17 +17,18 @@
     "efficiency": 0.119
   },
   "champion": {
-    "commit": "7ba0a7c769954d758e1c6db6e70cde3cac214bb5",
-    "configuration": "contextual.category-evidence.v1 + clarification.category-evidence-utility.v1",
-    "technical_score": 0.554435,
-    "hit_rate_at_10": 0.71,
-    "mrr": 0.314782,
-    "mttc": 5.75,
-    "efficiency": 0.525,
-    "delta_vs_campaign_base": 0.436775
+    "commit": "f4992683cff2fe0cb6e4e756edeb361f1f29f6b0",
+    "configuration": "contextual.category-evidence.v1 + clarification.category-evidence-utility-buying.v1",
+    "technical_score": 0.733983,
+    "hit_rate_at_10": 0.87,
+    "mrr": 0.519609,
+    "mttc": 3.845,
+    "efficiency": 0.7155,
+    "delta_vs_campaign_base": 0.616323,
+    "rollback_commit": "7ba0a7c769954d758e1c6db6e70cde3cac214bb5"
   },
   "final_reproduction": {
-    "status": "historical H0 reproduction retained for audit; superseded by the promoted P2 champion",
+    "status": "historical H0 reproduction retained for audit; superseded by the promoted P5 champion",
     "technical_score": 0.305993,
     "hit_rate_at_10": 0.405,
     "mrr": 0.15331,
@@ -84,6 +85,18 @@
         0.021953378,
         0.074019732
       ]
+    },
+    {
+      "experiment_id": "P5-prospective-causal-clarification-confirmation-v1",
+      "commit": "f4992683cff2fe0cb6e4e756edeb361f1f29f6b0",
+      "technical_score": 0.733983,
+      "delta_vs_previous_champion": 0.179548,
+      "gained_hits": 39,
+      "lost_hits": 7,
+      "paired_95_percent_ci": [
+        0.129785253,
+        0.232346637
+      ]
     }
   ],
   "rejected_experiments": [
@@ -113,6 +126,14 @@
         0.0
       ],
       "reason": "Rejected because aggregate and paired TechnicalScore decreased; one Intent Override hit moved to a worse rank and no session improved."
+    },
+    {
+      "experiment_id": "P4-buying-route-utility-clarification-v1",
+      "candidate_commit": "accda5bf3e1755730868f8e50cf2c2a33c3ef492",
+      "shadow_technical_score": 0.797876,
+      "shadow_delta_vs_p2": 0.218248,
+      "official_runs_consumed": 0,
+      "reason": "Historically rejected under its frozen route-local attribution gate because downstream mediated route transitions were treated as attribution failures; the verdict was not changed by P5."
     }
   ],
   "external_reference": {
@@ -120,14 +141,14 @@
     "status": "verified current reference checkout in two exact runs; retained only as a behavioral parity target",
     "used_as_implementation_source": false
   },
-  "official_runs_used": 8,
-  "official_runs_remaining": 4,
-  "stop_reason": null,
+  "official_runs_used": 10,
+  "official_runs_remaining": 2,
+  "stop_reason": "P5 promoted after deterministic confirmation; reserve the final two official runs for submission verification.",
   "resumed_after_h2_utc": "2026-08-30T12:59:34Z",
   "limitations": [
     "The selected score is measured on the official public set and is not a private-set claim.",
     "The verified 0.963323 reference score is not paired with our sessions and its source is not used after the sanitization barrier.",
     "Non-public shadow suites reduce but do not eliminate public-set selection and distribution-shift risk."
   ],
-  "last_updated_utc": "2026-08-30T19:18:17Z"
+  "last_updated_utc": "2026-08-31T09:49:56Z"
 }

@@ -1,0 +1,208 @@
+{
+  "schema_version": 1,
+  "record_type": "promotion_result",
+  "experiment_id": "P5-prospective-causal-clarification-confirmation-v1",
+  "decision": "retained_and_promoted_after_deterministic_confirmation",
+  "parent_champion": "7ba0a7c769954d758e1c6db6e70cde3cac214bb5",
+  "candidate_commit": "f4992683cff2fe0cb6e4e756edeb361f1f29f6b0",
+  "rollback_commit": "7ba0a7c769954d758e1c6db6e70cde3cac214bb5",
+  "historical_p4_status": "rejected_retain_p2_under_original_route_local_attribution_gate",
+  "predeclaration": {
+    "commit": "322d7dda1af22f880143ca3bf84a9f13558f3708",
+    "sha256": "cf469dff8354939bad8a262a2494a476bb3e0819f30d4fff3ed4f0d3ba68640e"
+  },
+  "causal_lineage_preflight": {
+    "commit": "744465a303fe0361aae30568197d094fdcdf1676",
+    "artifact_sha256": "d9e7333014d2ccf23e33e9b5a8d65464a7705b00d19f5e42ec911c56716b9570",
+    "verdict": "passed",
+    "paired_shadow_sessions": 64,
+    "qualifying_intervention_sessions": 48,
+    "all_changed_sessions_qualify": true,
+    "pre_divergence_exact": true,
+    "intervention_recommendation_parity": "48/48",
+    "intervention_usage_parity": "48/48",
+    "non_intervention_exact_p2_sessions": "16/16",
+    "changed_without_qualifying_intervention": 0,
+    "deterministic_replay": true,
+    "disabled_exact_p2_parity": true,
+    "questions_on_turn_10": 0,
+    "repeated_resolved_or_declined_attributes": 0
+  },
+  "configuration": {
+    "retrieval_policy": "contextual.category-evidence.v1",
+    "clarification_policy": "clarification.category-evidence-utility-buying.v1",
+    "configuration_fingerprint_sha256": "6db00179643c355adf1ecfbef5fee680ce50ce316f6f5c272da9aa53ab8bf62e",
+    "only_output_affecting_change_from_p2": "add buying to the frozen P2 eligible clarification routes",
+    "p4_behavior_or_configuration_tuned": false,
+    "p3_exposure_enabled": false
+  },
+  "integrity": {
+    "evaluator_wrapper_sha256": "3a7da928f190b907a3e8047f1570ac91d0b83feaa88d13394b06c18631565318",
+    "public_set_sha256": "857259f7a438e6188ac63e18995b6ff4489bfcfc4a716a798b9a2aa0ee8f7579",
+    "evaluator_or_public_set_diff_from_checkpoint": false,
+    "p2_official_baseline_sha256": "6682203ac20b65cd1f6c789e3cd193cbbac15b3d9bb3c8d2cddd64d9b07daab1"
+  },
+  "official_results": {
+    "p2": {
+      "hit_rate_at_10": 0.71,
+      "mrr": 0.314782,
+      "mttc": 5.75,
+      "efficiency": 0.525,
+      "technical_score": 0.554435
+    },
+    "p5": {
+      "hit_rate_at_10": 0.87,
+      "mrr": 0.519609,
+      "mttc": 3.845,
+      "efficiency": 0.7155,
+      "technical_score": 0.733983
+    },
+    "delta": {
+      "hit_rate_at_10": 0.16,
+      "mrr": 0.204827,
+      "mttc": -1.905,
+      "efficiency": 0.1905,
+      "technical_score": 0.179548
+    }
+  },
+  "scenario_metrics": {
+    "boundary": {
+      "p2_technical_score": 0.47525,
+      "p5_technical_score": 0.7047501,
+      "technical_score_delta": 0.2295001,
+      "p5_hit_rate_at_10": 0.9,
+      "p5_mrr": 0.449167,
+      "p5_mttc": 5.0,
+      "gained_hits": 3,
+      "lost_hits": 1
+    },
+    "browsing": {
+      "p2_technical_score": 0.6574583,
+      "p5_technical_score": 0.8145699,
+      "technical_score_delta": 0.1571116,
+      "p5_hit_rate_at_10": 0.95,
+      "p5_mrr": 0.610233,
+      "p5_mttc": 3.175,
+      "gained_hits": 12,
+      "lost_hits": 2
+    },
+    "buying": {
+      "p2_technical_score": 0.5252068,
+      "p5_technical_score": 0.7849449,
+      "technical_score_delta": 0.2597381,
+      "p5_hit_rate_at_10": 0.9375,
+      "p5_mrr": 0.508983,
+      "p5_mttc": 2.825,
+      "gained_hits": 24,
+      "lost_hits": 4
+    },
+    "intent_override": {
+      "p2_technical_score": 0.38403976,
+      "p5_technical_score": 0.39292876,
+      "technical_score_delta": 0.008889,
+      "p5_hit_rate_at_10": 0.466667,
+      "p5_mrr": 0.329762,
+      "p5_mttc": 7.966667,
+      "gained_hits": 0,
+      "lost_hits": 0
+    }
+  },
+  "paired_session_deltas": {
+    "gained_hits": 39,
+    "lost_hits": 7,
+    "net_hits": 32,
+    "earlier_hits": 38,
+    "later_hits": 5,
+    "better_ranks": 15,
+    "worse_ranks": 4,
+    "unchanged_hits": 73,
+    "unchanged_misses": 19
+  },
+  "paired_confidence_interval": {
+    "seed": 20260830,
+    "resamples": 10000,
+    "confidence_level": 0.95,
+    "observed_mean_delta": 0.179548214,
+    "lower": 0.129785253,
+    "upper": 0.232346637,
+    "probability_delta_positive": 1.0
+  },
+  "question_counts_and_yield": {
+    "total_questions": 323,
+    "other_questions": 166,
+    "feature_questions": 157,
+    "buying_route_questions": 270,
+    "answered": 219,
+    "declined": 14,
+    "interrupted": 8,
+    "unobserved_at_session_end": 82
+  },
+  "correctness_and_failure_counters": {
+    "response_exceptions": 0,
+    "invalid_responses": 0,
+    "invalid_ask_attributes": 0,
+    "invalid_asins": 0,
+    "duplicate_recommendations": 0,
+    "response_contract_violations": 0,
+    "repeated_questions": 0,
+    "clarification_failures": 0,
+    "routing_failures": 0,
+    "exposure_failures": 0,
+    "fallback_attempts": 0
+  },
+  "deterministic_confirmation": {
+    "normalized_response_sha256": "0b17cb2037fa6a18580e98b097b8268655d2121855ce8c9cf9f158d1b2a1e486",
+    "session_outcome_sha256": "654dbb33898ec07a742b88c04129519faf82b3c032a0fa5b7f7888e5df24989e",
+    "metrics_responses_recommendations_questions_usage_failures_and_sessions_identical": true,
+    "official_run1_sha256": "583e87ae4296e6bcb894f48f6a2baad1dc384cf335b1031d81d5b29b95ae23f8",
+    "official_run2_sha256": "8e2e4be6f26ac50b43e41a57020e642654b3b08e9a1e7e37f4f8d4fa96d2d5d2",
+    "paired_run1_sha256": "0880ba268975068b58da8e6d9b8a6206eb2cadd1765b544e1659c7c843c36de6",
+    "paired_run2_sha256": "5fbed609f1087140ef780fc5b03b04b81e569c8ec37828e6da322345127e5893"
+  },
+  "performance": {
+    "agent_startup_seconds_runs": [
+      16.653485,
+      16.745118
+    ],
+    "full_evaluator_wall_seconds_runs": [
+      48.779514,
+      48.965025
+    ],
+    "mean_response_latency_ms_runs": [
+      65.395212,
+      65.64404
+    ],
+    "p95_response_latency_ms_runs": [
+      320.746292,
+      337.696
+    ],
+    "peak_rss_mib_runs": [
+      711.0,
+      729.484375
+    ]
+  },
+  "promotion_gates": {
+    "technical_score_delta_at_least_0_050": true,
+    "paired_interval_entirely_above_zero": true,
+    "probability_positive_at_least_0_975": true,
+    "aggregate_hit_rate_not_decreased": true,
+    "positive_net_hits": true,
+    "no_scenario_technical_score_decrease_over_0_010": true,
+    "lost_hits_outweighed_within_scenario_and_scenario_score_not_regressed": true,
+    "disabled_exact_p2_parity": true,
+    "all_changed_preflight_sessions_pass_first_divergence_attribution": true,
+    "non_intervention_preflight_sessions_exact_p2": true,
+    "zero_correctness_and_reliability_failures": true,
+    "no_turn_10_or_repeated_resolved_or_declined_question": true,
+    "deterministic_confirmation": true,
+    "submission_entry_behavior": true
+  },
+  "official_run_budget": {
+    "used_before": 8,
+    "used_after": 10,
+    "remaining": 2
+  },
+  "timestamps": {
+    "promoted_utc": "2026-08-31T09:49:56Z"
+  }
+}
