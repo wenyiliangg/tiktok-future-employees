@@ -15,9 +15,9 @@ from .selective_clarification import SelectiveClarificationConfig
 DEFAULT_POLICY_PATH = (
     Path(__file__).resolve().parents[1] / "config" / "clarification_policies.json"
 )
-SELECTED_POLICY_ID = "clarification.browsing-only.v1"
+SELECTED_POLICY_ID = "clarification.category-evidence-utility-buying.v1"
 SELECTED_POLICY_FINGERPRINT = (
-    "405c3ff441211cc6073b3732e1bd60b7aa8e85698c8ceb7d7931fed8eeaeb6fd"
+    "6db00179643c355adf1ecfbef5fee680ce50ce316f6f5c272da9aa53ab8bf62e"
 )
 ROLLBACK_POLICY_ID = "contextual.browsing-dense.v1"
 ROLLBACK_POLICY_FINGERPRINT = (
