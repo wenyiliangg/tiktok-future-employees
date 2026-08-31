@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "record_type": "diagnostic_selection_predeclaration",
+  "diagnosis_id": "P7A-p5-final-residual-selection-v1",
+  "parent_champion": "f4992683cff2fe0cb6e4e756edeb361f1f29f6b0",
+  "campaign_checkpoint": "a8ef5e943cb641c895e585a139bee16361fdc331",
+  "decision": "frozen_before_reopening_complete_non_category_c_breakdown",
+  "excluded_families": {
+    "C": "P6 measured only three sessions and a +0.011205 conservative ceiling.",
+    "P3_exposure": "Previously rejected; confidence or list exposure cannot be revived."
+  },
+  "candidate_families": {
+    "D": {
+      "label": "constraint-ranking defect",
+      "definition": "The target remains in the bounded final pool and satisfies more disclosed runtime constraints than at least one candidate ranked above it."
+    },
+    "E": {
+      "label": "saturated evidence tie",
+      "definition": "The target and higher-ranked candidates satisfy equal disclosed constraints and differ only through a legitimate target-independent catalog prior or deterministic tie-break."
+    },
+    "F": {
+      "label": "remaining insufficient dialogue",
+      "definition": "The target remains unrecoverable because one useful answerable attribute was not elicited by P5."
+    },
+    "G": {
+      "label": "state or override timing",
+      "definition": "Valid disclosed evidence is incorrectly retained, erased, decayed, or applied after an intent transition."
+    },
+    "H": {
+      "label": "genuinely unclassified",
+      "definition": "No supported target-independent correction exists and the session is ineligible for implementation."
+    }
+  },
+  "assignment_rule": "Assign every P5 residual shadow session exactly once using the already frozen mutually exclusive causal classifier.",
+  "selection_rule": [
+    "Compute diagnostic-only oracle and conservative realizable TechnicalScore ceilings for D, E, F, and G.",
+    "A family qualifies only if it affects at least five sessions, has conservative realizable gain at least +0.015, admits one coherent target-independent runtime solution, and does not require combining families.",
+    "Select the qualifying family with the largest conservative realizable ceiling.",
+    "If no family qualifies, stop with zero official runs and package P5.",
+    "If the selected implementation later fails, do not switch to the second-best family."
+  ],
+  "per_session_observations": [
+    "scenario and relevant turn",
+    "target presence through lexical, fused, filtered, reranked, and final bounded stages",
+    "disclosed active constraints and normalized constraint coverage",
+    "explicit contradiction count",
+    "products above the target grouped by greater, equal, or lower disclosed-constraint coverage",
+    "unanswered clarification opportunities",
+    "state and override transitions",
+    "observed rank and hit plus diagnostic and conservative ceilings"
+  ],
+  "forbidden_runtime_inputs": [
+    "session identifiers",
+    "target ASINs or aliases",
+    "public target tables or labels",
+    "hidden scenario labels",
+    "future turns",
+    "reference artifacts",
+    "full-catalog response-time scans"
+  ],
+  "official_runs_consumed": 0,
+  "official_runs_remaining": 2,
+  "seed": 20260830,
+  "timestamps": {
+    "predeclared_utc": "2026-08-31T11:50:55Z"
+  }
+}

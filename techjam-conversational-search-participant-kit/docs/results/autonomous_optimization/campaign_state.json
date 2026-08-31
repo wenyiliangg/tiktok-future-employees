@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "campaign_status": "complete_p5_final_packaging",
+  "campaign_status": "running_final_p7_attempt",
   "campaign_base_commit": "c57dfce8f7aeb44cb366ab3a90c11e9ac613cf07",
-  "campaign_branch": "experiment/p6-filter-category-recovery",
+  "campaign_branch": "experiment/p7-final-residual",
   "champion_commit": "f4992683cff2fe0cb6e4e756edeb361f1f29f6b0",
   "rollback_commit": "7ba0a7c769954d758e1c6db6e70cde3cac214bb5",
   "champion_configuration": {
@@ -50,13 +50,11 @@
   },
   "champion_response_hash": "0b17cb2037fa6a18580e98b097b8268655d2121855ce8c9cf9f158d1b2a1e486",
   "champion_session_hash": "654dbb33898ec07a742b88c04129519faf82b3c032a0fa5b7f7888e5df24989e",
-  "current_experiment_id": "P6-filter-category-recovery-v1",
-  "current_hypothesis": "A coherent subset of P5 residuals may be caused by missing or uncertain category/filter evidence being treated as a contradiction after bounded retrieval.",
-  "current_stage": "P6_rejected_at_diagnostic_gate_retain_P5",
-  "experiment_start_commit": "e6550afd1f0368314db8461faa6ffca5cedf7464",
-  "experiment_commits": [
-    "9229aa68c3696eb02ecf51e521ef3ea5bb993548"
-  ],
+  "current_experiment_id": "P7-final-residual-v1",
+  "current_hypothesis": "One remaining non-category-C causal family may admit a single target-independent correction with substantial shadow and transfer evidence.",
+  "current_stage": "P7A_residual_selection_predeclared_before_complete_breakdown",
+  "experiment_start_commit": "a8ef5e943cb641c895e585a139bee16361fdc331",
+  "experiment_commits": [],
   "completed_hypotheses": [
     "H0-feedback-memory-bm25",
     "H1-open-evidence-questions-v1",
@@ -94,6 +92,6 @@
   "run_start_utc": "2026-08-30T14:44:51Z",
   "last_checkpoint_utc": "2026-08-31T10:30:09Z",
   "pause_reason": null,
-  "stop_reason": "P6 category C failed the frozen diagnostic continuation gate before candidate selection; P5 remains final champion and no further optimization family is permitted.",
-  "next_action": "Package the final submission from e6550afd1f0368314db8461faa6ffca5cedf7464 with runtime behavior fixed at f4992683cff2fe0cb6e4e756edeb361f1f29f6b0; use the two remaining official runs only for final packaged-submission verification."
+  "stop_reason": null,
+  "next_action": "Reopen the stored participant-generated P6 diagnosis, complete the frozen D/E/F/G aggregate selection, and continue with at most one qualifying P7 family."
 }
