@@ -50,9 +50,11 @@
   "champion_session_hash": "9513a906150178fc4ae5e829129cfd50b699c98b1f040d641dae91bb40847deb",
   "current_experiment_id": "P5-prospective-causal-clarification-confirmation-v1",
   "current_hypothesis": "The frozen P4 buying-route clarification behavior has a large target-independent benefit whose downstream effects are causally mediated by a qualifying first-divergence clarification.",
-  "current_stage": "P5A_prospective_causal_attribution_predeclared_before_preflight",
+  "current_stage": "P5B_first_divergence_attribution_preflight_passed",
   "experiment_start_commit": "48391a76332c222084304b061d947ea51169f2a3",
-  "experiment_commits": [],
+  "experiment_commits": [
+    "322d7dda1af22f880143ca3bf84a9f13558f3708"
+  ],
   "completed_hypotheses": [
     "H0-feedback-memory-bm25",
     "H1-open-evidence-questions-v1",
@@ -84,8 +86,8 @@
   "official_runs_remaining": 4,
   "fixed_seed": 20260830,
   "run_start_utc": "2026-08-30T14:44:51Z",
-  "last_checkpoint_utc": "2026-08-31T09:20:06Z",
+  "last_checkpoint_utc": "2026-08-31T09:35:19Z",
   "pause_reason": null,
   "stop_reason": null,
-  "next_action": "Commit the prospective P5 causal-attribution contract, then prove first-divergence lineage over frozen P2/P4 shadow replays before selecting the unchanged frozen P4 policy at the evaluator-facing entry point."
+  "next_action": "Commit passing P5 lineage evidence, select only clarification.category-evidence-utility-buying.v1 at the evaluator-facing entry point, freeze that selection, verify evaluator/public-set integrity, and run official P5 once."
 }
