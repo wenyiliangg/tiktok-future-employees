@@ -52,10 +52,11 @@
   "champion_session_hash": "654dbb33898ec07a742b88c04129519faf82b3c032a0fa5b7f7888e5df24989e",
   "current_experiment_id": "P8-proxy-clarification-fallback-v1",
   "current_hypothesis": "A catalog-derived one-time fallback question can acquire missing information on under-specified negative-feedback turns where P5 emits no useful question.",
-  "current_stage": "P8B_catalog_answerability_derived_before_proxy_generation",
+  "current_stage": "P8C_variants_implemented_and_ready_to_freeze_before_proxy_generation",
   "experiment_start_commit": "f18f169e4e1fa112009f1c4128e195b341273b4a",
   "experiment_commits": [
-    "dbdcf73894eed9f10fd6c580c680bc918acbf8c4"
+    "dbdcf73894eed9f10fd6c580c680bc918acbf8c4",
+    "279293055a1ea6a15ae72b951df1385090c7986d"
   ],
   "completed_hypotheses": [
     "H0-feedback-memory-bm25",
@@ -94,8 +95,8 @@
   "official_runs_remaining": 2,
   "fixed_seed": 20260830,
   "run_start_utc": "2026-08-30T14:44:51Z",
-  "last_checkpoint_utc": "2026-08-31T13:27:07Z",
+  "last_checkpoint_utc": "2026-08-31T13:37:47Z",
   "pause_reason": null,
   "stop_reason": null,
-  "next_action": "Implement and freeze the shared one-time fallback plus predeclared Variants A and B using only the derived aggregate constants; do not generate proxy outcomes before the candidate commit."
+  "next_action": "Commit the tested disabled/A/B implementation as the frozen development candidate, then generate the predeclared disjoint proxy manifests and evaluate development exactly once per policy."
 }

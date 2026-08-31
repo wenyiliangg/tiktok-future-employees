@@ -146,9 +146,7 @@ def main() -> None:
             if count <= 0:
                 continue
             try:
-                reply, _boundary = customer_reply(
-                    effective, attribute, set(), False
-                )
+                reply, _boundary = customer_reply(effective, attribute, set(), False)
                 if not isinstance(reply, str) or not reply:
                     helper_reply_failures += 1
                     continue
@@ -193,9 +191,7 @@ def main() -> None:
     answerability = {
         attribute: {
             "answerable_product_count": answerable[attribute],
-            "answerability_rate": _rounded_rate(
-                answerable[attribute], catalog_count
-            ),
+            "answerability_rate": _rounded_rate(answerable[attribute], catalog_count),
             "mean_constraint_yield_all_products": round(
                 total_yield[attribute] / catalog_count, 6
             )
@@ -244,9 +240,7 @@ def main() -> None:
             "catalog_sha256": _sha256(catalog_path),
             "catalog_product_count": catalog_count,
             "evaluator_helper_sha256": _sha256("evaluator/local_evaluator.py"),
-            "ambiguity_analyzer_sha256": _sha256(
-                "starter/ambiguity_analysis.py"
-            ),
+            "ambiguity_analyzer_sha256": _sha256("starter/ambiguity_analysis.py"),
             "public_outcomes_consulted": False,
             "proxy_targets_generated_or_evaluated": False,
         },
