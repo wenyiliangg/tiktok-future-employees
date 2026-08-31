@@ -52,9 +52,11 @@
   "champion_session_hash": "654dbb33898ec07a742b88c04129519faf82b3c032a0fa5b7f7888e5df24989e",
   "current_experiment_id": "P8-proxy-clarification-fallback-v1",
   "current_hypothesis": "A catalog-derived one-time fallback question can acquire missing information on under-specified negative-feedback turns where P5 emits no useful question.",
-  "current_stage": "P8A_proxy_and_variant_predeclaration_frozen_before_generation",
+  "current_stage": "P8B_catalog_answerability_derived_before_proxy_generation",
   "experiment_start_commit": "f18f169e4e1fa112009f1c4128e195b341273b4a",
-  "experiment_commits": [],
+  "experiment_commits": [
+    "dbdcf73894eed9f10fd6c580c680bc918acbf8c4"
+  ],
   "completed_hypotheses": [
     "H0-feedback-memory-bm25",
     "H1-open-evidence-questions-v1",
@@ -92,8 +94,8 @@
   "official_runs_remaining": 2,
   "fixed_seed": 20260830,
   "run_start_utc": "2026-08-30T14:44:51Z",
-  "last_checkpoint_utc": "2026-08-31T13:19:09Z",
+  "last_checkpoint_utc": "2026-08-31T13:27:07Z",
   "pause_reason": null,
   "stop_reason": null,
-  "next_action": "Derive catalog-wide answerability and the shared ambiguity threshold without generating or evaluating proxy sessions."
+  "next_action": "Implement and freeze the shared one-time fallback plus predeclared Variants A and B using only the derived aggregate constants; do not generate proxy outcomes before the candidate commit."
 }
