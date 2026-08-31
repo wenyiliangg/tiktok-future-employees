@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "record_type": "predeclaration",
+  "experiment_id": "P4-buying-route-utility-clarification-v1",
+  "parent_champion": "7ba0a7c769954d758e1c6db6e70cde3cac214bb5",
+  "diagnosis": {
+    "predeclaration_commit": "1363ad838261a7fc74e202e38e822e150ec26b3f",
+    "artifact_sha256": "e899fd3070a32100e9ceda575183875212c55aeb54bd3a1624b80f566ab4a097",
+    "residual_session_count": 46,
+    "selected_category": "F",
+    "selected_category_label": "insufficient dialogue information",
+    "selected_category_session_count": 14,
+    "selected_category_miss_count": 14,
+    "selected_category_scenario_counts": {
+      "boundary": 4,
+      "browsing": 6,
+      "intent_override": 4
+    },
+    "selected_category_observable_route_counts": {
+      "buying": 14
+    },
+    "selected_category_question_count_distribution": {
+      "0": 14
+    },
+    "oracle_technical_score_gain_diagnostic_only": 0.137813,
+    "conservative_realizable_technical_score_gain": 0.128828,
+    "selection_threshold": "at least 8 sessions or conservative TechnicalScore gain at least 0.020",
+    "selection_threshold_met": true,
+    "trace_integrity": {
+      "p2_transcript_sha256": "765c2e05e4bf8dc6f87ab5f099d5ce1144dc1405a39850151e3bff8e60c467f4",
+      "observer_matches_uninstrumented_p2": true,
+      "public_target_overlap": 0
+    }
+  },
+  "causal_hypothesis": "P2's clarification policy excludes the runtime-observable buying route. Fourteen residual shadow misses were routed as buying on every eligible decision turn and received zero questions even though one additional answerable constraint diagnostically recovered nine. Adding only the buying route to the existing P2 expected-utility clarification eligibility can obtain missing evidence while leaving retrieval, ranking, exposure, question choices, utility scoring, and question caps unchanged.",
+  "mechanism_family": "F: broader expected-utility clarification policy",
+  "mechanism_scope": "Add one runtime-observable route to P2 clarification eligibility; do not change exposure, retrieval, ranking, parsing, state, candidate generation, filters, question attributes, utility weights, thresholds, controller limits, or response validation.",
+  "configuration": {
+    "policy_id": "clarification.category-evidence-utility-buying.v1",
+    "retrieval_policy_id": "contextual.category-evidence.v1",
+    "clarification": {
+      "enabled": true,
+      "required_retrieval_policy_id": "contextual.category-evidence.v1",
+      "analysis_candidate_limit": 50,
+      "browsing_min_candidates": 4,
+      "browsing_min_expected_reduction": 0.2,
+      "buying_min_candidates": 8,
+      "buying_min_expected_reduction": 0.5,
+      "eligible_routes": [
+        "browsing",
+        "boundary",
+        "buying"
+      ],
+      "question_candidates": [
+        "other",
+        "feature"
+      ],
+      "utility_min_candidates": 4,
+      "answerability_rates": [
+        [
+          "other",
+          1.0
+        ],
+        [
+          "feature",
+          0.99294
+        ]
+      ],
+      "hit_probability_weight": 0.5,
+      "reciprocal_rank_weight": 0.3,
+      "additional_turn_cost": 0.02
+    },
+    "controller": {
+      "max_questions_per_session": 2,
+      "max_turns": 10
+    },
+    "exposure_policy": "disabled"
+  },
+  "allowed_runtime_inputs": [
+    "current runtime-observable route",
+    "current turn",
+    "current bounded candidate list and participant-visible catalog metadata",
+    "current and previous user messages",
+    "active conversation state",
+    "per-session clarification count and pending clarification state"
+  ],
+  "forbidden_runtime_inputs": [
+    "session identifier value",
+    "target ASIN or target rank",
+    "public-set target or label",
+    "future-turn evidence",
+    "shadow scenario label",
+    "shadow target-derived constraint",
+    "reference source or reference-run artifact",
+    "P3 exposure thresholds or exposure state",
+    "catalog-wide runtime scans"
+  ],
+  "expected_affected_population": {
+    "primary": "Sessions that P2 routes as buying, have at least four bounded analysis candidates under utility_min_candidates, produce a positive expected-utility question under the unchanged P2 utility calculation, and have fewer than two prior questions.",
+    "diagnostic_support": "All 14 selected F residual sessions were observably routed as buying and asked zero P2 questions; nine recovered under the conservative one-answer diagnostic replay.",
+    "expected_shadow_scenarios": [
+      "browsing",
+      "boundary",
+      "intent_override"
+    ],
+    "nonselected_sessions": "Any session not routed as buying must be byte-equivalent to P2. Buying-route sessions that fail an unchanged P2 utility gate must also remain unchanged."
+  },
+  "implementation_invariants": [
+    "The implementation is declarative configuration outside Agent logic.",
+    "Runtime work remains bounded by the existing 50-candidate analysis limit and two-question cap.",
+    "No new catalog scan, index, model, parser, ranker, filter, or target lookup is introduced.",
+    "Central response validation remains active and unchanged.",
+    "Policy load or clarification failure falls back safely to P2 recommendations under the existing Agent boundary.",
+    "Selecting clarification.category-evidence-utility.v1 reproduces exact P2 behavior.",
+    "P3 exposure remains disabled and is neither tuned nor reused."
+  ],
+  "shadow_protocol": {
+    "suite": "the same deterministic 64-session non-public shadow protocol used for P2 and P3",
+    "sample_count": 64,
+    "seed": 20260830,
+    "candidate_runs": 1,
+    "determinism_replay": "A repeat is allowed only as a non-promotional hash/parity verification of the frozen candidate, not as another candidate or tuning run.",
+    "official_runs_consumed": 0
+  },
+  "success_gates": {
+    "minimum_shadow_technical_score_delta": 0.015,
+    "paired_95_percent_confidence_interval_must_exclude_zero": true,
+    "minimum_probability_delta_positive": 0.975,
+    "minimum_selected_scenario_aggregate_technical_score_delta": 0.015,
+    "maximum_overall_hit_rate_regression": 0.0,
+    "maximum_lost_p2_hits": 0,
+    "maximum_scenario_hit_rate_regression": 0.0,
+    "maximum_nonselected_scenario_technical_score_regression": 0.005,
+    "minimum_primary_mechanism_affected_sessions": 1,
+    "minimum_new_buying_route_questions": 1,
+    "minimum_answered_new_buying_route_questions": 1,
+    "maximum_repeated_questions": 0,
+    "maximum_invalid_ids_duplicates_schema_violations_or_exceptions": 0,
+    "maximum_fallback_routing_or_clarification_failures": 0,
+    "disabled_exact_p2_parity_required": true,
+    "deterministic_transcript_and_session_hashes_required": true,
+    "paraphrase_and_target_independent_robustness_required": true,
+    "mechanism_attribution_required": "Every changed response must occur in a runtime-observable buying-route session with at least four bounded analysis candidates at a turn where the unchanged P2 utility calculation and controller admit a question."
+  },
+  "unacceptable_scenario_regression": "Any scenario hit-rate loss, any lost P2 hit, or a TechnicalScore decrease greater than 0.005 in a nonselected scenario. Selected F scenarios must improve in aggregate by at least 0.015.",
+  "rejection_rule": "Reject P4 without tuning if any success, regression, correctness, determinism, disabled-parity, robustness, or attribution gate fails. Retain P2 and do not evaluate another P4 mechanism in this invocation.",
+  "public_set_overfitting_risk": {
+    "level": "low but nonzero",
+    "reason": "The route addition is derived from a fixed non-public shadow residual population and uses only a generic runtime route, but the shadow simulator's route distribution may not transfer to the public set.",
+    "mitigations": [
+      "No public target identity or session label is used.",
+      "The exact route addition and every threshold are frozen before P4 outcomes.",
+      "No threshold sweep, variant, or post-outcome tuning is permitted.",
+      "Qualification requires paired uncertainty, scenario safety, robustness, and exact disabled parity."
+    ]
+  },
+  "official_run_policy": {
+    "runs_used_before": 8,
+    "runs_remaining_before": 4,
+    "runs_consumed_this_invocation": 0,
+    "runs_remaining_after": 4,
+    "qualifying_action": "Checkpoint and stop for a separately authorized official evaluation."
+  },
+  "timestamps": {
+    "predeclared_utc": "2026-08-31T05:13:59Z"
+  }
+}

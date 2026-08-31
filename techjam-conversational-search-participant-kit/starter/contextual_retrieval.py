@@ -23,6 +23,7 @@ class ContextualRetrievalPolicy:
     dense_weight: float = 0.0
     dense_routes: tuple[str, ...] = ()
     rrf_k: float = 60.0
+    negative_feedback_uses_active_intent: bool = False
 
     def __post_init__(self) -> None:
         if not self.policy_id.strip():
@@ -31,6 +32,8 @@ class ContextualRetrievalPolicy:
             raise ValueError("protected_lexical_count must be between 0 and 10")
         if self.candidate_count < 10:
             raise ValueError("candidate_count must be at least 10")
+        if not isinstance(self.negative_feedback_uses_active_intent, bool):
+            raise TypeError("negative_feedback_uses_active_intent must be a boolean")
         for name in ("state_lexical_weight", "dense_weight", "rrf_k"):
             value = getattr(self, name)
             if isinstance(value, bool) or not math.isfinite(value) or value < 0:
@@ -52,6 +55,36 @@ def contextual_policy_candidates() -> tuple[ContextualRetrievalPolicy, ...]:
             protected_lexical_count=8,
             dense_weight=0.50,
             dense_routes=("browsing",),
+        ),
+        ContextualRetrievalPolicy(
+            policy_id="contextual.feedback-memory.v1",
+            protected_lexical_count=8,
+            dense_weight=0.50,
+            dense_routes=("browsing",),
+            negative_feedback_uses_active_intent=True,
+        ),
+        ContextualRetrievalPolicy(
+            policy_id="contextual.override-history-tail.v1",
+            protected_lexical_count=8,
+            state_lexical_weight=0.5,
+            dense_weight=0.50,
+            dense_routes=("browsing",),
+            negative_feedback_uses_active_intent=True,
+        ),
+        ContextualRetrievalPolicy(
+            policy_id="contextual.override-history-conjunction.v1",
+            protected_lexical_count=8,
+            state_lexical_weight=0.5,
+            dense_weight=0.50,
+            dense_routes=("browsing",),
+            negative_feedback_uses_active_intent=True,
+        ),
+        ContextualRetrievalPolicy(
+            policy_id="contextual.category-evidence.v1",
+            protected_lexical_count=0,
+            candidate_count=200,
+            state_lexical_weight=0.5,
+            negative_feedback_uses_active_intent=True,
         ),
         ContextualRetrievalPolicy(
             policy_id="contextual.combined.v1",

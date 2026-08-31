@@ -275,6 +275,18 @@ class ClarificationController:
             state.pending_attribute = None
         return True
 
+    def interrupt_pending(self, session_id: str) -> ClarificationAttribute | None:
+        """Clear a pending question when the customer starts another intent."""
+
+        if not isinstance(session_id, str) or not session_id:
+            return None
+        state = self._sessions.get(session_id)
+        if state is None:
+            return None
+        interrupted = state.pending_attribute
+        state.pending_attribute = None
+        return interrupted
+
 
 def compose_clarification_response(
     response: Mapping[str, object],

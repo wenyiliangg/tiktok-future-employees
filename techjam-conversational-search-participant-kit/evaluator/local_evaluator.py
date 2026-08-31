@@ -310,6 +310,14 @@ def retrieval_configuration_fingerprint(
     policy_payload = (
         asdict(contextual_policy) if config.mode is RetrievalMode.CONTEXTUAL else None
     )
+    if (
+        policy_payload is not None
+        and not contextual_policy.negative_feedback_uses_active_intent
+    ):
+        # Preserve the frozen fingerprints and payloads of policies that retain
+        # the historical raw-turn behavior. Experimental query strategies are
+        # fingerprinted only when explicitly enabled.
+        policy_payload.pop("negative_feedback_uses_active_intent")
     payload: dict[str, object] = {
         "schema_version": 1,
         "mode": RetrievalMode.parse(config.mode).value,
@@ -723,6 +731,8 @@ def main() -> None:
         SELECTED_POLICY_ID,
         ROLLBACK_POLICY_ID,
         "clarification.issue-5c.v1",
+        "clarification.feedback-memory.v1",
+        "clarification.category-evidence-utility.v1",
     }:
         raise ValueError(
             f"unsupported clarification policy: {clarification_policy.policy_id}"

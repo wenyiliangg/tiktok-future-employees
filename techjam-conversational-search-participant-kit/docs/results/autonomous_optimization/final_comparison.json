@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "campaign_status": "paused_for_final_submission_verification",
+  "campaign_base": {
+    "commit": "c57dfce8f7aeb44cb366ab3a90c11e9ac613cf07",
+    "technical_score": 0.11766,
+    "hit_rate_at_10": 0.14,
+    "mrr": 0.074867,
+    "mttc": 9.74,
+    "efficiency": 0.126
+  },
+  "bm25_baseline": {
+    "technical_score": 0.10671,
+    "hit_rate_at_10": 0.125,
+    "mrr": 0.068034,
+    "mttc": 9.81,
+    "efficiency": 0.119
+  },
+  "champion": {
+    "commit": "f4992683cff2fe0cb6e4e756edeb361f1f29f6b0",
+    "configuration": "contextual.category-evidence.v1 + clarification.category-evidence-utility-buying.v1",
+    "technical_score": 0.733983,
+    "hit_rate_at_10": 0.87,
+    "mrr": 0.519609,
+    "mttc": 3.845,
+    "efficiency": 0.7155,
+    "delta_vs_campaign_base": 0.616323,
+    "rollback_commit": "7ba0a7c769954d758e1c6db6e70cde3cac214bb5"
+  },
+  "final_reproduction": {
+    "status": "historical H0 reproduction retained for audit; superseded by the promoted P5 champion",
+    "technical_score": 0.305993,
+    "hit_rate_at_10": 0.405,
+    "mrr": 0.15331,
+    "mttc": 8.125,
+    "efficiency": 0.2875,
+    "normalized_response_sha256": "9e50a9e37aea0e149bfaff346266d24628679558c1999bde36146681d67bca6d",
+    "session_outcome_sha256": "ee2d7a3a683273d17dcb2e8a9d0dcc1ab7c05816c4c611a43be9070133e45e67",
+    "metrics_and_hashes_match": true,
+    "correctness_violations": 0,
+    "startup_seconds": 5.617351,
+    "full_evaluator_wall_seconds": 23.602872,
+    "mean_response_latency_ms": 15.595118,
+    "p95_response_latency_ms": 22.324583,
+    "peak_rss_mib": 1157.171875
+  },
+  "retained_champions": [
+    {
+      "experiment_id": "H0-feedback-memory-bm25",
+      "commit": "4d7af4eea2cfb8626fc858452ba4d0ab7f2cc509",
+      "technical_score": 0.305993
+    },
+    {
+      "experiment_id": "H3-override-history-tail-v1",
+      "commit": "1172b6a3a3361e6848fdeb169915c66662a9f8b0",
+      "technical_score": 0.331493,
+      "delta_vs_previous_champion": 0.0255,
+      "gained_hits": 9,
+      "lost_hits": 0,
+      "paired_95_percent_ci": [
+        0.011166667,
+        0.042383333
+      ]
+    },
+    {
+      "experiment_id": "P1-category-evidence-pipeline-v1",
+      "commit": "1179c8bf70bf4994420599a8f70b05af70230a59",
+      "technical_score": 0.507985,
+      "delta_vs_previous_champion": 0.176492,
+      "gained_hits": 68,
+      "lost_hits": 22,
+      "paired_95_percent_ci": [
+        0.112498467,
+        0.239312336
+      ]
+    },
+    {
+      "experiment_id": "P2-answerability-utility-questions-v1",
+      "commit": "7ba0a7c769954d758e1c6db6e70cde3cac214bb5",
+      "technical_score": 0.554435,
+      "delta_vs_previous_champion": 0.04645,
+      "gained_hits": 8,
+      "lost_hits": 2,
+      "paired_95_percent_ci": [
+        0.021953378,
+        0.074019732
+      ]
+    },
+    {
+      "experiment_id": "P5-prospective-causal-clarification-confirmation-v1",
+      "commit": "f4992683cff2fe0cb6e4e756edeb361f1f29f6b0",
+      "technical_score": 0.733983,
+      "delta_vs_previous_champion": 0.179548,
+      "gained_hits": 39,
+      "lost_hits": 7,
+      "paired_95_percent_ci": [
+        0.129785253,
+        0.232346637
+      ]
+    }
+  ],
+  "rejected_experiments": [
+    {
+      "experiment_id": "H1-open-evidence-questions-v1",
+      "candidate_commit": "f725ee3050a2a7b3b931a64d0c7f4b2831d7c82c",
+      "technical_score": 0.328091,
+      "delta_vs_champion": 0.022098,
+      "gained_hits": 9,
+      "lost_hits": 7,
+      "paired_95_percent_ci": [
+        -0.009625625,
+        0.054877411
+      ],
+      "reason": "Rejected despite a strong aggregate delta because seven champion hits were lost and the paired interval crossed zero."
+    },
+    {
+      "experiment_id": "H2-catalog-signature-index-v1",
+      "candidate_commit": "c6979a129be50694029ff77476c711e65f1bf509",
+      "technical_score": 0.305243,
+      "delta_vs_champion": -0.00075,
+      "gained_hits": 0,
+      "lost_hits": 0,
+      "worse_ranks": 1,
+      "paired_95_percent_ci": [
+        -0.00225,
+        0.0
+      ],
+      "reason": "Rejected because aggregate and paired TechnicalScore decreased; one Intent Override hit moved to a worse rank and no session improved."
+    },
+    {
+      "experiment_id": "P4-buying-route-utility-clarification-v1",
+      "candidate_commit": "accda5bf3e1755730868f8e50cf2c2a33c3ef492",
+      "shadow_technical_score": 0.797876,
+      "shadow_delta_vs_p2": 0.218248,
+      "official_runs_consumed": 0,
+      "reason": "Historically rejected under its frozen route-local attribution gate because downstream mediated route transitions were treated as attribution failures; the verdict was not changed by P5."
+    }
+  ],
+  "external_reference": {
+    "technical_score": 0.963323,
+    "status": "verified current reference checkout in two exact runs; retained only as a behavioral parity target",
+    "used_as_implementation_source": false
+  },
+  "official_runs_used": 10,
+  "official_runs_remaining": 2,
+  "stop_reason": "P5 promoted after deterministic confirmation; reserve the final two official runs for submission verification.",
+  "resumed_after_h2_utc": "2026-08-30T12:59:34Z",
+  "limitations": [
+    "The selected score is measured on the official public set and is not a private-set claim.",
+    "The verified 0.963323 reference score is not paired with our sessions and its source is not used after the sanitization barrier.",
+    "Non-public shadow suites reduce but do not eliminate public-set selection and distribution-shift risk."
+  ],
+  "last_updated_utc": "2026-08-31T09:49:56Z"
+}

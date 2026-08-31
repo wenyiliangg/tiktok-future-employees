@@ -284,6 +284,16 @@ class ClarificationControllerTest(unittest.TestCase):
             self.controller.build_prompt("session", "color", SessionState(), 2)
         )
 
+    def test_override_interruption_clears_only_pending_state(self) -> None:
+        prompt = self.controller.build_prompt("session", "other", SessionState(), 1)
+        self.assertIsNotNone(prompt)
+        self.assertEqual(self.controller.interrupt_pending("session"), "other")
+        state = self.controller.state_for("session")
+        assert state is not None
+        self.assertIsNone(state.pending_attribute)
+        self.assertIn("other", state.asked_attributes)
+        self.assertNotIn("other", state.declined_attributes)
+
 
 class ClarificationResponseCompositionTest(unittest.TestCase):
     def setUp(self) -> None:

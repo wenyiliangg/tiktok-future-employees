@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "campaign_status": "paused_for_final_submission_verification",
+  "campaign_base_commit": "c57dfce8f7aeb44cb366ab3a90c11e9ac613cf07",
+  "campaign_branch": "experiment/p5-clarification-confirmation",
+  "champion_commit": "f4992683cff2fe0cb6e4e756edeb361f1f29f6b0",
+  "rollback_commit": "7ba0a7c769954d758e1c6db6e70cde3cac214bb5",
+  "champion_configuration": {
+    "retrieval_mode": "contextual",
+    "retrieval_policy": "contextual.category-evidence.v1",
+    "clarification_policy": "clarification.category-evidence-utility-buying.v1",
+    "bm25_candidate_count": 200,
+    "dense_candidate_count": 200,
+    "final_candidate_count": 10,
+    "protected_lexical_count": 0,
+    "dense_weight": 0.0,
+    "override_history_phrase_limit": 1,
+    "override_history_tail_weight": 0.5,
+    "category_candidate_limit": 1600,
+    "total_evidence_candidate_limit": 4000,
+    "weak_evidence_anchor_floor": 6,
+    "rare_document_fraction": 0.05,
+    "strong_evidence_document_fraction": 0.01,
+    "question_candidates": [
+      "other",
+      "feature"
+    ],
+    "eligible_clarification_routes": [
+      "browsing",
+      "boundary",
+      "buying"
+    ],
+    "max_questions_per_session": 2,
+    "fixed_seed": 20260830
+  },
+  "champion_fingerprint": {
+    "retrieval": "d7283c869605b440a2e6f702db5a9179f983fd3bc045f38193bb05b5bf85c47b",
+    "override_history": "fc9e1a03e3b5a789e141dc7c644db12420e2fb312c0a1d9564a9472b87b40e01",
+    "category_evidence": "13964662e5fb63bf16da308e43ed107fff58dc6eb76263cc1d4b7c814c1eb267",
+    "clarification": "6db00179643c355adf1ecfbef5fee680ce50ce316f6f5c272da9aa53ab8bf62e"
+  },
+  "champion_metrics": {
+    "sample_count": 200,
+    "hit_rate_at_10": 0.87,
+    "mrr": 0.519609,
+    "mttc": 3.845,
+    "efficiency": 0.7155,
+    "technical_score": 0.733983,
+    "clarification_questions": 323
+  },
+  "champion_response_hash": "0b17cb2037fa6a18580e98b097b8268655d2121855ce8c9cf9f158d1b2a1e486",
+  "champion_session_hash": "654dbb33898ec07a742b88c04129519faf82b3c032a0fa5b7f7888e5df24989e",
+  "current_experiment_id": "P5-prospective-causal-clarification-confirmation-v1",
+  "current_hypothesis": "The frozen P4 buying-route clarification behavior has a large target-independent benefit whose downstream effects are causally mediated by a qualifying first-divergence clarification.",
+  "current_stage": "P5_promoted_official_deterministically_confirmed",
+  "experiment_start_commit": "48391a76332c222084304b061d947ea51169f2a3",
+  "experiment_commits": [
+    "322d7dda1af22f880143ca3bf84a9f13558f3708",
+    "744465a303fe0361aae30568197d094fdcdf1676",
+    "f4992683cff2fe0cb6e4e756edeb361f1f29f6b0"
+  ],
+  "completed_hypotheses": [
+    "H0-feedback-memory-bm25",
+    "H1-open-evidence-questions-v1",
+    "H2-catalog-signature-index-v1",
+    "H3-override-history-tail-v1",
+    "P1-category-evidence-pipeline-v1",
+    "P2-answerability-utility-questions-v1",
+    "P3-bounded-confidence-exposure-v1",
+    "P4-buying-route-utility-clarification-v1",
+    "P5-prospective-causal-clarification-confirmation-v1"
+  ],
+  "retained_hypotheses": [
+    "H0-feedback-memory-bm25",
+    "H3-override-history-tail-v1",
+    "P1-category-evidence-pipeline-v1",
+    "P2-answerability-utility-questions-v1",
+    "P5-prospective-causal-clarification-confirmation-v1"
+  ],
+  "rejected_hypotheses": [
+    "H1-open-evidence-questions-v1",
+    "H2-catalog-signature-index-v1",
+    "P3-bounded-confidence-exposure-v1",
+    "P4-buying-route-utility-clarification-v1"
+  ],
+  "superseded_hypotheses": [
+    "H4-dual-evidence-conjunction-v1"
+  ],
+  "consecutive_rejections": 0,
+  "consecutive_small_improvements": 0,
+  "official_runs_used": 10,
+  "official_runs_remaining": 2,
+  "fixed_seed": 20260830,
+  "run_start_utc": "2026-08-30T14:44:51Z",
+  "last_checkpoint_utc": "2026-08-31T09:49:56Z",
+  "pause_reason": "P5 promoted after two deterministic official runs; two official runs are reserved for final submission verification.",
+  "stop_reason": "The authorized P5 confirmation is complete; no further experiment is permitted in this invocation.",
+  "next_action": "Prepare the final submission from f4992683cff2fe0cb6e4e756edeb361f1f29f6b0 without changing behavior, then use the two reserved official runs only for final submission verification."
+}

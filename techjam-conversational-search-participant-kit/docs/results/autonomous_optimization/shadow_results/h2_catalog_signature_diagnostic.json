@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "experiment_id": "H2-catalog-signature-index-v1",
+  "catalog_sha256": "da979b05a68af864cb0dcf9ee6a81c010c7e66a57978ad286c7a2e005fc69a67",
+  "public_target_overlap": 0,
+  "configuration": {
+    "signature_token_limit": 24,
+    "rare_token_max_documents": 500,
+    "fields": [
+      "title",
+      "features",
+      "description",
+      "categories",
+      "details"
+    ]
+  },
+  "diagnostic": {
+    "sample_count": 256,
+    "phrases_evaluated": 1024,
+    "all_phrase_candidate_buckets": {
+      "eleven_to_hundred": 133,
+      "no_candidates": 88,
+      "over_hundred": 387,
+      "two_to_ten": 99,
+      "unique": 317
+    },
+    "first_phrase_candidate_buckets": {
+      "eleven_to_hundred": 47,
+      "no_candidates": 21,
+      "over_hundred": 112,
+      "two_to_ten": 19,
+      "unique": 57
+    },
+    "two_phrase_candidate_buckets": {
+      "eleven_to_hundred": 27,
+      "no_candidates": 21,
+      "over_hundred": 77,
+      "two_to_ten": 35,
+      "unique": 96
+    },
+    "owner_recovery": {
+      "first_phrase": 231,
+      "phrase": 918,
+      "two_phrase": 231
+    },
+    "owner_recovery_rates": {
+      "first_phrase": 0.902344,
+      "two_phrase": 0.902344
+    },
+    "candidate_size": {
+      "mean": 2498.454102,
+      "median": 11.5,
+      "maximum": 25451
+    }
+  }
+}

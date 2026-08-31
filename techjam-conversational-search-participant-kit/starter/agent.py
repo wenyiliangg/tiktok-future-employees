@@ -19,6 +19,11 @@ from dense_retrieval import DEFAULT_MODEL_NAME, DEFAULT_MODEL_REVISION, DenseRet
 
 from .ambiguity_analysis import AmbiguityAnalyzer
 from .bm25_anchor import BM25AnchorRetriever
+from .category_evidence import (
+    CategoryEvidenceIndex,
+    EvidenceMessageStore,
+    category_evidence_policy_for_retrieval,
+)
 from .clarification_controller import (
     ClarificationController,
     ClarificationPrompt,
@@ -41,6 +46,10 @@ from .conversation_state import (
     SearchQuery,
     explicit_attribute_mentions,
 )
+from .dual_evidence_conjunction import (
+    DualEvidenceConjunctionRanker,
+    dual_evidence_policy_for_retrieval,
+)
 from .fallback_candidates import FallbackCandidateGenerator
 from .feature_reranker import (
     CatalogView,
@@ -59,6 +68,14 @@ from .hybrid_retrieval import (
 )
 from .intent_router import IntentRouter, RoutingDecision
 from .lexical_retriever import LexicalRetriever
+from .override_history_policy import override_history_policy_for_retrieval
+from .question_utility import rank_question_candidates
+from .recommendation_exposure import (
+    ExposureDecision,
+    RecommendationExposurePolicy,
+    apply_recommendation_exposure,
+    disabled_exposure_policy,
+)
 from .response_validation import DEFAULT_RECOMMENDATION_MESSAGE, validate_response
 from .route_aware_retrieval import (
     filter_candidates,
@@ -104,6 +121,7 @@ class Agent:
         clarification_composer: Callable[
             [Mapping[str, object], ClarificationPrompt | None], dict[str, object]
         ] = compose_clarification_response,
+        exposure_policy: RecommendationExposurePolicy | None = None,
     ) -> None:
         self.catalog_path = Path(catalog_path)
         self.config = config or HybridRetrievalConfig()
@@ -118,6 +136,22 @@ class Agent:
         self._contextual_policy = contextual_policy or policy_by_id(
             "contextual.browsing-dense.v1"
         )
+        self._override_history_policy = override_history_policy_for_retrieval(
+            self._contextual_policy.policy_id
+        )
+        self._dual_evidence_policy = dual_evidence_policy_for_retrieval(
+            self._contextual_policy.policy_id
+        )
+        self._category_evidence_policy = category_evidence_policy_for_retrieval(
+            self._contextual_policy.policy_id
+        )
+        self._evidence_messages = EvidenceMessageStore()
+        if (
+            self._override_history_policy.enabled
+            and self._contextual_policy.state_lexical_weight
+            != self._override_history_policy.required_tail_weight
+        ):
+            raise ValueError("override history and contextual tail weights differ")
         self._initialization_fallback_counts: Counter[str] = Counter()
         if clarification_config is None:
             default_clarification_policy, selected_error = (
@@ -140,9 +174,11 @@ class Agent:
             or ClarificationController(default_controller_config)
         )
         self._clarification_composer = clarification_composer
+        self._exposure_policy = exposure_policy or disabled_exposure_policy()
         self._known_negative_ids: dict[str, set[str]] = {}
         self._last_recommended_ids: dict[str, tuple[str, ...]] = {}
         self._active_raw_intent: dict[str, str] = {}
+        self._historical_raw_evidence: dict[str, str] = {}
         self._fallback_init_error: str | None = None
         self._user_profiles: dict[str, dict] = {}
         self._session_diagnostics: dict[str, list[dict[str, object]]] = {}
@@ -163,11 +199,44 @@ class Agent:
         self._clarification_route_counts: Counter[str] = Counter()
         self._clarification_resolution_counts: Counter[str] = Counter()
         self._clarification_failure_count = 0
+        self._exposure_events: dict[str, list[dict[str, object]]] = {}
+        self._exposure_was_gated: dict[str, bool] = {}
+        self._exposure_activation_count = 0
+        self._exposure_exit_counts: Counter[str] = Counter()
+        self._exposure_activation_turns: Counter[int] = Counter()
+        self._exposure_activation_routes: Counter[str] = Counter()
+        self._exposure_activation_evidence: Counter[str] = Counter()
+        self._exposure_suppressed_recommendations = 0
+        self._exposure_failure_count = 0
 
         self._catalog_ids = self._load_catalog_ids(self.catalog_path)
         self._catalog_view = catalog_view or InMemoryCatalogView.from_jsonl(
             self.catalog_path
         )
+        self._dual_evidence_ranker: DualEvidenceConjunctionRanker | None = None
+        if self._dual_evidence_policy.enabled:
+            try:
+                self._dual_evidence_ranker = DualEvidenceConjunctionRanker.from_jsonl(
+                    self.catalog_path, self._dual_evidence_policy
+                )
+            except Exception as error:  # noqa: BLE001 - optional ranker boundary
+                self._initialization_fallback_counts["dual_evidence"] += 1
+                LOGGER.warning(
+                    "dual-evidence initialization failed; preserving H3 ranking: %s",
+                    error,
+                )
+        self._category_evidence_index: CategoryEvidenceIndex | None = None
+        if self._category_evidence_policy.enabled:
+            try:
+                self._category_evidence_index = CategoryEvidenceIndex.from_jsonl(
+                    self.catalog_path, self._category_evidence_policy
+                )
+            except Exception as error:  # noqa: BLE001 - optional ranker boundary
+                self._initialization_fallback_counts["category_evidence"] += 1
+                LOGGER.warning(
+                    "category-evidence initialization failed; preserving H3 ranking: %s",
+                    error,
+                )
         # Experimental reranking remains opt-in. Protected BM25 and contextual
         # modes never pass their prefix through this component.
         self._reranker = reranker or FeatureReranker(reranker_config)
@@ -253,9 +322,13 @@ class Agent:
         self._known_negative_ids[session_id] = set()
         self._last_recommended_ids[session_id] = ()
         self._active_raw_intent[session_id] = ""
+        self._historical_raw_evidence[session_id] = ""
+        self._evidence_messages.reset(session_id)
         self._clarification_candidates[session_id] = []
         self._contextual_routes.pop(session_id, None)
         self._clarification_disabled_sessions.discard(session_id)
+        self._exposure_events[session_id] = []
+        self._exposure_was_gated[session_id] = False
         if self._clarification_config.enabled:
             try:
                 self._clarification_controller.reset(session_id)
@@ -276,11 +349,14 @@ class Agent:
 
         try:
             response = self._respond_once(session_id, user_message, turn, top_k)
-            return validate_response(
+            validated = validate_response(
                 response,
                 self._last_candidates.get(session_id, ()),
                 self._catalog_ids,
                 top_k,
+            )
+            return self._apply_exposure_fail_open(
+                validated, session_id=session_id, turn=turn
             )
         except Exception as error:  # noqa: BLE001 - final evaluator boundary
             self._component_failure_counts["unexpected_response"] += 1
@@ -314,6 +390,76 @@ class Agent:
                     top_k,
                 )
 
+    def _apply_exposure_fail_open(
+        self,
+        response: dict[str, object],
+        *,
+        session_id: str,
+        turn: int,
+    ) -> dict[str, object]:
+        """Apply prefix-only exposure after validation, returning P2 on failure."""
+
+        if not self._exposure_policy.enabled:
+            return response
+        try:
+            active_state = self._state.state_for(session_id)
+            clarification_state = self._clarification_controller.state_for(session_id)
+            route = self._contextual_routes.get(session_id, "uncertain")
+            exposed, decision = apply_recommendation_exposure(
+                response,
+                policy=self._exposure_policy,
+                turn=turn,
+                route=route,
+                active_state=active_state,
+                clarification_state=clarification_state,
+            )
+            self._record_exposure_decision(session_id, decision)
+            return exposed
+        except Exception as error:  # noqa: BLE001 - optional exposure boundary
+            self._exposure_failure_count += 1
+            self._component_failure_counts["recommendation_exposure"] += 1
+            LOGGER.warning(
+                "recommendation exposure failed for session %s; returning full P2 response: %s",
+                session_id,
+                error,
+            )
+            return response
+
+    def _record_exposure_decision(
+        self, session_id: str, decision: ExposureDecision
+    ) -> None:
+        previously_gated = self._exposure_was_gated.get(session_id, False)
+        if decision.gated:
+            if not previously_gated:
+                self._exposure_activation_count += 1
+            self._exposure_activation_turns[decision.turn] += 1
+            self._exposure_activation_routes[decision.route] += 1
+            self._exposure_activation_evidence[decision.evidence_level] += 1
+            self._exposure_suppressed_recommendations += (
+                decision.suppressed_recommendation_count
+            )
+        elif previously_gated:
+            self._exposure_exit_counts[decision.reason] += 1
+        self._exposure_was_gated[session_id] = decision.gated
+        self._exposure_events.setdefault(session_id, []).append(
+            {
+                "gated": decision.gated,
+                "reason": decision.reason,
+                "turn": decision.turn,
+                "route": decision.route,
+                "active_constraint_count": decision.active_constraint_count,
+                "answered_clarification": decision.answered_clarification,
+                "evidence_level": decision.evidence_level,
+                "available_recommendation_count": (
+                    decision.available_recommendation_count
+                ),
+                "exposed_recommendation_count": decision.exposed_recommendation_count,
+                "suppressed_recommendation_count": (
+                    decision.suppressed_recommendation_count
+                ),
+            }
+        )
+
     def _respond_once(
         self,
         session_id: str,
@@ -325,11 +471,23 @@ class Agent:
             self._resolve_pending_clarification(session_id, user_message)
 
         if self.config.mode is RetrievalMode.CONTEXTUAL:
-            if OVERRIDE_CUE_RE.search(user_message):
+            is_override = bool(OVERRIDE_CUE_RE.search(user_message))
+            is_negative = bool(NEGATIVE_FEEDBACK_RE.search(user_message))
+            self._evidence_messages.observe(
+                session_id,
+                user_message,
+                override=is_override,
+                non_evidence_reply=is_negative
+                or is_explicit_no_preference(user_message),
+            )
+            if is_override:
+                if self._override_history_policy.enabled:
+                    prior_intent = self._active_raw_intent.get(session_id, "").strip()
+                    self._historical_raw_evidence[session_id] = prior_intent
                 self._known_negative_ids.setdefault(session_id, set()).clear()
                 self._last_recommended_ids[session_id] = ()
                 self._active_raw_intent[session_id] = user_message
-            elif NEGATIVE_FEEDBACK_RE.search(user_message):
+            elif is_negative:
                 self._known_negative_ids.setdefault(session_id, set()).update(
                     self._last_recommended_ids.get(session_id, ())
                 )
@@ -401,6 +559,13 @@ class Agent:
             pending = getattr(clarification_state, "pending_attribute", None)
             if pending is None:
                 return
+            uses_utility_strategy = bool(
+                getattr(self._clarification_config, "uses_utility_strategy", False)
+            )
+            if uses_utility_strategy and OVERRIDE_CUE_RE.search(user_message):
+                if self._clarification_controller.interrupt_pending(session_id):
+                    self._clarification_resolution_counts["interrupted"] += 1
+                return
             if is_explicit_no_preference(user_message):
                 if self._clarification_controller.record_resolution(
                     session_id, pending, "no_preference"
@@ -411,11 +576,15 @@ class Agent:
                 normalize_attribute(attribute)
                 for attribute in explicit_attribute_mentions(user_message)
             }
+            protocol_answer = (
+                uses_utility_strategy
+                and pending in self._clarification_config.question_candidates
+                and bool(user_message.strip())
+            )
             if (
-                pending in recognized
-                and self._clarification_controller.record_resolution(
-                    session_id, pending, "answered"
-                )
+                pending in recognized or protocol_answer
+            ) and self._clarification_controller.record_resolution(
+                session_id, pending, "answered"
             ):
                 self._clarification_resolution_counts["answered"] += 1
         except Exception as error:  # noqa: BLE001 - clarification-only boundary
@@ -434,12 +603,41 @@ class Agent:
         if (
             session_id in self._clarification_disabled_sessions
             or self.config.mode is not RetrievalMode.CONTEXTUAL
-            or self._contextual_policy.policy_id != config.required_retrieval_policy_id
+            or not self._override_history_policy.clarification_is_compatible(
+                config.required_retrieval_policy_id
+            )
         ):
             return dict(response)
         candidates = self._clarification_candidates.get(session_id, [])[
             : config.analysis_candidate_limit
         ]
+        route = self._contextual_routes.get(session_id, "uncertain")
+        if getattr(config, "uses_utility_strategy", False):
+            try:
+                if not config.utility_is_eligible(route, len(candidates)):
+                    return dict(response)
+                catalog = self._clarification_catalog(candidates)
+                active_state = self._state.state_for(session_id)
+                statistics = self._ambiguity_analyzer.attribute_statistics(
+                    candidates, catalog, active_state
+                )
+                prompt = None
+                for utility in rank_question_candidates(statistics, config):
+                    prompt = self._clarification_controller.build_prompt(
+                        session_id, utility.attribute, active_state, turn
+                    )
+                    if prompt is not None:
+                        break
+                if prompt is None:
+                    return dict(response)
+            except Exception as error:  # noqa: BLE001 - utility policy boundary
+                self._record_clarification_failure(
+                    session_id, "question_utility", error
+                )
+                return dict(response)
+            return self._compose_clarification(
+                response, prompt=prompt, route=route, session_id=session_id
+            )
         try:
             catalog = self._clarification_catalog(candidates)
             active_state = self._state.state_for(session_id)
@@ -449,7 +647,6 @@ class Agent:
         except Exception as error:  # noqa: BLE001 - analyzer boundary
             self._record_clarification_failure(session_id, "ambiguity_analyzer", error)
             return dict(response)
-        route = self._contextual_routes.get(session_id, "uncertain")
         try:
             if not config.is_eligible(route, len(candidates), opportunity):
                 return dict(response)
@@ -473,6 +670,18 @@ class Agent:
         except Exception as error:  # noqa: BLE001 - controller boundary
             self._record_clarification_failure(session_id, "controller", error)
             return dict(response)
+        return self._compose_clarification(
+            response, prompt=prompt, route=route, session_id=session_id
+        )
+
+    def _compose_clarification(
+        self,
+        response: Mapping[str, object],
+        *,
+        prompt: ClarificationPrompt,
+        route: str,
+        session_id: str,
+    ) -> dict[str, object]:
         try:
             composed = self._clarification_composer(response, prompt)
             prompt_attribute = str(prompt.ask_attribute)
@@ -653,10 +862,31 @@ class Agent:
         policy = self._contextual_policy
         raw_text = self._raw_turn_text(session_id, query)
         active_text = self._active_raw_intent.get(session_id) or raw_text
-        anchor = list(self._anchor.retrieve(raw_text, top_n=policy.candidate_count))
+        anchor_text = raw_text
+        if policy.negative_feedback_uses_active_intent and NEGATIVE_FEEDBACK_RE.search(
+            raw_text
+        ):
+            anchor_text = active_text
+        anchor = list(self._anchor.retrieve(anchor_text, top_n=policy.candidate_count))
         soft_query = self._soft_backfill_query(query)
         state_results: list[RankedResult] = []
-        if policy.state_lexical_weight > 0:
+        history_text = self._historical_raw_evidence.get(session_id, "")
+        if self._override_history_policy.enabled:
+            if history_text:
+                try:
+                    state_results = list(
+                        self._anchor.retrieve(
+                            history_text, top_n=policy.candidate_count
+                        )
+                    )
+                except Exception as error:  # noqa: BLE001 - optional evidence boundary
+                    self._component_failure_counts["override_history"] += 1
+                    LOGGER.warning(
+                        "override history retrieval failed for session %s; preserving current intent: %s",
+                        session_id,
+                        error,
+                    )
+        elif policy.state_lexical_weight > 0:
             if self._lexical is None:
                 self._lexical = LexicalRetriever.from_jsonl(self.catalog_path)
             state_results = list(
@@ -722,6 +952,51 @@ class Agent:
                 self._catalog_ids,
                 ranking_limit,
             )
+        if self._category_evidence_index is not None:
+            try:
+                ranked = self._category_evidence_index.rank(
+                    query=query,
+                    current_text=(
+                        self._evidence_messages.current_text(session_id) or active_text
+                    ),
+                    historical_text=(
+                        self._evidence_messages.historical_text(session_id)
+                        or history_text
+                    ),
+                    base_results=anchor,
+                    history_results=state_results,
+                    catalog=self._catalog_view,
+                    known_negative_ids=self._known_negative_ids.get(session_id, set()),
+                    limit=ranking_limit,
+                )
+            except Exception as error:  # noqa: BLE001 - optional ranker boundary
+                self._component_failure_counts["category_evidence"] += 1
+                LOGGER.warning(
+                    "category-evidence ranking failed for session %s; preserving H3 ranking: %s",
+                    session_id,
+                    error,
+                )
+        if self._dual_evidence_ranker is not None and history_text and ranked:
+            try:
+                head = ranked[:limit]
+                identifiers = [candidate.parent_asin for candidate in head]
+                ranked = [
+                    *self._dual_evidence_ranker.rerank(
+                        head,
+                        identifiers,
+                        active_text,
+                        history_text,
+                        self._catalog_view,
+                    ),
+                    *ranked[limit:],
+                ]
+            except Exception as error:  # noqa: BLE001 - optional ranker boundary
+                self._component_failure_counts["dual_evidence"] += 1
+                LOGGER.warning(
+                    "dual-evidence reranking failed for session %s; preserving H3 ranking: %s",
+                    session_id,
+                    error,
+                )
         if self._clarification_config.enabled:
             self._clarification_candidates[session_id] = copy.deepcopy(
                 ranked[: self._clarification_config.analysis_candidate_limit]
@@ -1049,6 +1324,46 @@ class Agent:
             "analysis_candidate_limit": (
                 self._clarification_config.analysis_candidate_limit
             ),
+        }
+
+    def exposure_diagnostics_snapshot(
+        self, session_id: str | None = None
+    ) -> dict[str, object]:
+        """Return exposure-only diagnostics without affecting runtime decisions."""
+
+        if session_id is not None:
+            return {
+                "policy_id": self._exposure_policy.policy_id,
+                "events": copy.deepcopy(self._exposure_events.get(session_id, [])),
+                "currently_gated": self._exposure_was_gated.get(session_id, False),
+            }
+        affected = sum(
+            any(bool(event.get("gated")) for event in events)
+            for events in self._exposure_events.values()
+        )
+        return {
+            "enabled": self._exposure_policy.enabled,
+            "policy_id": self._exposure_policy.policy_id,
+            "fingerprint_sha256": self._exposure_policy.fingerprint_sha256,
+            "affected_session_count": affected,
+            "activation_count": self._exposure_activation_count,
+            "gated_turn_count": sum(self._exposure_activation_turns.values()),
+            "activation_by_turn": {
+                str(key): value
+                for key, value in sorted(self._exposure_activation_turns.items())
+            },
+            "activation_by_route": dict(
+                sorted(self._exposure_activation_routes.items())
+            ),
+            "activation_by_evidence_level": dict(
+                sorted(self._exposure_activation_evidence.items())
+            ),
+            "exit_counts": dict(sorted(self._exposure_exit_counts.items())),
+            "suppressed_recommendation_count": (
+                self._exposure_suppressed_recommendations
+            ),
+            "currently_gated_session_count": sum(self._exposure_was_gated.values()),
+            "exposure_failure_count": self._exposure_failure_count,
         }
 
     def _require_lexical(self) -> Any:

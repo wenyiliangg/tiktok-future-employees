@@ -1,0 +1,2686 @@
+{
+  "schema_version": 1,
+  "experiment_id": "P3-bounded-confidence-exposure-v1",
+  "seed": 20260830,
+  "official_runs_consumed": 0,
+  "inputs": {
+    "catalog_sha256": "da979b05a68af864cb0dcf9ee6a81c010c7e66a57978ad286c7a2e005fc69a67",
+    "public_set_sha256": "857259f7a438e6188ac63e18995b6ff4489bfcfc4a716a798b9a2aa0ee8f7579",
+    "predeclaration_sha256": "5855b8422aa52399eddb6bb3ea70bb3cd531ac8bf958606ed2fbb0a430ce39a8"
+  },
+  "suite": {
+    "sample_count": 64,
+    "scenario_counts": {
+      "boundary": 16,
+      "browsing": 16,
+      "buying": 16,
+      "intent_override": 16
+    },
+    "public_target_overlap": 0,
+    "catalog_reorder_invariant": true,
+    "target_selection_sha256": "431d63ad07e902b5e65db068cb584fd3089df0390e4213a8dbf8f686d467be80"
+  },
+  "robustness_checks": {
+    "malformed_price_and_metadata": true,
+    "missing_dense_cache_fallback": true,
+    "component_failure_fallback": true,
+    "consecutive_session_isolation": true,
+    "empty_query_preserves_zero_results": true,
+    "sparse_metadata_keeps_rank_one": true,
+    "paraphrased_wording_is_policy_invariant": true,
+    "missing_optional_component_fails_open": true,
+    "repeated_reset_is_isolated": true,
+    "turn_cap_boundary_releases_full_list": true,
+    "disabled_mode_exact_response_parity": true
+  },
+  "p2_champion": {
+    "sample_count": 64,
+    "hit_rate_at_10": 0.703125,
+    "mrr": 0.388343,
+    "mttc": 5.421875,
+    "efficiency": 0.557813,
+    "technical_score": 0.579628,
+    "scenario_metrics": {
+      "boundary": {
+        "sample_count": 16,
+        "hit_rate_at_10": 0.625,
+        "mrr": 0.259722,
+        "mttc": 6.1875,
+        "efficiency": 0.48125,
+        "technical_score": 0.486667
+      },
+      "browsing": {
+        "sample_count": 16,
+        "hit_rate_at_10": 0.5,
+        "mrr": 0.304167,
+        "mttc": 7.5625,
+        "efficiency": 0.34375,
+        "technical_score": 0.41
+      },
+      "buying": {
+        "sample_count": 16,
+        "hit_rate_at_10": 0.9375,
+        "mrr": 0.543998,
+        "mttc": 2.4375,
+        "efficiency": 0.85625,
+        "technical_score": 0.803199
+      },
+      "intent_override": {
+        "sample_count": 16,
+        "hit_rate_at_10": 0.75,
+        "mrr": 0.445486,
+        "mttc": 5.5,
+        "efficiency": 0.55,
+        "technical_score": 0.618646
+      }
+    },
+    "question_counts": {
+      "feature": 7,
+      "other": 9
+    },
+    "question_yield": {
+      "feature.asked": 7,
+      "feature.revealed": 9,
+      "other.asked": 9,
+      "other.revealed": 9
+    },
+    "correctness_counters": {
+      "response_exceptions": 0,
+      "invalid_responses": 0,
+      "invalid_ask_attributes": 0,
+      "invalid_asins": 0,
+      "duplicate_recommendations": 0
+    },
+    "normalized_transcript_sha256": "765c2e05e4bf8dc6f87ab5f099d5ce1144dc1405a39850151e3bff8e60c467f4",
+    "exposure_diagnostics": {
+      "enabled": false,
+      "policy_id": "exposure.disabled.v1",
+      "fingerprint_sha256": "f92cbd2c2801019d305594f312c283a03930713ae010a0fa1c6a7d385c4e7edf",
+      "affected_session_count": 0,
+      "activation_count": 0,
+      "gated_turn_count": 0,
+      "activation_by_turn": {},
+      "activation_by_route": {},
+      "activation_by_evidence_level": {},
+      "exit_counts": {},
+      "suppressed_recommendation_count": 0,
+      "currently_gated_session_count": 0,
+      "exposure_failure_count": 0,
+      "target_suppressed_from_positions_2_to_10_count": 0,
+      "target_suppression_by_position": {},
+      "target_suppression_by_turn": {},
+      "target_affected_session_count": 0,
+      "zero_result_session_count": 0,
+      "permanently_gated_session_count": 0
+    },
+    "fallback_diagnostics": {
+      "route_counts": {},
+      "routing_failure_count": 0,
+      "component_failure_counts": {},
+      "initialization_fallback_counts": {},
+      "fallback_attempt_count": 0,
+      "fallback_success_count": 0,
+      "fallback_reasons": {},
+      "routing_latency": {
+        "average_ms": 0.0,
+        "p95_ms": 0.0
+      },
+      "retrieval_latency": {
+        "average_ms": 0.0,
+        "p95_ms": 0.0
+      }
+    },
+    "sessions": [
+      {
+        "sample_id": "shadow_0001",
+        "scenario_type": "buying",
+        "hit": true,
+        "first_hit_turn": 2,
+        "best_rank": 6,
+        "reciprocal_rank": 0.16666666666666666
+      },
+      {
+        "sample_id": "shadow_0002",
+        "scenario_type": "browsing",
+        "hit": true,
+        "first_hit_turn": 2,
+        "best_rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "sample_id": "shadow_0003",
+        "scenario_type": "intent_override",
+        "hit": true,
+        "first_hit_turn": 3,
+        "best_rank": 5,
+        "reciprocal_rank": 0.2
+      },
+      {
+        "sample_id": "shadow_0004",
+        "scenario_type": "boundary",
+        "hit": true,
+        "first_hit_turn": 3,
+        "best_rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "sample_id": "shadow_0005",
+        "scenario_type": "buying",
+        "hit": true,
+        "first_hit_turn": 7,
+        "best_rank": 10,
+        "reciprocal_rank": 0.1
+      },
+      {
+        "sample_id": "shadow_0006",
+        "scenario_type": "browsing",
+        "hit": false,
+        "first_hit_turn": null,
+        "best_rank": null,
+        "reciprocal_rank": 0.0
+      },
+      {
+        "sample_id": "shadow_0007",
+        "scenario_type": "intent_override",
+        "hit": true,
+        "first_hit_turn": 3,
+        "best_rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "sample_id": "shadow_0008",
+        "scenario_type": "boundary",
+        "hit": false,
+        "first_hit_turn": null,
+        "best_rank": null,
+        "reciprocal_rank": 0.0
+      },
+      {
+        "sample_id": "shadow_0009",
+        "scenario_type": "buying",
+        "hit": true,
+        "first_hit_turn": 2,
+        "best_rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "sample_id": "shadow_0010",
+        "scenario_type": "browsing",
+        "hit": false,
+        "first_hit_turn": null,
+        "best_rank": null,
+        "reciprocal_rank": 0.0
+      },
+      {
+        "sample_id": "shadow_0011",
+        "scenario_type": "intent_override",
+        "hit": false,
+        "first_hit_turn": null,
+        "best_rank": null,
+        "reciprocal_rank": 0.0
+      },
+      {
+        "sample_id": "shadow_0012",
+        "scenario_type": "boundary",
+        "hit": true,
+        "first_hit_turn": 3,
+        "best_rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "sample_id": "shadow_0013",
+        "scenario_type": "buying",
+        "hit": true,
+        "first_hit_turn": 1,
+        "best_rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "sample_id": "shadow_0014",
+        "scenario_type": "browsing",
+        "hit": true,
+        "first_hit_turn": 8,
+        "best_rank": 6,
+        "reciprocal_rank": 0.16666666666666666
+      },
+      {
+        "sample_id": "shadow_0015",
+        "scenario_type": "intent_override",
+        "hit": false,
+        "first_hit_turn": null,
+        "best_rank": null,
+        "reciprocal_rank": 0.0
+      },
+      {
+        "sample_id": "shadow_0016",
+        "scenario_type": "boundary",
+        "hit": false,
+        "first_hit_turn": null,
+        "best_rank": null,
+        "reciprocal_rank": 0.0
+      },
+      {
+        "sample_id": "shadow_0017",
+        "scenario_type": "buying",
+        "hit": true,
+        "first_hit_turn": 1,
+        "best_rank": 10,
+        "reciprocal_rank": 0.1
+      },
+      {
+        "sample_id": "shadow_0018",
+        "scenario_type": "browsing",
+        "hit": false,
+        "first_hit_turn": null,
+        "best_rank": null,
+        "reciprocal_rank": 0.0
+      },
+      {
+        "sample_id": "shadow_0019",
+        "scenario_type": "intent_override",
+        "hit": true,
+        "first_hit_turn": 4,
+        "best_rank": 5,
+        "reciprocal_rank": 0.2
+      },
+      {
+        "sample_id": "shadow_0020",
+        "scenario_type": "boundary",
+        "hit": false,
+        "first_hit_turn": null,
+        "best_rank": null,
+        "reciprocal_rank": 0.0
+      },
+      {
+        "sample_id": "shadow_0021",
+        "scenario_type": "buying",
+        "hit": true,
+        "first_hit_turn": 1,
+        "best_rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "sample_id": "shadow_0022",
+        "scenario_type": "browsing",
+        "hit": true,
+        "first_hit_turn": 2,
+        "best_rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "sample_id": "shadow_0023",
+        "scenario_type": "intent_override",
+        "hit": true,
+        "first_hit_turn": 3,
+        "best_rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "sample_id": "shadow_0024",
+        "scenario_type": "boundary",
+        "hit": true,
+        "first_hit_turn": 7,
+        "best_rank": 4,
+        "reciprocal_rank": 0.25
+      },
+      {
+        "sample_id": "shadow_0025",
+        "scenario_type": "buying",
+        "hit": true,
+        "first_hit_turn": 5,
+        "best_rank": 7,
+        "reciprocal_rank": 0.14285714285714285
+      },
+      {
+        "sample_id": "shadow_0026",
+        "scenario_type": "browsing",
+        "hit": false,
+        "first_hit_turn": null,
+        "best_rank": null,
+        "reciprocal_rank": 0.0
+      },
+      {
+        "sample_id": "shadow_0027",
+        "scenario_type": "intent_override",
+        "hit": true,
+        "first_hit_turn": 3,
+        "best_rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "sample_id": "shadow_0028",
+        "scenario_type": "boundary",
+        "hit": false,
+        "first_hit_turn": null,
+        "best_rank": null,
+        "reciprocal_rank": 0.0
+      },
+      {
+        "sample_id": "shadow_0029",
+        "scenario_type": "buying",
+        "hit": false,
+        "first_hit_turn": null,
+        "best_rank": null,
+        "reciprocal_rank": 0.0
+      },
+      {
+        "sample_id": "shadow_0030",
+        "scenario_type": "browsing",
+        "hit": false,
+        "first_hit_turn": null,
+        "best_rank": null,
+        "reciprocal_rank": 0.0
+      },
+      {
+        "sample_id": "shadow_0031",
+        "scenario_type": "intent_override",
+        "hit": false,
+        "first_hit_turn": null,
+        "best_rank": null,
+        "reciprocal_rank": 0.0
+      },
+      {
+        "sample_id": "shadow_0032",
+        "scenario_type": "boundary",
+        "hit": true,
+        "first_hit_turn": 3,
+        "best_rank": 2,
+        "reciprocal_rank": 0.5
+      },
+      {
+        "sample_id": "shadow_0033",
+        "scenario_type": "buying",
+        "hit": true,
+        "first_hit_turn": 1,
+        "best_rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "sample_id": "shadow_0034",
+        "scenario_type": "browsing",
+        "hit": false,
+        "first_hit_turn": null,
+        "best_rank": null,
+        "reciprocal_rank": 0.0
+      },
+      {
+        "sample_id": "shadow_0035",
+        "scenario_type": "intent_override",
+        "hit": true,
+        "first_hit_turn": 3,
+        "best_rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "sample_id": "shadow_0036",
+        "scenario_type": "boundary",
+        "hit": true,
+        "first_hit_turn": 5,
+        "best_rank": 9,
+        "reciprocal_rank": 0.1111111111111111
+      },
+      {
+        "sample_id": "shadow_0037",
+        "scenario_type": "buying",
+        "hit": true,
+        "first_hit_turn": 1,
+        "best_rank": 3,
+        "reciprocal_rank": 0.3333333333333333
+      },
+      {
+        "sample_id": "shadow_0038",
+        "scenario_type": "browsing",
+        "hit": true,
+        "first_hit_turn": 1,
+        "best_rank": 5,
+        "reciprocal_rank": 0.2
+      },
+      {
+        "sample_id": "shadow_0039",
+        "scenario_type": "intent_override",
+        "hit": true,
+        "first_hit_turn": 4,
+        "best_rank": 4,
+        "reciprocal_rank": 0.25
+      },
+      {
+        "sample_id": "shadow_0040",
+        "scenario_type": "boundary",
+        "hit": true,
+        "first_hit_turn": 4,
+        "best_rank": 4,
+        "reciprocal_rank": 0.25
+      },
+      {
+        "sample_id": "shadow_0041",
+        "scenario_type": "buying",
+        "hit": true,
+        "first_hit_turn": 1,
+        "best_rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "sample_id": "shadow_0042",
+        "scenario_type": "browsing",
+        "hit": true,
+        "first_hit_turn": 7,
+        "best_rank": 2,
+        "reciprocal_rank": 0.5
+      },
+      {
+        "sample_id": "shadow_0043",
+        "scenario_type": "intent_override",
+        "hit": true,
+        "first_hit_turn": 5,
+        "best_rank": 9,
+        "reciprocal_rank": 0.1111111111111111
+      },
+      {
+        "sample_id": "shadow_0044",
+        "scenario_type": "boundary",
+        "hit": true,
+        "first_hit_turn": 1,
+        "best_rank": 9,
+        "reciprocal_rank": 0.1111111111111111
+      },
+      {
+        "sample_id": "shadow_0045",
+        "scenario_type": "buying",
+        "hit": true,
+        "first_hit_turn": 1,
+        "best_rank": 2,
+        "reciprocal_rank": 0.5
+      },
+      {
+        "sample_id": "shadow_0046",
+        "scenario_type": "browsing",
+        "hit": false,
+        "first_hit_turn": null,
+        "best_rank": null,
+        "reciprocal_rank": 0.0
+      },
+      {
+        "sample_id": "shadow_0047",
+        "scenario_type": "intent_override",
+        "hit": true,
+        "first_hit_turn": 7,
+        "best_rank": 5,
+        "reciprocal_rank": 0.2
+      },
+      {
+        "sample_id": "shadow_0048",
+        "scenario_type": "boundary",
+        "hit": true,
+        "first_hit_turn": 3,
+        "best_rank": 2,
+        "reciprocal_rank": 0.5
+      },
+      {
+        "sample_id": "shadow_0049",
+        "scenario_type": "buying",
+        "hit": true,
+        "first_hit_turn": 1,
+        "best_rank": 4,
+        "reciprocal_rank": 0.25
+      },
+      {
+        "sample_id": "shadow_0050",
+        "scenario_type": "browsing",
+        "hit": true,
+        "first_hit_turn": 9,
+        "best_rank": 2,
+        "reciprocal_rank": 0.5
+      },
+      {
+        "sample_id": "shadow_0051",
+        "scenario_type": "intent_override",
+        "hit": true,
+        "first_hit_turn": 3,
+        "best_rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "sample_id": "shadow_0052",
+        "scenario_type": "boundary",
+        "hit": true,
+        "first_hit_turn": 1,
+        "best_rank": 10,
+        "reciprocal_rank": 0.1
+      },
+      {
+        "sample_id": "shadow_0053",
+        "scenario_type": "buying",
+        "hit": true,
+        "first_hit_turn": 1,
+        "best_rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "sample_id": "shadow_0054",
+        "scenario_type": "browsing",
+        "hit": false,
+        "first_hit_turn": null,
+        "best_rank": null,
+        "reciprocal_rank": 0.0
+      },
+      {
+        "sample_id": "shadow_0055",
+        "scenario_type": "intent_override",
+        "hit": false,
+        "first_hit_turn": null,
+        "best_rank": null,
+        "reciprocal_rank": 0.0
+      },
+      {
+        "sample_id": "shadow_0056",
+        "scenario_type": "boundary",
+        "hit": false,
+        "first_hit_turn": null,
+        "best_rank": null,
+        "reciprocal_rank": 0.0
+      },
+      {
+        "sample_id": "shadow_0057",
+        "scenario_type": "buying",
+        "hit": true,
+        "first_hit_turn": 2,
+        "best_rank": 9,
+        "reciprocal_rank": 0.1111111111111111
+      },
+      {
+        "sample_id": "shadow_0058",
+        "scenario_type": "browsing",
+        "hit": true,
+        "first_hit_turn": 2,
+        "best_rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "sample_id": "shadow_0059",
+        "scenario_type": "intent_override",
+        "hit": true,
+        "first_hit_turn": 3,
+        "best_rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "sample_id": "shadow_0060",
+        "scenario_type": "boundary",
+        "hit": true,
+        "first_hit_turn": 3,
+        "best_rank": 3,
+        "reciprocal_rank": 0.3333333333333333
+      },
+      {
+        "sample_id": "shadow_0061",
+        "scenario_type": "buying",
+        "hit": true,
+        "first_hit_turn": 1,
+        "best_rank": 1,
+        "reciprocal_rank": 1.0
+      },
+      {
+        "sample_id": "shadow_0062",
+        "scenario_type": "browsing",
+        "hit": true,
+        "first_hit_turn": 2,
+        "best_rank": 2,
+        "reciprocal_rank": 0.5
+      },
+      {
+        "sample_id": "shadow_0063",
+        "scenario_type": "intent_override",
+        "hit": true,
+        "first_hit_turn": 3,
+        "best_rank": 6,
+        "reciprocal_rank": 0.16666666666666666
+      },
+      {
+        "sample_id": "shadow_0064",
+        "scenario_type": "boundary",
+        "hit": false,
+        "first_hit_turn": null,
+        "best_rank": null,
+        "reciprocal_rank": 0.0
+      }
+    ]
+  },
+  "disabled_exact_p2_parity": true,
+  "disabled_replay_hash": "765c2e05e4bf8dc6f87ab5f099d5ce1144dc1405a39850151e3bff8e60c467f4",
+  "policies": {
+    "exposure.constraint-release-cap2.v1": {
+      "promotion_eligible": true,
+      "configuration_fingerprint_sha256": "ab1462a4c9faf119fad93c87cdb247257d47344de5e3c9de3b82d7ec68ac2aac",
+      "candidate": {
+        "sample_count": 64,
+        "hit_rate_at_10": 0.703125,
+        "mrr": 0.412822,
+        "mttc": 5.5,
+        "efficiency": 0.55,
+        "technical_score": 0.585409,
+        "scenario_metrics": {
+          "boundary": {
+            "sample_count": 16,
+            "hit_rate_at_10": 0.625,
+            "mrr": 0.284722,
+            "mttc": 6.3125,
+            "efficiency": 0.46875,
+            "technical_score": 0.491667
+          },
+          "browsing": {
+            "sample_count": 16,
+            "hit_rate_at_10": 0.5,
+            "mrr": 0.354167,
+            "mttc": 7.625,
+            "efficiency": 0.3375,
+            "technical_score": 0.42375
+          },
+          "buying": {
+            "sample_count": 16,
+            "hit_rate_at_10": 0.9375,
+            "mrr": 0.566915,
+            "mttc": 2.5625,
+            "efficiency": 0.84375,
+            "technical_score": 0.807574
+          },
+          "intent_override": {
+            "sample_count": 16,
+            "hit_rate_at_10": 0.75,
+            "mrr": 0.445486,
+            "mttc": 5.5,
+            "efficiency": 0.55,
+            "technical_score": 0.618646
+          }
+        },
+        "question_counts": {
+          "feature": 10,
+          "other": 11
+        },
+        "question_yield": {
+          "feature.asked": 10,
+          "feature.revealed": 14,
+          "other.asked": 11,
+          "other.revealed": 10
+        },
+        "correctness_counters": {
+          "response_exceptions": 0,
+          "invalid_responses": 0,
+          "invalid_ask_attributes": 0,
+          "invalid_asins": 0,
+          "duplicate_recommendations": 0
+        },
+        "normalized_transcript_sha256": "44a634fc438f7a6e63c19aebd25559fd0866f6bf48285f30c1c39aef839ec994",
+        "exposure_diagnostics": {
+          "enabled": true,
+          "policy_id": "exposure.constraint-release-cap2.v1",
+          "fingerprint_sha256": "ab1462a4c9faf119fad93c87cdb247257d47344de5e3c9de3b82d7ec68ac2aac",
+          "affected_session_count": 16,
+          "activation_count": 16,
+          "gated_turn_count": 22,
+          "activation_by_turn": {
+            "1": 16,
+            "2": 6
+          },
+          "activation_by_route": {
+            "boundary": 22
+          },
+          "activation_by_evidence_level": {
+            "none": 22
+          },
+          "exit_counts": {
+            "answered_clarification_release": 6,
+            "route_release": 4,
+            "turn_cap_release": 5
+          },
+          "suppressed_recommendation_count": 198,
+          "currently_gated_session_count": 1,
+          "exposure_failure_count": 0,
+          "target_suppressed_from_positions_2_to_10_count": 6,
+          "target_suppression_by_position": {
+            "2": 2,
+            "3": 1,
+            "5": 1,
+            "7": 1,
+            "10": 1
+          },
+          "target_suppression_by_turn": {
+            "1": 5,
+            "2": 1
+          },
+          "target_affected_session_count": 16,
+          "zero_result_session_count": 0,
+          "permanently_gated_session_count": 0
+        },
+        "fallback_diagnostics": {
+          "route_counts": {},
+          "routing_failure_count": 0,
+          "component_failure_counts": {},
+          "initialization_fallback_counts": {},
+          "fallback_attempt_count": 0,
+          "fallback_success_count": 0,
+          "fallback_reasons": {},
+          "routing_latency": {
+            "average_ms": 0.0,
+            "p95_ms": 0.0
+          },
+          "retrieval_latency": {
+            "average_ms": 0.0,
+            "p95_ms": 0.0
+          }
+        },
+        "sessions": [
+          {
+            "sample_id": "shadow_0001",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 6,
+            "reciprocal_rank": 0.16666666666666666
+          },
+          {
+            "sample_id": "shadow_0002",
+            "scenario_type": "browsing",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0003",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 5,
+            "reciprocal_rank": 0.2
+          },
+          {
+            "sample_id": "shadow_0004",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0005",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 7,
+            "best_rank": 10,
+            "reciprocal_rank": 0.1
+          },
+          {
+            "sample_id": "shadow_0006",
+            "scenario_type": "browsing",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0007",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0008",
+            "scenario_type": "boundary",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0009",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0010",
+            "scenario_type": "browsing",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0011",
+            "scenario_type": "intent_override",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0012",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0013",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 1,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0014",
+            "scenario_type": "browsing",
+            "hit": true,
+            "first_hit_turn": 8,
+            "best_rank": 6,
+            "reciprocal_rank": 0.16666666666666666
+          },
+          {
+            "sample_id": "shadow_0015",
+            "scenario_type": "intent_override",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0016",
+            "scenario_type": "boundary",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0017",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 1,
+            "best_rank": 10,
+            "reciprocal_rank": 0.1
+          },
+          {
+            "sample_id": "shadow_0018",
+            "scenario_type": "browsing",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0019",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 4,
+            "best_rank": 5,
+            "reciprocal_rank": 0.2
+          },
+          {
+            "sample_id": "shadow_0020",
+            "scenario_type": "boundary",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0021",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 1,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0022",
+            "scenario_type": "browsing",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0023",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0024",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 7,
+            "best_rank": 4,
+            "reciprocal_rank": 0.25
+          },
+          {
+            "sample_id": "shadow_0025",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 5,
+            "best_rank": 7,
+            "reciprocal_rank": 0.14285714285714285
+          },
+          {
+            "sample_id": "shadow_0026",
+            "scenario_type": "browsing",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0027",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0028",
+            "scenario_type": "boundary",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0029",
+            "scenario_type": "buying",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0030",
+            "scenario_type": "browsing",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0031",
+            "scenario_type": "intent_override",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0032",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 2,
+            "reciprocal_rank": 0.5
+          },
+          {
+            "sample_id": "shadow_0033",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 1,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0034",
+            "scenario_type": "browsing",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0035",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0036",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 5,
+            "best_rank": 9,
+            "reciprocal_rank": 0.1111111111111111
+          },
+          {
+            "sample_id": "shadow_0037",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 5,
+            "reciprocal_rank": 0.2
+          },
+          {
+            "sample_id": "shadow_0038",
+            "scenario_type": "browsing",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0039",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 4,
+            "best_rank": 4,
+            "reciprocal_rank": 0.25
+          },
+          {
+            "sample_id": "shadow_0040",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 4,
+            "best_rank": 4,
+            "reciprocal_rank": 0.25
+          },
+          {
+            "sample_id": "shadow_0041",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 1,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0042",
+            "scenario_type": "browsing",
+            "hit": true,
+            "first_hit_turn": 7,
+            "best_rank": 2,
+            "reciprocal_rank": 0.5
+          },
+          {
+            "sample_id": "shadow_0043",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 5,
+            "best_rank": 9,
+            "reciprocal_rank": 0.1111111111111111
+          },
+          {
+            "sample_id": "shadow_0044",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 1,
+            "best_rank": 9,
+            "reciprocal_rank": 0.1111111111111111
+          },
+          {
+            "sample_id": "shadow_0045",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0046",
+            "scenario_type": "browsing",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0047",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 7,
+            "best_rank": 5,
+            "reciprocal_rank": 0.2
+          },
+          {
+            "sample_id": "shadow_0048",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 2,
+            "reciprocal_rank": 0.5
+          },
+          {
+            "sample_id": "shadow_0049",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 1,
+            "best_rank": 4,
+            "reciprocal_rank": 0.25
+          },
+          {
+            "sample_id": "shadow_0050",
+            "scenario_type": "browsing",
+            "hit": true,
+            "first_hit_turn": 9,
+            "best_rank": 2,
+            "reciprocal_rank": 0.5
+          },
+          {
+            "sample_id": "shadow_0051",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0052",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 2,
+            "reciprocal_rank": 0.5
+          },
+          {
+            "sample_id": "shadow_0053",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 1,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0054",
+            "scenario_type": "browsing",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0055",
+            "scenario_type": "intent_override",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0056",
+            "scenario_type": "boundary",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0057",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 9,
+            "reciprocal_rank": 0.1111111111111111
+          },
+          {
+            "sample_id": "shadow_0058",
+            "scenario_type": "browsing",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0059",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0060",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 3,
+            "reciprocal_rank": 0.3333333333333333
+          },
+          {
+            "sample_id": "shadow_0061",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 1,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0062",
+            "scenario_type": "browsing",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 2,
+            "reciprocal_rank": 0.5
+          },
+          {
+            "sample_id": "shadow_0063",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 6,
+            "reciprocal_rank": 0.16666666666666666
+          },
+          {
+            "sample_id": "shadow_0064",
+            "scenario_type": "boundary",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          }
+        ]
+      },
+      "comparison": {
+        "technical_score_delta": 0.005781,
+        "mrr_delta": 0.024479,
+        "hit_rate_delta": 0.0,
+        "mttc_delta": 0.078125,
+        "efficiency_delta": -0.007813,
+        "gained_hits": 0,
+        "lost_hits": 0,
+        "earlier_shared_hits": 0,
+        "later_shared_hits": 4,
+        "better_shared_ranks": 3,
+        "worse_shared_ranks": 1,
+        "affected_session_count": 4,
+        "scenario_mean_contribution_deltas": {
+          "boundary": 0.005,
+          "browsing": 0.01375,
+          "buying": 0.004375,
+          "intent_override": 0.0
+        },
+        "paired_bootstrap": {
+          "seed": 20260830,
+          "resamples": 10000,
+          "observed_mean_delta": 0.00578125,
+          "confidence_level": 0.95,
+          "lower": -0.0009375,
+          "upper": 0.015,
+          "probability_delta_positive": 0.9322
+        }
+      },
+      "deterministic_replay": true,
+      "repeat_normalized_transcript_sha256": "44a634fc438f7a6e63c19aebd25559fd0866f6bf48285f30c1c39aef839ec994",
+      "scenario_hit_rate_deltas": {
+        "boundary": 0.0,
+        "browsing": 0.0,
+        "buying": 0.0,
+        "intent_override": 0.0
+      }
+    },
+    "exposure.constraint-release-cap1.v1": {
+      "promotion_eligible": false,
+      "configuration_fingerprint_sha256": "4b1a50bdbdd615980ec13559c4e1b6e73551f0ec052d2b6fb6ca9558d1dc344e",
+      "candidate": {
+        "sample_count": 64,
+        "hit_rate_at_10": 0.703125,
+        "mrr": 0.407242,
+        "mttc": 5.484375,
+        "efficiency": 0.551562,
+        "technical_score": 0.584048,
+        "scenario_metrics": {
+          "boundary": {
+            "sample_count": 16,
+            "hit_rate_at_10": 0.625,
+            "mrr": 0.262401,
+            "mttc": 6.25,
+            "efficiency": 0.475,
+            "technical_score": 0.48622
+          },
+          "browsing": {
+            "sample_count": 16,
+            "hit_rate_at_10": 0.5,
+            "mrr": 0.354167,
+            "mttc": 7.625,
+            "efficiency": 0.3375,
+            "technical_score": 0.42375
+          },
+          "buying": {
+            "sample_count": 16,
+            "hit_rate_at_10": 0.9375,
+            "mrr": 0.566915,
+            "mttc": 2.5625,
+            "efficiency": 0.84375,
+            "technical_score": 0.807574
+          },
+          "intent_override": {
+            "sample_count": 16,
+            "hit_rate_at_10": 0.75,
+            "mrr": 0.445486,
+            "mttc": 5.5,
+            "efficiency": 0.55,
+            "technical_score": 0.618646
+          }
+        },
+        "question_counts": {
+          "feature": 9,
+          "other": 11
+        },
+        "question_yield": {
+          "feature.asked": 9,
+          "feature.revealed": 13,
+          "other.asked": 11,
+          "other.revealed": 10
+        },
+        "correctness_counters": {
+          "response_exceptions": 0,
+          "invalid_responses": 0,
+          "invalid_ask_attributes": 0,
+          "invalid_asins": 0,
+          "duplicate_recommendations": 0
+        },
+        "normalized_transcript_sha256": "ecc7e3791a827cac577d6fdb3b7958e4ba5309cd15cc1c99bd4b0c563a466c78",
+        "exposure_diagnostics": {
+          "enabled": true,
+          "policy_id": "exposure.constraint-release-cap1.v1",
+          "fingerprint_sha256": "4b1a50bdbdd615980ec13559c4e1b6e73551f0ec052d2b6fb6ca9558d1dc344e",
+          "affected_session_count": 16,
+          "activation_count": 16,
+          "gated_turn_count": 16,
+          "activation_by_turn": {
+            "1": 16
+          },
+          "activation_by_route": {
+            "boundary": 16
+          },
+          "activation_by_evidence_level": {
+            "none": 16
+          },
+          "exit_counts": {
+            "route_release": 3,
+            "turn_cap_release": 12
+          },
+          "suppressed_recommendation_count": 144,
+          "currently_gated_session_count": 1,
+          "exposure_failure_count": 0,
+          "target_suppressed_from_positions_2_to_10_count": 5,
+          "target_suppression_by_position": {
+            "2": 2,
+            "3": 1,
+            "5": 1,
+            "10": 1
+          },
+          "target_suppression_by_turn": {
+            "1": 5
+          },
+          "target_affected_session_count": 16,
+          "zero_result_session_count": 0,
+          "permanently_gated_session_count": 0
+        },
+        "fallback_diagnostics": {
+          "route_counts": {},
+          "routing_failure_count": 0,
+          "component_failure_counts": {},
+          "initialization_fallback_counts": {},
+          "fallback_attempt_count": 0,
+          "fallback_success_count": 0,
+          "fallback_reasons": {},
+          "routing_latency": {
+            "average_ms": 0.0,
+            "p95_ms": 0.0
+          },
+          "retrieval_latency": {
+            "average_ms": 0.0,
+            "p95_ms": 0.0
+          }
+        },
+        "sessions": [
+          {
+            "sample_id": "shadow_0001",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 6,
+            "reciprocal_rank": 0.16666666666666666
+          },
+          {
+            "sample_id": "shadow_0002",
+            "scenario_type": "browsing",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0003",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 5,
+            "reciprocal_rank": 0.2
+          },
+          {
+            "sample_id": "shadow_0004",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0005",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 7,
+            "best_rank": 10,
+            "reciprocal_rank": 0.1
+          },
+          {
+            "sample_id": "shadow_0006",
+            "scenario_type": "browsing",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0007",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0008",
+            "scenario_type": "boundary",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0009",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0010",
+            "scenario_type": "browsing",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0011",
+            "scenario_type": "intent_override",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0012",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0013",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 1,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0014",
+            "scenario_type": "browsing",
+            "hit": true,
+            "first_hit_turn": 8,
+            "best_rank": 6,
+            "reciprocal_rank": 0.16666666666666666
+          },
+          {
+            "sample_id": "shadow_0015",
+            "scenario_type": "intent_override",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0016",
+            "scenario_type": "boundary",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0017",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 1,
+            "best_rank": 10,
+            "reciprocal_rank": 0.1
+          },
+          {
+            "sample_id": "shadow_0018",
+            "scenario_type": "browsing",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0019",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 4,
+            "best_rank": 5,
+            "reciprocal_rank": 0.2
+          },
+          {
+            "sample_id": "shadow_0020",
+            "scenario_type": "boundary",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0021",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 1,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0022",
+            "scenario_type": "browsing",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0023",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0024",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 7,
+            "best_rank": 4,
+            "reciprocal_rank": 0.25
+          },
+          {
+            "sample_id": "shadow_0025",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 5,
+            "best_rank": 7,
+            "reciprocal_rank": 0.14285714285714285
+          },
+          {
+            "sample_id": "shadow_0026",
+            "scenario_type": "browsing",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0027",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0028",
+            "scenario_type": "boundary",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0029",
+            "scenario_type": "buying",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0030",
+            "scenario_type": "browsing",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0031",
+            "scenario_type": "intent_override",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0032",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 2,
+            "reciprocal_rank": 0.5
+          },
+          {
+            "sample_id": "shadow_0033",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 1,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0034",
+            "scenario_type": "browsing",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0035",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0036",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 5,
+            "best_rank": 9,
+            "reciprocal_rank": 0.1111111111111111
+          },
+          {
+            "sample_id": "shadow_0037",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 5,
+            "reciprocal_rank": 0.2
+          },
+          {
+            "sample_id": "shadow_0038",
+            "scenario_type": "browsing",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0039",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 4,
+            "best_rank": 4,
+            "reciprocal_rank": 0.25
+          },
+          {
+            "sample_id": "shadow_0040",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 4,
+            "best_rank": 4,
+            "reciprocal_rank": 0.25
+          },
+          {
+            "sample_id": "shadow_0041",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 1,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0042",
+            "scenario_type": "browsing",
+            "hit": true,
+            "first_hit_turn": 7,
+            "best_rank": 2,
+            "reciprocal_rank": 0.5
+          },
+          {
+            "sample_id": "shadow_0043",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 5,
+            "best_rank": 9,
+            "reciprocal_rank": 0.1111111111111111
+          },
+          {
+            "sample_id": "shadow_0044",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 1,
+            "best_rank": 9,
+            "reciprocal_rank": 0.1111111111111111
+          },
+          {
+            "sample_id": "shadow_0045",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0046",
+            "scenario_type": "browsing",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0047",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 7,
+            "best_rank": 5,
+            "reciprocal_rank": 0.2
+          },
+          {
+            "sample_id": "shadow_0048",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 2,
+            "reciprocal_rank": 0.5
+          },
+          {
+            "sample_id": "shadow_0049",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 1,
+            "best_rank": 4,
+            "reciprocal_rank": 0.25
+          },
+          {
+            "sample_id": "shadow_0050",
+            "scenario_type": "browsing",
+            "hit": true,
+            "first_hit_turn": 9,
+            "best_rank": 2,
+            "reciprocal_rank": 0.5
+          },
+          {
+            "sample_id": "shadow_0051",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0052",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 7,
+            "reciprocal_rank": 0.14285714285714285
+          },
+          {
+            "sample_id": "shadow_0053",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 1,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0054",
+            "scenario_type": "browsing",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0055",
+            "scenario_type": "intent_override",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0056",
+            "scenario_type": "boundary",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0057",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 9,
+            "reciprocal_rank": 0.1111111111111111
+          },
+          {
+            "sample_id": "shadow_0058",
+            "scenario_type": "browsing",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0059",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0060",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 3,
+            "reciprocal_rank": 0.3333333333333333
+          },
+          {
+            "sample_id": "shadow_0061",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 1,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0062",
+            "scenario_type": "browsing",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 2,
+            "reciprocal_rank": 0.5
+          },
+          {
+            "sample_id": "shadow_0063",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 6,
+            "reciprocal_rank": 0.16666666666666666
+          },
+          {
+            "sample_id": "shadow_0064",
+            "scenario_type": "boundary",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          }
+        ]
+      },
+      "comparison": {
+        "technical_score_delta": 0.00442,
+        "mrr_delta": 0.018899,
+        "hit_rate_delta": 0.0,
+        "mttc_delta": 0.0625,
+        "efficiency_delta": -0.006251,
+        "gained_hits": 0,
+        "lost_hits": 0,
+        "earlier_shared_hits": 0,
+        "later_shared_hits": 4,
+        "better_shared_ranks": 3,
+        "worse_shared_ranks": 1,
+        "affected_session_count": 4,
+        "scenario_mean_contribution_deltas": {
+          "boundary": -0.000446429,
+          "browsing": 0.01375,
+          "buying": 0.004375,
+          "intent_override": 0.0
+        },
+        "paired_bootstrap": {
+          "seed": 20260830,
+          "resamples": 10000,
+          "observed_mean_delta": 0.004419643,
+          "confidence_level": 0.95,
+          "lower": -0.001986607,
+          "upper": 0.013526786,
+          "probability_delta_positive": 0.8484
+        }
+      },
+      "deterministic_replay": true,
+      "repeat_normalized_transcript_sha256": "ecc7e3791a827cac577d6fdb3b7958e4ba5309cd15cc1c99bd4b0c563a466c78",
+      "scenario_hit_rate_deltas": {
+        "boundary": 0.0,
+        "browsing": 0.0,
+        "buying": 0.0,
+        "intent_override": 0.0
+      }
+    },
+    "exposure.constraint-release-min3.v1": {
+      "promotion_eligible": false,
+      "configuration_fingerprint_sha256": "9edd66ec5a79e0f18db16340edded1d5e26bbbd520ed0f3c90944a5a16d46996",
+      "candidate": {
+        "sample_count": 64,
+        "hit_rate_at_10": 0.703125,
+        "mrr": 0.412822,
+        "mttc": 5.5,
+        "efficiency": 0.55,
+        "technical_score": 0.585409,
+        "scenario_metrics": {
+          "boundary": {
+            "sample_count": 16,
+            "hit_rate_at_10": 0.625,
+            "mrr": 0.284722,
+            "mttc": 6.3125,
+            "efficiency": 0.46875,
+            "technical_score": 0.491667
+          },
+          "browsing": {
+            "sample_count": 16,
+            "hit_rate_at_10": 0.5,
+            "mrr": 0.354167,
+            "mttc": 7.625,
+            "efficiency": 0.3375,
+            "technical_score": 0.42375
+          },
+          "buying": {
+            "sample_count": 16,
+            "hit_rate_at_10": 0.9375,
+            "mrr": 0.566915,
+            "mttc": 2.5625,
+            "efficiency": 0.84375,
+            "technical_score": 0.807574
+          },
+          "intent_override": {
+            "sample_count": 16,
+            "hit_rate_at_10": 0.75,
+            "mrr": 0.445486,
+            "mttc": 5.5,
+            "efficiency": 0.55,
+            "technical_score": 0.618646
+          }
+        },
+        "question_counts": {
+          "feature": 10,
+          "other": 11
+        },
+        "question_yield": {
+          "feature.asked": 10,
+          "feature.revealed": 14,
+          "other.asked": 11,
+          "other.revealed": 10
+        },
+        "correctness_counters": {
+          "response_exceptions": 0,
+          "invalid_responses": 0,
+          "invalid_ask_attributes": 0,
+          "invalid_asins": 0,
+          "duplicate_recommendations": 0
+        },
+        "normalized_transcript_sha256": "44a634fc438f7a6e63c19aebd25559fd0866f6bf48285f30c1c39aef839ec994",
+        "exposure_diagnostics": {
+          "enabled": true,
+          "policy_id": "exposure.constraint-release-min3.v1",
+          "fingerprint_sha256": "9edd66ec5a79e0f18db16340edded1d5e26bbbd520ed0f3c90944a5a16d46996",
+          "affected_session_count": 16,
+          "activation_count": 16,
+          "gated_turn_count": 22,
+          "activation_by_turn": {
+            "1": 16,
+            "2": 6
+          },
+          "activation_by_route": {
+            "boundary": 22
+          },
+          "activation_by_evidence_level": {
+            "none": 22
+          },
+          "exit_counts": {
+            "answered_clarification_release": 6,
+            "route_release": 4,
+            "turn_cap_release": 5
+          },
+          "suppressed_recommendation_count": 198,
+          "currently_gated_session_count": 1,
+          "exposure_failure_count": 0,
+          "target_suppressed_from_positions_2_to_10_count": 6,
+          "target_suppression_by_position": {
+            "2": 2,
+            "3": 1,
+            "5": 1,
+            "7": 1,
+            "10": 1
+          },
+          "target_suppression_by_turn": {
+            "1": 5,
+            "2": 1
+          },
+          "target_affected_session_count": 16,
+          "zero_result_session_count": 0,
+          "permanently_gated_session_count": 0
+        },
+        "fallback_diagnostics": {
+          "route_counts": {},
+          "routing_failure_count": 0,
+          "component_failure_counts": {},
+          "initialization_fallback_counts": {},
+          "fallback_attempt_count": 0,
+          "fallback_success_count": 0,
+          "fallback_reasons": {},
+          "routing_latency": {
+            "average_ms": 0.0,
+            "p95_ms": 0.0
+          },
+          "retrieval_latency": {
+            "average_ms": 0.0,
+            "p95_ms": 0.0
+          }
+        },
+        "sessions": [
+          {
+            "sample_id": "shadow_0001",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 6,
+            "reciprocal_rank": 0.16666666666666666
+          },
+          {
+            "sample_id": "shadow_0002",
+            "scenario_type": "browsing",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0003",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 5,
+            "reciprocal_rank": 0.2
+          },
+          {
+            "sample_id": "shadow_0004",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0005",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 7,
+            "best_rank": 10,
+            "reciprocal_rank": 0.1
+          },
+          {
+            "sample_id": "shadow_0006",
+            "scenario_type": "browsing",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0007",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0008",
+            "scenario_type": "boundary",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0009",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0010",
+            "scenario_type": "browsing",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0011",
+            "scenario_type": "intent_override",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0012",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0013",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 1,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0014",
+            "scenario_type": "browsing",
+            "hit": true,
+            "first_hit_turn": 8,
+            "best_rank": 6,
+            "reciprocal_rank": 0.16666666666666666
+          },
+          {
+            "sample_id": "shadow_0015",
+            "scenario_type": "intent_override",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0016",
+            "scenario_type": "boundary",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0017",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 1,
+            "best_rank": 10,
+            "reciprocal_rank": 0.1
+          },
+          {
+            "sample_id": "shadow_0018",
+            "scenario_type": "browsing",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0019",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 4,
+            "best_rank": 5,
+            "reciprocal_rank": 0.2
+          },
+          {
+            "sample_id": "shadow_0020",
+            "scenario_type": "boundary",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0021",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 1,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0022",
+            "scenario_type": "browsing",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0023",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0024",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 7,
+            "best_rank": 4,
+            "reciprocal_rank": 0.25
+          },
+          {
+            "sample_id": "shadow_0025",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 5,
+            "best_rank": 7,
+            "reciprocal_rank": 0.14285714285714285
+          },
+          {
+            "sample_id": "shadow_0026",
+            "scenario_type": "browsing",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0027",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0028",
+            "scenario_type": "boundary",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0029",
+            "scenario_type": "buying",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0030",
+            "scenario_type": "browsing",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0031",
+            "scenario_type": "intent_override",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0032",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 2,
+            "reciprocal_rank": 0.5
+          },
+          {
+            "sample_id": "shadow_0033",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 1,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0034",
+            "scenario_type": "browsing",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0035",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0036",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 5,
+            "best_rank": 9,
+            "reciprocal_rank": 0.1111111111111111
+          },
+          {
+            "sample_id": "shadow_0037",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 5,
+            "reciprocal_rank": 0.2
+          },
+          {
+            "sample_id": "shadow_0038",
+            "scenario_type": "browsing",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0039",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 4,
+            "best_rank": 4,
+            "reciprocal_rank": 0.25
+          },
+          {
+            "sample_id": "shadow_0040",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 4,
+            "best_rank": 4,
+            "reciprocal_rank": 0.25
+          },
+          {
+            "sample_id": "shadow_0041",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 1,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0042",
+            "scenario_type": "browsing",
+            "hit": true,
+            "first_hit_turn": 7,
+            "best_rank": 2,
+            "reciprocal_rank": 0.5
+          },
+          {
+            "sample_id": "shadow_0043",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 5,
+            "best_rank": 9,
+            "reciprocal_rank": 0.1111111111111111
+          },
+          {
+            "sample_id": "shadow_0044",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 1,
+            "best_rank": 9,
+            "reciprocal_rank": 0.1111111111111111
+          },
+          {
+            "sample_id": "shadow_0045",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0046",
+            "scenario_type": "browsing",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0047",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 7,
+            "best_rank": 5,
+            "reciprocal_rank": 0.2
+          },
+          {
+            "sample_id": "shadow_0048",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 2,
+            "reciprocal_rank": 0.5
+          },
+          {
+            "sample_id": "shadow_0049",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 1,
+            "best_rank": 4,
+            "reciprocal_rank": 0.25
+          },
+          {
+            "sample_id": "shadow_0050",
+            "scenario_type": "browsing",
+            "hit": true,
+            "first_hit_turn": 9,
+            "best_rank": 2,
+            "reciprocal_rank": 0.5
+          },
+          {
+            "sample_id": "shadow_0051",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0052",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 2,
+            "reciprocal_rank": 0.5
+          },
+          {
+            "sample_id": "shadow_0053",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 1,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0054",
+            "scenario_type": "browsing",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0055",
+            "scenario_type": "intent_override",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0056",
+            "scenario_type": "boundary",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          },
+          {
+            "sample_id": "shadow_0057",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 9,
+            "reciprocal_rank": 0.1111111111111111
+          },
+          {
+            "sample_id": "shadow_0058",
+            "scenario_type": "browsing",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0059",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0060",
+            "scenario_type": "boundary",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 3,
+            "reciprocal_rank": 0.3333333333333333
+          },
+          {
+            "sample_id": "shadow_0061",
+            "scenario_type": "buying",
+            "hit": true,
+            "first_hit_turn": 1,
+            "best_rank": 1,
+            "reciprocal_rank": 1.0
+          },
+          {
+            "sample_id": "shadow_0062",
+            "scenario_type": "browsing",
+            "hit": true,
+            "first_hit_turn": 2,
+            "best_rank": 2,
+            "reciprocal_rank": 0.5
+          },
+          {
+            "sample_id": "shadow_0063",
+            "scenario_type": "intent_override",
+            "hit": true,
+            "first_hit_turn": 3,
+            "best_rank": 6,
+            "reciprocal_rank": 0.16666666666666666
+          },
+          {
+            "sample_id": "shadow_0064",
+            "scenario_type": "boundary",
+            "hit": false,
+            "first_hit_turn": null,
+            "best_rank": null,
+            "reciprocal_rank": 0.0
+          }
+        ]
+      },
+      "comparison": {
+        "technical_score_delta": 0.005781,
+        "mrr_delta": 0.024479,
+        "hit_rate_delta": 0.0,
+        "mttc_delta": 0.078125,
+        "efficiency_delta": -0.007813,
+        "gained_hits": 0,
+        "lost_hits": 0,
+        "earlier_shared_hits": 0,
+        "later_shared_hits": 4,
+        "better_shared_ranks": 3,
+        "worse_shared_ranks": 1,
+        "affected_session_count": 4,
+        "scenario_mean_contribution_deltas": {
+          "boundary": 0.005,
+          "browsing": 0.01375,
+          "buying": 0.004375,
+          "intent_override": 0.0
+        },
+        "paired_bootstrap": {
+          "seed": 20260830,
+          "resamples": 10000,
+          "observed_mean_delta": 0.00578125,
+          "confidence_level": 0.95,
+          "lower": -0.0009375,
+          "upper": 0.015,
+          "probability_delta_positive": 0.9322
+        }
+      },
+      "deterministic_replay": true,
+      "repeat_normalized_transcript_sha256": "44a634fc438f7a6e63c19aebd25559fd0866f6bf48285f30c1c39aef839ec994",
+      "scenario_hit_rate_deltas": {
+        "boundary": 0.0,
+        "browsing": 0.0,
+        "buying": 0.0,
+        "intent_override": 0.0
+      }
+    }
+  },
+  "primary_qualification_gates": {
+    "technical_score_delta_at_least_0_005": true,
+    "mrr_delta_at_least_0_010": true,
+    "paired_interval_excludes_zero": false,
+    "probability_positive_at_least_0_975": false,
+    "no_lost_p2_hits": true,
+    "no_overall_hit_rate_regression": true,
+    "no_scenario_hit_rate_regression": true,
+    "no_permanently_gated_sessions": true,
+    "no_policy_zero_result_sessions": true,
+    "zero_exposure_failures": true,
+    "zero_response_correctness_failures": true,
+    "zero_runtime_fallbacks": true,
+    "deterministic_replay": true,
+    "disabled_exact_p2_parity": true,
+    "target_independent_robustness": true
+  },
+  "primary_qualification_verdict": "rejected_retain_p2",
+  "user_utility_cost": "The primary hides positions 2-10 for at most two low-confidence turns. This reduces immediate choice breadth and can delay a relevant non-rank-1 item until clarification, sufficient normalized constraints, an ineligible route, or the turn-3 release."
+}

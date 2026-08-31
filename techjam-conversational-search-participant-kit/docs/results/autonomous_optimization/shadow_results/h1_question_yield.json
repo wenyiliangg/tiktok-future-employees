@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "experiment_id": "H1-open-evidence-questions-v1",
+  "official_decision": "rejected",
+  "seed": 20260830,
+  "suite": {
+    "sample_count": 64,
+    "scenario_counts": {
+      "buying": 16,
+      "browsing": 16,
+      "intent_override": 16,
+      "boundary": 16
+    },
+    "public_target_overlap": 0,
+    "catalog_reorder_invariant": true,
+    "case_variants": {
+      "upper": 10,
+      "lower": 9,
+      "natural": 45
+    },
+    "partial_disclosure_count": 22,
+    "target_selection_sha256": "431d63ad07e902b5e65db068cb584fd3089df0390e4213a8dbf8f686d467be80"
+  },
+  "question_answerability": {
+    "sample_count": 64,
+    "potential_constraints_revealed": {
+      "budget": 1,
+      "color": 8,
+      "feature": 125,
+      "material": 38,
+      "other": 128,
+      "size": 12,
+      "style": 36,
+      "use_case": 4
+    },
+    "mean_other_yield": 2.0,
+    "category_target_derived_yield": 0,
+    "brand_target_derived_yield": 0
+  },
+  "robustness_checks": {
+    "malformed_price_and_metadata": true,
+    "missing_dense_cache_fallback": true,
+    "component_failure_fallback": true,
+    "consecutive_session_isolation": true
+  }
+}
