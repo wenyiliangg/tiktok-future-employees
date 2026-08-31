@@ -48,10 +48,10 @@
   },
   "champion_response_hash": "921cbfe879262cae0c5332db632920544bb0b90c562ae91cf450a7252617e7f5",
   "champion_session_hash": "9513a906150178fc4ae5e829129cfd50b699c98b1f040d641dae91bb40847deb",
-  "current_experiment_id": null,
-  "current_hypothesis": null,
-  "current_stage": "P3_rejected_shadow_retain_P2",
-  "experiment_start_commit": null,
+  "current_experiment_id": "P4A-p2-residual-causal-diagnosis-v1",
+  "current_hypothesis": "The largest conservative, target-independent residual P2 failure category can justify exactly one independent non-exposure P4 mechanism.",
+  "current_stage": "P4A_residual_diagnosis_predeclared_before_target_aware_analysis",
+  "experiment_start_commit": "13c9fc58967f51a33bd5e5c88ab9568d527cca88",
   "experiment_commits": [],
   "completed_hypotheses": [
     "H0-feedback-memory-bm25",
@@ -82,8 +82,8 @@
   "official_runs_remaining": 4,
   "fixed_seed": 20260830,
   "run_start_utc": "2026-08-30T14:44:51Z",
-  "last_checkpoint_utc": "2026-08-31T03:17:10Z",
+  "last_checkpoint_utc": "2026-08-31T04:58:53Z",
   "pause_reason": null,
   "stop_reason": null,
-  "next_action": "Retain P2 and do not authorize an official run for P3. If optimization continues in a later invocation, begin with a new independent predeclaration rather than tuning or reusing the rejected exposure thresholds; keep all four official runs reserved."
+  "next_action": "Commit the frozen P4A diagnosis contract, then run observational target-aware diagnosis over the existing 64-session non-public shadow protocol. Preserve P2, keep P3 disabled, and consume zero official runs."
 }

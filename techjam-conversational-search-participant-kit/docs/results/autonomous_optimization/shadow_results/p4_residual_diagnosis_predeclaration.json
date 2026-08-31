@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "record_type": "residual_diagnosis_predeclaration",
+  "diagnosis_id": "P4A-p2-residual-causal-diagnosis-v1",
+  "parent_champion": "7ba0a7c769954d758e1c6db6e70cde3cac214bb5",
+  "objective": "Classify every P2 shadow miss and every P2 shadow hit below rank one before selecting at most one independent, non-exposure P4 mechanism.",
+  "data_boundary": {
+    "protocol": "The existing deterministic 64-session non-public shadow protocol used for P2 and P3.",
+    "sample_count": 64,
+    "seed": 20260830,
+    "public_target_overlap_required": 0,
+    "allowed_inputs": [
+      "participant-visible catalog fields",
+      "runtime user messages through the current turn",
+      "P2 active conversation state through the current turn",
+      "P2 route, clarification, candidate provenance, and validated responses",
+      "shadow target and disclosed/hidden constraints inside benchmark-only diagnostics"
+    ],
+    "forbidden_inputs": [
+      "official public-set targets or labels in runtime code",
+      "session identifiers in runtime decisions",
+      "target identifiers or target rank in runtime decisions",
+      "future-turn evidence in runtime decisions",
+      "reference checkout or reference-run artifacts",
+      "unsanitized audit artifacts",
+      "P3 exposure thresholds or exposure behavior"
+    ],
+    "diagnostic_only_target_awareness": "Shadow targets may be consulted only after this record is committed, only to label causes and compute ceilings, and never to alter runtime behavior."
+  },
+  "residual_population": {
+    "inclusion": "Every P2 session that never hits by turn 10, plus every P2 session whose first successful response has best_rank greater than 1.",
+    "exclusion": "P2 sessions whose first successful response has best_rank exactly 1.",
+    "unit": "One primary category per included session, based on evidence available no later than the session's terminal turn.",
+    "population_must_be_exhaustive": true,
+    "assignment_must_be_mutually_exclusive": true
+  },
+  "pool_definitions": {
+    "lexical": "The bounded P2 BM25 anchor results, at most 200, before contextual or category-evidence ranking.",
+    "dense": "The bounded dense results actually executed by P2. Because contextual.category-evidence.v1 has dense_weight 0.0, absence is recorded as not_executed rather than target_absent.",
+    "fused": "The bounded output of rank_contextual_candidates before category-evidence replacement, at the P2 analysis limit of 50.",
+    "filtered": "The bounded category-evidence candidate universe after known-negative exclusion and structured contradiction accounting, before final score ordering; P2 has no separate destructive hard filter, so this stage records eligibility and contradiction status.",
+    "reranked": "The ordered P2 category-evidence output at the analysis limit of 50, before truncation to the validated top 10.",
+    "published": "The centrally validated P2 top-10 response with P3 exposure disabled."
+  },
+  "constraint_evidence_method": {
+    "normalization": "Use the participant implementation's existing deterministic tokenizer and structured state representation. No new aliases may be inferred during diagnosis.",
+    "disclosed_constraint": "A shadow constraint is disclosed only from the first turn on which its perturbed text is present in a customer message or is returned as an answer to a P2 clarification.",
+    "catalog_satisfaction": "A product satisfies a disclosed textual constraint when every normalized non-dialogue token occurs in participant-visible catalog text; price constraints use finite participant-visible price values and the active structured bound.",
+    "useful_constraint": "A disclosed constraint is useful when the target satisfies it and at least one product ranked above the target or in the published top 10 does not.",
+    "coverage": "The count of useful disclosed constraints satisfied by a product at that turn. Hidden constraints never contribute to runtime-observable coverage.",
+    "trace_integrity": "The observational trace must reproduce the uninstrumented P2 transcript hash and session outcomes exactly. A mismatch invalidates the diagnosis."
+  },
+  "primary_category_assignment": {
+    "precedence": [
+      "G",
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F",
+      "H"
+    ],
+    "categories": {
+      "G": "Intent/override timing failure: after an explicit override, correct current evidence exists but the target first becomes recoverable only after a later route/state synchronization, or stale pre-override evidence is still applied on the override turn.",
+      "A": "Parsing/state failure: at least one useful disclosed structured constraint is missing, assigned to the wrong slot/value, removed, or stale in active P2 state, without satisfying G.",
+      "B": "Candidate-generation failure: active state represents useful disclosed evidence correctly, but the target is absent from lexical, executed dense, fused, filtered, and reranked pools on every turn at or after disclosure despite positive normalized target/evidence overlap.",
+      "C": "Filtering/category failure: the target enters lexical or fused generation, but is absent from the filtered/reranked pool or carries a structured contradiction/category mismatch not supported by the disclosed evidence.",
+      "D": "Constraint-ranking failure: the target remains in the reranked pool and satisfies strictly more useful disclosed constraints than at least one product ranked above it, yet finishes below rank one or outside the published top 10.",
+      "E": "Saturated tie: the target remains in the reranked pool, no higher product has lower disclosed-constraint coverage, and all target-distinguishing disclosed evidence is tied among the target and products above it.",
+      "F": "Insufficient dialogue information: no disclosed evidence can distinguish the target from products above it, at least one undisclosed shadow constraint would distinguish it, and the P2 clarification path did not obtain that information before termination.",
+      "H": "Other/unclassified: the recorded evidence does not establish G, A, B, C, D, E, or F."
+    },
+    "ambiguity_rule": "Apply the first fully evidenced category in the frozen precedence. Never assign a category from aggregate outcome alone. Unsupported or conflicting evidence falls to H.",
+    "earliest_recovery_turn": "The earliest observed turn at which the defining failure could be corrected using only evidence already disclosed by that turn; for F it is the first legal subsequent turn on which one additional answerable clarification could disclose the distinguishing attribute."
+  },
+  "impact_reporting": {
+    "required_by_category": [
+      "session_count",
+      "scenario_counts",
+      "miss_count",
+      "below_rank_one_hit_count",
+      "mean_and_distribution_of_terminal_rank",
+      "mean_first_hit_turn_for_hits",
+      "pool_presence_counts_by_stage",
+      "earliest_recovery_turn_distribution",
+      "oracle_technical_score_ceiling",
+      "conservative_realizable_technical_score_ceiling",
+      "representative_generic_patterns_without_identifiers"
+    ],
+    "session_contribution_formula": "0.5*hit + 0.3*reciprocal_rank + 0.2*((11-first_hit_turn)/10), with a miss represented by hit=0, reciprocal_rank=0, first_hit_turn=11.",
+    "category_gain_aggregation": "Replace only sessions assigned to that category, hold all other P2 shadow outcomes fixed, average over all 64 sessions, and subtract P2 shadow TechnicalScore."
+  },
+  "ceiling_rules": {
+    "oracle": {
+      "label": "diagnostic oracle; not an achievable experimental result",
+      "rule": "For A, B, C, D, E, or G, move the target to rank 1 on the frozen earliest recovery turn. For F, move it to rank 1 on the first legal turn after one answerable distinguishing clarification. H receives zero oracle gain unless a recovery turn is directly evidenced, in which case it is reported separately and remains ineligible for selection."
+    },
+    "conservative_realizable": {
+      "A": "Use the earliest disclosed turn on which corrected active state could be formed and the target's best observed reranked position at or after that turn, capped at rank 10; if never reranked, assign rank 10 one turn later.",
+      "B": "Assume bounded generation adds the target only at rank 10 one turn after the first useful disclosed evidence; no rank-one credit is allowed.",
+      "C": "Restore the target at its best observed pre-category lexical/fused position, capped at rank 10, on that pool-entry turn; if the observed position exceeds 10, use rank 10 one turn later.",
+      "D": "Set rank to one plus the number of products in the same reranked pool with disclosed-constraint coverage greater than or equal to the target's, excluding the target and capped at rank 10, on the earliest supporting turn.",
+      "E": "Within the tied-coverage group, use the target's rank under the existing label-free P2 popularity component with identifier only as the final deterministic tie-break; grant credit only when that rank improves the observed outcome and cap it at rank 10.",
+      "F": "Replay P2 diagnostically with exactly one next answerable hidden constraint disclosed at the first legal clarification opportunity, then use the resulting P2 target rank capped at 10; no further question or recovery is credited.",
+      "G": "Use the first later observed target rank after state/route synchronization, shifted no earlier than the override turn and by at most one turn.",
+      "H": "Zero."
+    },
+    "anti_oracle_guard": "Mechanism selection uses only the conservative realizable ceiling. Oracle gains cannot satisfy the continuation threshold."
+  },
+  "mechanism_selection_rule": {
+    "ranking": "Choose the eligible non-H category with the largest conservative realizable TechnicalScore gain; break exact ties by larger session count, then category letter.",
+    "minimum_evidence": "The selected category must affect at least 8 residual sessions or have conservative realizable TechnicalScore gain at least 0.020.",
+    "target_independence": "A generic runtime decision must be expressible solely from participant-visible catalog fields, current/past messages, active state, and bounded candidate metadata.",
+    "single_family_mapping": {
+      "A": "general catalog-vocabulary parsing or state-normalization improvement",
+      "B": "bounded field/facet candidate generation or query expansion",
+      "C": "deterministic constraint/filter correction",
+      "D": "constraint-coverage reranking correction",
+      "E": "catalog-derived target-independent tie prior",
+      "F": "broader expected-utility clarification policy",
+      "G": "deterministic route/state timing correction"
+    },
+    "stop_rule": "Stop without P4 implementation if no category meets the count/gain threshold, if the leading category has no target-independent solution, if trace integrity fails, or if H has the largest apparent ceiling.",
+    "forbidden_selection_basis": "Do not select from individual target identities, public targets, per-session exceptions, oracle ceiling size, or P3 exposure behavior."
+  },
+  "falsification_and_rejection": {
+    "diagnosis_invalid_if": [
+      "any residual session is unassigned or multiply assigned",
+      "instrumented P2 differs from uninstrumented P2",
+      "public target overlap is nonzero",
+      "a pool-presence statement cannot be reproduced from bounded traces",
+      "a conservative ceiling uses hidden evidence except the single F diagnostic replay",
+      "any official evaluator run is consumed"
+    ],
+    "mechanism_rejected_before_implementation_if": [
+      "minimum evidence is not met",
+      "the cause cannot be addressed target-independently",
+      "more than one mechanism family is required",
+      "the proposed mechanism is exposure gating or reuses P3"
+    ],
+    "post_implementation_shadow_gates": {
+      "minimum_technical_score_delta": 0.015,
+      "paired_95_percent_confidence_interval_must_exclude_zero": true,
+      "minimum_probability_delta_positive": 0.975,
+      "aggregate_and_selected_scenario_must_match_hypothesis": true,
+      "maximum_unacceptable_scenario_regressions": 0,
+      "maximum_correctness_reliability_or_fallback_failures": 0,
+      "disabled_exact_p2_parity_required": true,
+      "deterministic_replay_required": true,
+      "paraphrase_and_target_independent_robustness_required": true
+    },
+    "no_tuning_after_outcomes": "After the frozen candidate's single target-aware shadow evaluation, any failed gate rejects P4 and retains P2 without modification or a second candidate."
+  },
+  "official_run_policy": {
+    "runs_consumed_this_invocation": 0,
+    "runs_remaining_required": 4,
+    "qualifying_candidate_action": "Checkpoint and stop for separate official authorization."
+  },
+  "timestamps": {
+    "predeclared_utc": "2026-08-31T04:58:53Z"
+  }
+}
