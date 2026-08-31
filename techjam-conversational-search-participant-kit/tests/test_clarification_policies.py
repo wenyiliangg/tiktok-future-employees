@@ -29,6 +29,7 @@ class ClarificationPolicyRegistryTest(unittest.TestCase):
                 "clarification.browsing-only.v1",
                 "clarification.feedback-memory.v1",
                 "clarification.category-evidence-utility.v1",
+                "clarification.category-evidence-utility-buying.v1",
             ],
         )
         self.assertEqual(
@@ -39,6 +40,7 @@ class ClarificationPolicyRegistryTest(unittest.TestCase):
                 "clarification.browsing-only.v1": "405c3ff441211cc6073b3732e1bd60b7aa8e85698c8ceb7d7931fed8eeaeb6fd",
                 "clarification.feedback-memory.v1": "56550e0f09f152db8be1a3988bacda499955e8b5683e95eedad44b3ce19fb7a5",
                 "clarification.category-evidence-utility.v1": "ce4634f3f2e14414238812ba0eda841e2ab2e0fd71bc00f392192539571924d1",
+                "clarification.category-evidence-utility-buying.v1": "6db00179643c355adf1ecfbef5fee680ce50ce316f6f5c272da9aa53ab8bf62e",
             },
         )
         self.assertEqual({policy.evaluation_seed for policy in policies}, {20260830})

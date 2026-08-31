@@ -129,6 +129,42 @@
         "max_questions_per_session": 2,
         "max_turns": 10
       }
+    },
+    {
+      "policy_id": "clarification.category-evidence-utility-buying.v1",
+      "fingerprint_sha256": "6db00179643c355adf1ecfbef5fee680ce50ce316f6f5c272da9aa53ab8bf62e",
+      "rationale": "P4 adds only the runtime-observable buying route to the frozen P2 expected-utility clarification policy after the predeclared residual diagnosis found fourteen buying-routed misses with no questions.",
+      "retrieval_policy_id": "contextual.category-evidence.v1",
+      "clarification": {
+        "enabled": true,
+        "required_retrieval_policy_id": "contextual.category-evidence.v1",
+        "analysis_candidate_limit": 50,
+        "browsing_min_candidates": 4,
+        "browsing_min_expected_reduction": 0.2,
+        "buying_min_candidates": 8,
+        "buying_min_expected_reduction": 0.5,
+        "eligible_routes": [
+          "browsing",
+          "boundary",
+          "buying"
+        ],
+        "question_candidates": [
+          "other",
+          "feature"
+        ],
+        "utility_min_candidates": 4,
+        "answerability_rates": [
+          ["other", 1.0],
+          ["feature", 0.99294]
+        ],
+        "hit_probability_weight": 0.5,
+        "reciprocal_rank_weight": 0.3,
+        "additional_turn_cost": 0.02
+      },
+      "controller": {
+        "max_questions_per_session": 2,
+        "max_turns": 10
+      }
     }
   ]
 }
