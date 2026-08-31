@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "campaign_status": "completed_p7_rejected_p5_packaged",
+  "campaign_status": "completed_p8_rejected_p5_packaged",
   "campaign_base": {
     "commit": "c57dfce8f7aeb44cb366ab3a90c11e9ac613cf07",
     "technical_score": 0.11766,
@@ -157,6 +157,28 @@
       ],
       "official_runs_consumed": 0,
       "reason": "Rejected because the shadow gain was below +0.015, the paired interval crossed zero, probability positive was 0.6924, net hit gain was zero, and Buying plus Intent Override exceeded the -0.005 scenario regression limit."
+    },
+    {
+      "experiment_id": "P8-proxy-clarification-fallback-v1",
+      "variant_implementation_commit": "67222de722db1789d3aa26780702578a95cbd66c",
+      "proxy_harness_commit": "30f366a0ce6d83b6fa203d6dd845b23661426ed4",
+      "development_sample_count": 400,
+      "variant_a_technical_score": 0.611129,
+      "variant_a_delta_vs_p5_proxy": 0.000806,
+      "variant_a_paired_97_5_percent_ci": [
+        0.0,
+        0.003225
+      ],
+      "variant_b_technical_score": 0.610637,
+      "variant_b_delta_vs_p5_proxy": 0.000314,
+      "variant_b_paired_97_5_percent_ci": [
+        -0.001778571,
+        0.00271875
+      ],
+      "variant_a_net_hits": 0,
+      "variant_b_net_hits": 0,
+      "official_runs_consumed": 0,
+      "reason": "Both frozen variants failed the +0.015 development gain, positive-net-hit, and multiplicity-adjusted paired-confidence gates. The stop rule rejected P8 before confirmation, uniform stress, public shadow, or official evaluation."
     }
   ],
   "external_reference": {
@@ -171,15 +193,18 @@
     "runtime_comparison_checkpoint": "e6550afd1f0368314db8461faa6ffca5cedf7464",
     "p7_runtime_retained": false,
     "p7_runtime_historical_commit": "5084d36a1544d6517167162e9ef3b60787c369ce",
+    "p8_runtime_retained": false,
+    "p8_runtime_historical_commit": "67222de722db1789d3aa26780702578a95cbd66c",
+    "p8_development_result_sha256": "b137ce9f24b1d4c784b9992e5f2d4ca518c40a364786320c4edfd436ada755b7",
     "evaluator_wrapper_sha256": "3a7da928f190b907a3e8047f1570ac91d0b83feaa88d13394b06c18631565318",
     "public_set_sha256": "857259f7a438e6188ac63e18995b6ff4489bfcfc4a716a798b9a2aa0ee8f7579"
   },
-  "stop_reason": "P7 failed five frozen shadow gates; P5 is the final champion, no official run was consumed, two runs remain unused, and P8 is forbidden.",
+  "stop_reason": "The newly authorized final P8 candidate failed its frozen proxy-development gates. P5 is the final champion, P8 consumed no official run, two official runs remain unused, and no P9 is authorized.",
   "resumed_after_h2_utc": "2026-08-30T12:59:34Z",
   "limitations": [
     "The selected score is measured on the official public set and is not a private-set claim.",
     "The verified 0.963323 reference score is not paired with our sessions and its source is not used after the sanitization barrier.",
     "Non-public shadow suites reduce but do not eliminate public-set selection and distribution-shift risk."
   ],
-  "last_updated_utc": "2026-08-31T12:26:00Z"
+  "last_updated_utc": "2026-08-31T14:07:17Z"
 }

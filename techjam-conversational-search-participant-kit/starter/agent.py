@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import copy
-import hashlib
 import json
 import logging
 import math
@@ -31,11 +30,6 @@ from .clarification_controller import (
     compose_clarification_response,
     is_explicit_no_preference,
     normalize_attribute,
-)
-from .clarification_fallback import (
-    ClarificationFallbackPolicy,
-    choose_fallback_attribute,
-    disabled_fallback_policy,
 )
 from .clarification_policies import (
     ClarificationPolicy,
@@ -128,7 +122,6 @@ class Agent:
             [Mapping[str, object], ClarificationPrompt | None], dict[str, object]
         ] = compose_clarification_response,
         exposure_policy: RecommendationExposurePolicy | None = None,
-        clarification_fallback_policy: ClarificationFallbackPolicy | None = None,
     ) -> None:
         self.catalog_path = Path(catalog_path)
         self.config = config or HybridRetrievalConfig()
@@ -182,9 +175,6 @@ class Agent:
         )
         self._clarification_composer = clarification_composer
         self._exposure_policy = exposure_policy or disabled_exposure_policy()
-        self._clarification_fallback_policy = (
-            clarification_fallback_policy or disabled_fallback_policy()
-        )
         self._known_negative_ids: dict[str, set[str]] = {}
         self._last_recommended_ids: dict[str, tuple[str, ...]] = {}
         self._active_raw_intent: dict[str, str] = {}
@@ -209,13 +199,6 @@ class Agent:
         self._clarification_route_counts: Counter[str] = Counter()
         self._clarification_resolution_counts: Counter[str] = Counter()
         self._clarification_failure_count = 0
-        self._clarification_fallback_used_sessions: set[str] = set()
-        self._clarification_fallback_counts: Counter[str] = Counter()
-        self._clarification_fallback_turns: Counter[int] = Counter()
-        self._clarification_fallback_routes: Counter[str] = Counter()
-        self._clarification_fallback_reasons: Counter[str] = Counter()
-        self._clarification_fallback_failure_count = 0
-        self._clarification_fallback_events: dict[str, list[dict[str, object]]] = {}
         self._exposure_events: dict[str, list[dict[str, object]]] = {}
         self._exposure_was_gated: dict[str, bool] = {}
         self._exposure_activation_count = 0
@@ -344,8 +327,6 @@ class Agent:
         self._clarification_candidates[session_id] = []
         self._contextual_routes.pop(session_id, None)
         self._clarification_disabled_sessions.discard(session_id)
-        self._clarification_fallback_used_sessions.discard(session_id)
-        self._clarification_fallback_events[session_id] = []
         self._exposure_events[session_id] = []
         self._exposure_was_gated[session_id] = False
         if self._clarification_config.enabled:
@@ -536,15 +517,7 @@ class Agent:
         }
         if not self._clarification_config.enabled:
             return response
-        clarified = self._attach_clarification(
-            response, session_id=session_id, turn=turn
-        )
-        return self._attach_clarification_fallback(
-            clarified,
-            session_id=session_id,
-            user_message=user_message,
-            turn=turn,
-        )
+        return self._attach_clarification(response, session_id=session_id, turn=turn)
 
     def _protected_lexical_response(
         self, user_message: str, top_k: object
@@ -720,126 +693,6 @@ class Agent:
                 session_id, "question_composition", error
             )
             return dict(response)
-
-    def _attach_clarification_fallback(
-        self,
-        response: Mapping[str, object],
-        *,
-        session_id: str,
-        user_message: str,
-        turn: int,
-    ) -> dict[str, object]:
-        """Attach one P8 fallback after an unchanged P5 no-question decision."""
-
-        policy = self._clarification_fallback_policy
-        reason = "ineligible"
-        if not policy.enabled:
-            return dict(response)
-        try:
-            if response.get("ask_attribute") is not None:
-                reason = "p5_question_present"
-                return dict(response)
-            if not policy.minimum_turn <= turn < policy.maximum_turn_exclusive:
-                reason = "turn_outside_window"
-                return dict(response)
-            if not NEGATIVE_FEEDBACK_RE.search(user_message):
-                reason = "no_negative_feedback"
-                return dict(response)
-            if session_id in self._clarification_fallback_used_sessions:
-                reason = "fallback_already_used"
-                return dict(response)
-            if (
-                self.config.mode is not RetrievalMode.CONTEXTUAL
-                or not self._override_history_policy.clarification_is_compatible(
-                    policy.required_retrieval_policy_id
-                )
-            ):
-                reason = "incompatible_retrieval"
-                return dict(response)
-            candidates = self._clarification_candidates.get(session_id, [])[
-                : self._clarification_config.analysis_candidate_limit
-            ]
-            if len(candidates) < policy.minimum_candidate_count:
-                reason = "candidate_pool_too_small"
-                return dict(response)
-            clarification_state = self._clarification_controller.state_for(session_id)
-            if clarification_state is None:
-                reason = "missing_controller_state"
-                return dict(response)
-            if clarification_state.pending_attribute is not None:
-                reason = "pending_question"
-                return dict(response)
-            if (
-                clarification_state.clarification_count
-                >= self._clarification_controller.config.max_questions_per_session
-            ):
-                reason = "p5_question_cap_exhausted"
-                return dict(response)
-            catalog = self._clarification_catalog(candidates)
-            active_state = self._state.state_for(session_id)
-            statistics = self._ambiguity_analyzer.attribute_statistics(
-                candidates, catalog, active_state
-            )
-            decision = choose_fallback_attribute(
-                policy, statistics, clarification_state, active_state
-            )
-            reason = decision.reason
-            if decision.attribute is None:
-                return dict(response)
-            prompt = self._clarification_controller.build_prompt(
-                session_id, decision.attribute, active_state, turn
-            )
-            if prompt is None:
-                reason = "controller_refused"
-                return dict(response)
-            composed = self._clarification_composer(response, prompt)
-            if composed.get("ask_attribute") != prompt.ask_attribute:
-                raise ValueError("fallback composer dropped selected attribute")
-            self._clarification_fallback_used_sessions.add(session_id)
-            attribute = str(prompt.ask_attribute)
-            route = self._contextual_routes.get(session_id, "uncertain")
-            self._clarification_question_counts[attribute] += 1
-            self._clarification_route_counts[route] += 1
-            self._clarification_fallback_counts[attribute] += 1
-            self._clarification_fallback_turns[turn] += 1
-            self._clarification_fallback_routes[route] += 1
-            self._clarification_fallback_events.setdefault(session_id, []).append(
-                {
-                    "turn": turn,
-                    "attribute": attribute,
-                    "route": route,
-                    "expected_reduction": decision.expected_reduction,
-                    "utility": decision.utility,
-                    "recommendations_sha256": hashlib.sha256(
-                        json.dumps(
-                            response.get("recommendations"),
-                            sort_keys=True,
-                            separators=(",", ":"),
-                            default=repr,
-                        ).encode()
-                    ).hexdigest(),
-                    "usage_sha256": hashlib.sha256(
-                        json.dumps(
-                            response.get("usage"),
-                            sort_keys=True,
-                            separators=(",", ":"),
-                            default=repr,
-                        ).encode()
-                    ).hexdigest(),
-                }
-            )
-            return composed
-        except Exception as error:  # noqa: BLE001 - optional fallback boundary
-            self._clarification_fallback_failure_count += 1
-            self._component_failure_counts["clarification_fallback"] += 1
-            LOGGER.warning(
-                "clarification fallback failed for session %s; returning exact P5 response: %s",
-                session_id,
-                error,
-            )
-            return dict(response)
-        finally:
-            self._clarification_fallback_reasons[reason] += 1
 
     def _clarification_catalog(
         self, candidates: list[Candidate]
@@ -1471,42 +1324,6 @@ class Agent:
             "analysis_candidate_limit": (
                 self._clarification_config.analysis_candidate_limit
             ),
-        }
-
-    def clarification_fallback_diagnostics_snapshot(
-        self, session_id: str | None = None
-    ) -> dict[str, object]:
-        """Return P8-only aggregate or per-session observational diagnostics."""
-
-        if session_id is not None:
-            return {
-                "session_id": session_id,
-                "events": copy.deepcopy(
-                    self._clarification_fallback_events.get(session_id, [])
-                ),
-            }
-        return {
-            "enabled": self._clarification_fallback_policy.enabled,
-            "policy_id": self._clarification_fallback_policy.policy_id,
-            "fingerprint_sha256": (
-                self._clarification_fallback_policy.fingerprint_sha256
-            ),
-            "intervention_count": sum(self._clarification_fallback_counts.values()),
-            "affected_session_count": len(self._clarification_fallback_used_sessions),
-            "counts_by_attribute": dict(
-                sorted(self._clarification_fallback_counts.items())
-            ),
-            "counts_by_turn": {
-                str(key): value
-                for key, value in sorted(self._clarification_fallback_turns.items())
-            },
-            "counts_by_route": dict(
-                sorted(self._clarification_fallback_routes.items())
-            ),
-            "eligibility_reasons": dict(
-                sorted(self._clarification_fallback_reasons.items())
-            ),
-            "failure_count": self._clarification_fallback_failure_count,
         }
 
     def exposure_diagnostics_snapshot(

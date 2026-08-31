@@ -1,0 +1,215 @@
+{
+  "schema_version": 1,
+  "record_type": "proxy_development_rejection",
+  "experiment_id": "P8-proxy-clarification-fallback-v1",
+  "parent_champion": "f4992683cff2fe0cb6e4e756edeb361f1f29f6b0",
+  "decision": "reject_p8_retain_p5_and_end_optimization",
+  "frozen_commits": {
+    "predeclaration": "dbdcf73894eed9f10fd6c580c680bc918acbf8c4",
+    "catalog_derivation": "279293055a1ea6a15ae72b951df1385090c7986d",
+    "variant_implementation": "67222de722db1789d3aa26780702578a95cbd66c",
+    "proxy_harness": "30f366a0ce6d83b6fa203d6dd845b23661426ed4"
+  },
+  "development_proxy": {
+    "sample_count": 400,
+    "seed": 2026083101,
+    "scenario_counts": {
+      "boundary": 100,
+      "browsing": 100,
+      "buying": 100,
+      "intent_override": 100
+    },
+    "popularity_quartile_counts": {
+      "1": 76,
+      "2": 114,
+      "3": 106,
+      "4": 104
+    },
+    "public_target_intersection": 0,
+    "target_selection_sha256": "b29e934b5e4455edc431c80f32f7b27f41a949187657d3e1ee6bae9c1b7cabe2",
+    "ordered_assignment_sha256": "1883975d9500467c4677a809856272cc885c0943c1c0ecd87ba1865e362d169d",
+    "target_ids_persisted": false
+  },
+  "policies": {
+    "P5": {
+      "policy_id": "clarification-fallback.disabled.v1",
+      "fingerprint_sha256": "bc9db390faf9e0231ec5c4dafa193a0f94f3f2c2a62aa5ea231807acfb8d0838",
+      "technical_score": 0.610323,
+      "hit_rate_at_10": 0.725,
+      "mrr": 0.451911,
+      "mttc": 5.3875,
+      "efficiency": 0.56125,
+      "questions": 723,
+      "question_outcomes": {
+        "answered": 454,
+        "declined": 116,
+        "interrupted": 53,
+        "unobserved_after_stop": 100
+      },
+      "normalized_response_sha256": "5a592864701efbce073f0df8cd3c674397379724e726a1876e96b867a34a0a87",
+      "session_outcome_sha256": "2b3e354fc355735e3114b9a57ee3a22b96a2a36d013d0988002e73a30e57af7d"
+    },
+    "A": {
+      "policy_id": "clarification-fallback.open-once.v1",
+      "fingerprint_sha256": "e62c41f153f93673229e279e010a3949d2344da9182a6011364c0bfda938cb3c",
+      "technical_score": 0.611129,
+      "hit_rate_at_10": 0.725,
+      "mrr": 0.454098,
+      "mttc": 5.38,
+      "efficiency": 0.562,
+      "questions": 725,
+      "fallback_questions": 1,
+      "fallback_outcomes": {
+        "answered": 1,
+        "declined": 0,
+        "unobserved_after_stop": 0
+      },
+      "technical_score_delta": 0.000806,
+      "hit_rate_delta": 0.0,
+      "mrr_delta": 0.002187,
+      "mttc_delta": -0.0075,
+      "paired_counts": {
+        "gained_hits": 0,
+        "lost_hits": 0,
+        "earlier_hits": 1,
+        "later_hits": 0,
+        "better_ranks": 0,
+        "worse_ranks": 0,
+        "unchanged_hits": 289,
+        "unchanged_misses": 110
+      },
+      "paired_bootstrap": {
+        "seed": 2026083191,
+        "resamples": 20000,
+        "confidence_level": 0.975,
+        "lower": 0.0,
+        "upper": 0.003225,
+        "probability_delta_positive": 0.6275
+      },
+      "scenario_technical_score_deltas": {
+        "boundary": 0.0,
+        "browsing": 0.0,
+        "buying": 0.0,
+        "intent_override": 0.003225
+      },
+      "normalized_response_sha256": "be1cc48e1e6b8572101bf6dc0ffe5f02a807cd7f7531feddca835b852cf9aa4a",
+      "session_outcome_sha256": "735c8450ece825a3c34caeb065767996abfeae4d3c637e7ccb218e247d1a6f61"
+    },
+    "B": {
+      "policy_id": "clarification-fallback.catalog-utility-once.v1",
+      "fingerprint_sha256": "6272221d897451c358926f1fa16c957472dd917aea7ee5846e0029206673cff4",
+      "technical_score": 0.610637,
+      "hit_rate_at_10": 0.725,
+      "mrr": 0.452789,
+      "mttc": 5.385,
+      "efficiency": 0.5615,
+      "questions": 727,
+      "fallback_questions": 3,
+      "fallback_outcomes": {
+        "answered": 3,
+        "declined": 0,
+        "unobserved_after_stop": 0
+      },
+      "technical_score_delta": 0.000314,
+      "hit_rate_delta": 0.0,
+      "mrr_delta": 0.000878,
+      "mttc_delta": -0.0025,
+      "paired_counts": {
+        "gained_hits": 0,
+        "lost_hits": 0,
+        "earlier_hits": 2,
+        "later_hits": 1,
+        "better_ranks": 0,
+        "worse_ranks": 0,
+        "unchanged_hits": 287,
+        "unchanged_misses": 110
+      },
+      "paired_bootstrap": {
+        "seed": 2026083191,
+        "resamples": 20000,
+        "confidence_level": 0.975,
+        "lower": -0.001778571,
+        "upper": 0.00271875,
+        "probability_delta_positive": 0.6089
+      },
+      "scenario_technical_score_deltas": {
+        "boundary": 0.0,
+        "browsing": -0.001971,
+        "buying": 0.0,
+        "intent_override": 0.003225
+      },
+      "normalized_response_sha256": "98cc093970308310617c947b5f37973f09671592d60d6b62b6e38c2785bbc13f",
+      "session_outcome_sha256": "c1c4c33b4c1a69caa9027cf78c5561425e3174b5e9f0e70c833fd0f4313ecf99"
+    }
+  },
+  "failed_frozen_gates": {
+    "A": [
+      "technical_score_delta_at_least_0.015",
+      "97.5_percent_interval_lower_above_zero",
+      "probability_positive_at_least_0.9875",
+      "positive_net_hits"
+    ],
+    "B": [
+      "technical_score_delta_at_least_0.015",
+      "97.5_percent_interval_lower_above_zero",
+      "probability_positive_at_least_0.9875",
+      "positive_net_hits"
+    ]
+  },
+  "passed_common_safety_gates": {
+    "hit_rate_nondecrease": true,
+    "scenario_regression_limit": true,
+    "mttc_nonworsening": true,
+    "zero_correctness_or_reliability_failures": true,
+    "missing_information_attribution": true,
+    "target_and_session_identifier_independence": true,
+    "resource_limits": true
+  },
+  "performance": {
+    "P5": {
+      "wall_seconds": 156.317856,
+      "p95_response_latency_ms": 320.156541,
+      "peak_rss_mib": 771.03125
+    },
+    "A": {
+      "wall_seconds": 158.58062,
+      "p95_response_latency_ms": 364.048958,
+      "peak_rss_mib": 802.96875
+    },
+    "B": {
+      "wall_seconds": 159.656842,
+      "p95_response_latency_ms": 341.677333,
+      "peak_rss_mib": 810.671875
+    }
+  },
+  "correctness_failure_count_each_policy": 0,
+  "later_phases": {
+    "confirmation_targets_generated_or_evaluated": false,
+    "uniform_stress_targets_generated_or_evaluated": false,
+    "public_shadow_run": false,
+    "official_runs_consumed": 0
+  },
+  "artifacts": {
+    "development_result_sha256": "b137ce9f24b1d4c784b9992e5f2d4ca518c40a364786320c4edfd436ada755b7",
+    "predeclaration_sha256": "1e83e3532724c5cc302ea4f5f4b34a23c31dfc1fa44fca2fd5b9a3470b7a32ac",
+    "catalog_derivation_sha256": "ca78b8cbf8bd11fc4072a03510482646d07a5058c4d29bda04db53b824258015",
+    "proxy_harness_sha256": "dda5b8b4de0e415b900e281dfca9c31d84a170b3a46f4dfe912265ef61ee01a1"
+  },
+  "final_champion": "f4992683cff2fe0cb6e4e756edeb361f1f29f6b0",
+  "official_run_budget": {
+    "used_before": 10,
+    "consumed_by_p8": 0,
+    "used_after": 10,
+    "remaining": 2
+  },
+  "clean_room": {
+    "reference_checkout_accessed": false,
+    "public_outcomes_consulted_for_proxy_selection": false,
+    "evaluator_or_public_set_modified": false
+  },
+  "rejection_reason": "Neither frozen variant approached the +0.015 development threshold, neither produced a positive net hit gain, and neither passed the multiplicity-adjusted paired-confidence gates. The frozen stop rule therefore rejects P8 before confirmation.",
+  "timestamps": {
+    "development_completed_utc": "2026-08-31T14:03:09Z",
+    "rejected_utc": "2026-08-31T14:07:17Z"
+  }
+}
