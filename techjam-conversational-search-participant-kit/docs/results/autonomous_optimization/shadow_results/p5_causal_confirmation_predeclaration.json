@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "record_type": "predeclaration",
+  "experiment_id": "P5-prospective-causal-clarification-confirmation-v1",
+  "parent_champion": "7ba0a7c769954d758e1c6db6e70cde3cac214bb5",
+  "campaign_checkpoint": "48391a76332c222084304b061d947ea51169f2a3",
+  "historical_status": {
+    "P4_verdict": "rejected_under_original_route_local_attribution_gate",
+    "P4_verdict_is_immutable": true,
+    "P4_failure_explanation": "The original P4 gate treated downstream response differences on turns no longer routed as buying as attribution failures.",
+    "prospective_P5_rationale": "In a stateful dialogue, a qualifying clarification can change the next customer message, active state, candidate pools, rankings, recommendations, and later routes. P5 prospectively attributes those downstream differences through the first qualifying intervention and its causal mediation rather than requiring every later turn to remain on the buying route."
+  },
+  "frozen_candidate_identity": {
+    "implementation_commit": "accda5bf3e1755730868f8e50cf2c2a33c3ef492",
+    "policy_id": "clarification.category-evidence-utility-buying.v1",
+    "policy_fingerprint_sha256": "6db00179643c355adf1ecfbef5fee680ce50ce316f6f5c272da9aa53ab8bf62e",
+    "clarification_registry_sha256_at_checkpoint": "bd5ad908878bc5572cf579633d4f42515bb26479dfed7fa6fad3bdb765369614",
+    "retrieval_policy_id": "contextual.category-evidence.v1",
+    "exposure_policy_id": "exposure.disabled.v1",
+    "behavior_change_from_P4": "none",
+    "prohibited_changes": "No P4 question rule, route, threshold, weight, answerability value, controller limit, response behavior, retrieval behavior, or implementation logic may change."
+  },
+  "exact_candidate_configuration": {
+    "enabled": true,
+    "required_retrieval_policy_id": "contextual.category-evidence.v1",
+    "analysis_candidate_limit": 50,
+    "browsing_min_candidates": 4,
+    "browsing_min_expected_reduction": 0.2,
+    "buying_min_candidates": 8,
+    "buying_min_expected_reduction": 0.5,
+    "eligible_routes": ["browsing", "boundary", "buying"],
+    "question_candidates": ["other", "feature"],
+    "utility_min_candidates": 4,
+    "answerability_rates": [["other", 1.0], ["feature", 0.99294]],
+    "hit_probability_weight": 0.5,
+    "reciprocal_rank_weight": 0.3,
+    "additional_turn_cost": 0.02,
+    "max_questions_per_session": 2,
+    "max_turns": 10
+  },
+  "prospective_first_divergence_attribution": {
+    "paired_setup": "P2 and P5 start each session with identical seed, catalog, user profile, initial message, configuration outside clarification policy selection, and accumulated history before intervention.",
+    "pre_divergence_identity": [
+      "customer inputs are identical",
+      "active state is identical",
+      "observable route is identical",
+      "analysis candidate ordering is identical",
+      "published recommendations are identical",
+      "usage is identical",
+      "message and all response fields are identical"
+    ],
+    "qualifying_intervention": [
+      "the first response divergence occurs on a turn whose control route is buying",
+      "P2 ask_attribute is null",
+      "P5 ask_attribute is the frozen eligible other or feature clarification",
+      "P2 and P5 recommendations are identical on the intervention turn",
+      "P2 and P5 usage is identical on the intervention turn",
+      "all response fields other than clarification question/message text remain identical on the intervention turn"
+    ],
+    "mediated_effects": "After the qualifying question, the customer may answer, decline, or be interrupted. Differences in the next customer input, active state, later route, candidate pool, ranking, recommendations, and final outcome are attributed only when every divergent turn is reachable from that first intervention and no independent code/configuration difference exists.",
+    "later_nonbuying_route_is_not_failure": true,
+    "unchanged_session_rule": "A paired session with no qualifying intervention must remain byte-identical in normalized responses, questions, usage, state, candidate ordering, recommendations, and final outcome.",
+    "required_affected_session_record": [
+      "first_divergence_turn",
+      "route_at_intervention",
+      "P2_question_field",
+      "P5_question_field",
+      "recommendation_parity_at_intervention",
+      "usage_parity_at_intervention",
+      "state_before_and_after_answer",
+      "subsequent_route_transitions",
+      "candidate_pool_and_ranking_changes",
+      "final_hit_rank_and_turn_delta"
+    ]
+  },
+  "attribution_failure_conditions": [
+    "behavior changes before a qualifying clarification",
+    "a session without a qualifying clarification changes",
+    "recommendations or usage change on the intervention turn before the customer answers",
+    "code outside the frozen clarification activation path changes behavior",
+    "P5 uses a different P4 threshold, question rule, weight, or configuration",
+    "a downstream difference cannot be causally traced to the first intervention",
+    "target-aware, session-specific, public-label, or future-turn information influences runtime behavior"
+  ],
+  "promotion_gates": {
+    "minimum_official_technical_score_delta": 0.05,
+    "paired_95_percent_confidence_interval_must_be_above_zero": true,
+    "minimum_probability_delta_positive": 0.975,
+    "minimum_aggregate_hit_rate_delta": 0.0,
+    "minimum_net_hit_delta": 1,
+    "maximum_scenario_technical_score_regression": 0.01,
+    "lost_hit_rule": "Every individual lost hit must be outweighed by gained hits within its scenario and that scenario TechnicalScore must not regress.",
+    "disabled_exact_P2_parity_required": true,
+    "all_changed_sessions_must_pass_first_divergence_attribution": true,
+    "sessions_without_intervention_must_be_exact_P2": true,
+    "maximum_correctness_or_failure_counters": 0,
+    "turn_10_questions_allowed": 0,
+    "already_resolved_or_declined_attribute_repeats_allowed": 0,
+    "deterministic_execution_required": true,
+    "submission_entry_point_behavior_required": true
+  },
+  "official_run_protocol": {
+    "runs_used_before": 8,
+    "runs_remaining_before": 4,
+    "run_1_failure_action": "Reject P5, retain P2, preserve three official runs, and stop.",
+    "run_2_condition": "Allowed only if run 1 passes every frozen promotion and attribution gate.",
+    "run_2_requirement": "Require identical normalized-response and session-outcome hashes, metrics, recommendations, questions, usage, and counters.",
+    "run_2_success_action": "Promote P5, retain P2 as rollback, preserve two official runs, and stop.",
+    "maximum_official_runs_this_invocation": 2
+  },
+  "clean_room_and_overfitting_controls": {
+    "allowed_inputs": ["participant repository", "participant-visible catalog fields", "runtime evidence through the current turn", "frozen sanitized participant campaign evidence"],
+    "forbidden_inputs": ["competitor or reference checkout", "reference-run snapshot", "unsanitized reference artifact", "session or target identifiers in runtime decisions", "target labels", "future turns", "benchmark lookup tables"],
+    "public_set_overfitting_risk": "P5 does not alter the shadow-selected behavior, but confirmation still risks shadow-distribution transfer error. Frozen configuration, prospective attribution, official paired gates, and zero post-result tuning bound that risk."
+  },
+  "timestamps": {"predeclared_utc": "2026-08-31T09:20:06Z"}
+}

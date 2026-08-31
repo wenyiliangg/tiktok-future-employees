@@ -2,7 +2,7 @@
   "schema_version": 1,
   "campaign_status": "running",
   "campaign_base_commit": "c57dfce8f7aeb44cb366ab3a90c11e9ac613cf07",
-  "campaign_branch": "experiment/bounded-technicalscore-optimization",
+  "campaign_branch": "experiment/p5-clarification-confirmation",
   "champion_commit": "7ba0a7c769954d758e1c6db6e70cde3cac214bb5",
   "champion_configuration": {
     "retrieval_mode": "contextual",
@@ -48,10 +48,10 @@
   },
   "champion_response_hash": "921cbfe879262cae0c5332db632920544bb0b90c562ae91cf450a7252617e7f5",
   "champion_session_hash": "9513a906150178fc4ae5e829129cfd50b699c98b1f040d641dae91bb40847deb",
-  "current_experiment_id": null,
-  "current_hypothesis": null,
-  "current_stage": "P4_rejected_shadow_retain_P2",
-  "experiment_start_commit": null,
+  "current_experiment_id": "P5-prospective-causal-clarification-confirmation-v1",
+  "current_hypothesis": "The frozen P4 buying-route clarification behavior has a large target-independent benefit whose downstream effects are causally mediated by a qualifying first-divergence clarification.",
+  "current_stage": "P5A_prospective_causal_attribution_predeclared_before_preflight",
+  "experiment_start_commit": "48391a76332c222084304b061d947ea51169f2a3",
   "experiment_commits": [],
   "completed_hypotheses": [
     "H0-feedback-memory-bm25",
@@ -84,8 +84,8 @@
   "official_runs_remaining": 4,
   "fixed_seed": 20260830,
   "run_start_utc": "2026-08-30T14:44:51Z",
-  "last_checkpoint_utc": "2026-08-31T05:24:20Z",
+  "last_checkpoint_utc": "2026-08-31T09:20:06Z",
   "pause_reason": null,
   "stop_reason": null,
-  "next_action": "Retain P2 and do not authorize an official run for P4. Preserve all four official runs. If optimization resumes, start a new independent P5 diagnosis/predeclaration; do not tune P4 or relax its failed attribution gate."
+  "next_action": "Commit the prospective P5 causal-attribution contract, then prove first-divergence lineage over frozen P2/P4 shadow replays before selecting the unchanged frozen P4 policy at the evaluator-facing entry point."
 }
