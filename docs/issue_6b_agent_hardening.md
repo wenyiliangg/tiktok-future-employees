@@ -87,7 +87,7 @@ and embedding working set, not customer/session state.
 
 ## Verification
 
-Commands were run from `techjam-conversational-search-participant-kit`:
+Commands were run from the repository root:
 
 ```bash
 python3 -m unittest tests.test_response_validation tests.test_agent_reliability

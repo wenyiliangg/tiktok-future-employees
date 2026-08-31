@@ -1,5 +1,15 @@
 __pycache__/
 *.py[cod]
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.venv/
+venv/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
 .DS_Store
 .env
 results.json

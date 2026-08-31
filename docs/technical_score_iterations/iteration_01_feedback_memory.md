@@ -84,7 +84,7 @@ Kept disabled by default:
 
 ## Exact validation commands
 
-All commands ran from `techjam-conversational-search-participant-kit`.
+All commands ran from the repository root.
 
 ```bash
 /private/tmp/tiktok-techscore-venv-20260830/bin/python -m unittest discover -s tests -v

@@ -218,7 +218,7 @@ fallback -> feature reranking -> semantic reranking -> clarification`.
 
 ## Commands
 
-From `techjam-conversational-search-participant-kit`:
+From the repository root:
 
 ```bash
 # Focused/unit regression (150 tests in the audited environment)

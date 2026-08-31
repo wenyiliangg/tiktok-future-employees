@@ -63,7 +63,7 @@ experimental mode but requires a compatible generated cache and local model.
 
 ## Reproduction
 
-From `techjam-conversational-search-participant-kit`:
+From the repository root:
 
 ```bash
 python3 -m pip install -r requirements.txt
