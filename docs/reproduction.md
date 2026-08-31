@@ -1,7 +1,6 @@
 # Reproduction guide
 
-Run all commands from `techjam-conversational-search-participant-kit` unless a
-step says otherwise.
+Run all commands from the repository root unless a step says otherwise.
 
 ## 1. Environment
 
@@ -91,10 +90,10 @@ git worktree add ../tiktok-baseline 166bae7
 ```
 
 Copy the same authorized `data/catalog.jsonl` into
-`../tiktok-baseline/techjam-conversational-search-participant-kit/data/`, then:
+`../tiktok-baseline/data/`, then:
 
 ```bash
-cd ../tiktok-baseline/techjam-conversational-search-participant-kit
+cd ../tiktok-baseline
 python -m evaluator.local_evaluator --catalog data/catalog.jsonl --dataset data/public_set.jsonl --output results.json
 ```
 

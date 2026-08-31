@@ -41,10 +41,10 @@ Scenario performance on the public set:
 | Intent Override | 30 | 0.4667 | 0.329762 | 7.967 |
 | Boundary | 10 | 0.9000 | 0.449167 | 5.000 |
 
-See the [final comparison](techjam-conversational-search-participant-kit/docs/results/autonomous_optimization/final_comparison.json)
+See the [final comparison](docs/results/autonomous_optimization/final_comparison.json)
 and the two frozen P5 runs
-([run 1](techjam-conversational-search-participant-kit/docs/results/autonomous_optimization/p5_official_run1.json),
-[run 2](techjam-conversational-search-participant-kit/docs/results/autonomous_optimization/p5_official_run2.json))
+([run 1](docs/results/autonomous_optimization/p5_official_run1.json),
+[run 2](docs/results/autonomous_optimization/p5_official_run2.json))
 for the complete evidence.
 
 ## User guide
@@ -55,7 +55,7 @@ Python 3.12 is recommended and is the version used for the latest local
 verification.
 
 ```bash
-cd techjam-conversational-search-participant-kit
+# Run from the repository root
 python3.12 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
@@ -74,7 +74,7 @@ The public session file is included at `data/public_set.jsonl`. The competition
 catalog is intentionally ignored by Git. Place the organizer-authorized file at:
 
 ```text
-techjam-conversational-search-participant-kit/data/catalog.jsonl
+data/catalog.jsonl
 ```
 
 The file must contain 50,000 non-empty JSONL records, each with a unique,
@@ -85,7 +85,7 @@ python -c "import json,pathlib; p=pathlib.Path('data/catalog.jsonl'); rows=[json
 ```
 
 Data origin and redistribution notes are in
-[`DATA_ATTRIBUTION.md`](techjam-conversational-search-participant-kit/DATA_ATTRIBUTION.md).
+[`DATA_ATTRIBUTION.md`](DATA_ATTRIBUTION.md).
 
 ### 3. Try the agent interactively
 
@@ -102,7 +102,7 @@ The complete presenter walkthrough is in [`DEMO.md`](DEMO.md).
 
 ### 4. Reproduce the final score
 
-Run this command from `techjam-conversational-search-participant-kit`:
+Run this command from the repository root:
 
 ```bash
 python -m evaluator.local_evaluator \
@@ -302,27 +302,26 @@ decisions:
   disabled.
 
 Full experiment evidence is in
-[`docs/autonomous_technicalscore_optimization.md`](techjam-conversational-search-participant-kit/docs/autonomous_technicalscore_optimization.md)
+[`docs/autonomous_technicalscore_optimization.md`](docs/autonomous_technicalscore_optimization.md)
 and
-[`docs/results/autonomous_optimization/`](techjam-conversational-search-participant-kit/docs/results/autonomous_optimization/).
+[`docs/results/autonomous_optimization/`](docs/results/autonomous_optimization/).
 
 ## Project layout
 
 ```text
 .
-├── README.md
-├── DEMO.md
-├── AmazonReviews2023-main/              # Upstream dataset utilities/reference
-└── techjam-conversational-search-participant-kit/
-    ├── demo.py                           # Interactive product demo
-    ├── starter/                          # Agent, state, routing, ranking, questions
-    ├── evaluator/                        # Local competition evaluator
-    ├── dense_retrieval/                  # Optional MiniLM retriever and cache
-    ├── benchmarks/                       # Ablations and regression diagnostics
-    ├── config/                           # Fingerprinted policy registries
-    ├── data/                             # Public set; local catalog goes here
-    ├── docs/                             # Design, reproduction, and experiment evidence
-    └── tests/                            # Deterministic unit/integration tests
+├── demo.py                    # Interactive product demo
+├── starter/                   # Agent, state, routing, ranking, questions
+├── evaluator/                 # Local competition evaluator
+├── dense_retrieval/           # Optional MiniLM retriever and cache
+├── benchmarks/                # Ablations and regression diagnostics
+├── config/                    # Fingerprinted policy registries
+├── data/                      # Public set; local catalog goes here
+├── diagnostics/               # Reviewed diagnostic outputs
+├── docs/                      # Design, reproduction, and experiment evidence
+├── tests/                     # Deterministic unit/integration tests
+└── third_party/
+    └── amazon-reviews-2023/   # Upstream source snapshot and license
 ```
 
 ## Limitations and next steps
@@ -345,9 +344,10 @@ and a user-facing explanation layer that does not alter ranking.
 
 ## Further documentation
 
-- [Competition specification](techjam-conversational-search-participant-kit/docs/competition_specification.md)
-- [System architecture](techjam-conversational-search-participant-kit/docs/architecture.md)
-- [Reproduction guide](techjam-conversational-search-participant-kit/docs/reproduction.md)
-- [Agent API contract](techjam-conversational-search-participant-kit/docs/agent_api_contract.json)
-- [Data policy](techjam-conversational-search-participant-kit/data/README.md)
-- [Submission rules](techjam-conversational-search-participant-kit/docs/submission_rules.md)
+- [Competition specification](docs/competition_specification.md)
+- [System architecture](docs/architecture.md)
+- [Reproduction guide](docs/reproduction.md)
+- [Technical component reference](docs/technical_reference.md)
+- [Agent API contract](docs/agent_api_contract.json)
+- [Data policy](data/README.md)
+- [Submission rules](docs/submission_rules.md)

@@ -32,7 +32,7 @@ omitted. Catalog rows are never mutated.
 
 ## Installation and usage
 
-From `techjam-conversational-search-participant-kit`:
+From the repository root:
 
 ```bash
 python3 -m pip install -r requirements.txt

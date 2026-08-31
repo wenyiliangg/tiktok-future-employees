@@ -1,8 +1,8 @@
 # Demo Runbook
 
 This is a six-minute judge-facing walkthrough of the final TechJam shopping
-agent. Run every command from `techjam-conversational-search-participant-kit`
-after activating the project environment.
+agent. Run every command from the repository root after activating the project
+environment.
 
 ## Before the presentation
 

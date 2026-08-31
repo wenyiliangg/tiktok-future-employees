@@ -41,10 +41,10 @@ default; the retrieval-only policy remains available unchanged as rollback.
 | Deterministic feature reranking | Explicit opt-in only; disabled by default |
 | User-facing clarification questions/history | At most one question on eligible runtime-routed Browsing sessions |
 
-See [`docs/contextual_retrieval_recovery.md`](docs/contextual_retrieval_recovery.md)
+See [`docs/contextual_retrieval_recovery.md`](contextual_retrieval_recovery.md)
 for the retrieval promotion evidence,
-[`docs/issue_6a_ablation_tuning.md`](docs/issue_6a_ablation_tuning.md) for the
-final clarification selection, and [`docs/architecture.md`](docs/architecture.md)
+[`docs/issue_6a_ablation_tuning.md`](issue_6a_ablation_tuning.md) for the
+final clarification selection, and [`docs/architecture.md`](architecture.md)
 for the component contracts.
 
 ## Architecture at a glance
@@ -153,7 +153,7 @@ python -c "import json, pathlib; rows=[json.loads(x) for x in pathlib.Path('data
 ```
 
 The source attribution and redistribution terms are in
-[`DATA_ATTRIBUTION.md`](DATA_ATTRIBUTION.md). The derived catalog is based on
+[`DATA_ATTRIBUTION.md`](../DATA_ATTRIBUTION.md). The derived catalog is based on
 the Amazon Reviews 2023 project and joins product metadata by `parent_asin`.
 
 ## Generated indexes and `.gitignore`
@@ -208,14 +208,14 @@ python -m benchmarks.benchmark_dense_retrieval --catalog data/catalog.jsonl --ca
 
 For the historical weak baseline and full reproduction notes, including
 hardware-dependent timing caveats, see
-[`docs/reproduction.md`](docs/reproduction.md).
+[`docs/reproduction.md`](reproduction.md).
 
 ## Results
 
 ### Fixed baseline
 
 These are the frozen weak-BM25 public-set metrics recorded in
-[`docs/baseline_results.json`](docs/baseline_results.json):
+[`docs/baseline_results.json`](baseline_results.json):
 
 | HR@10 | MRR | MTTC | Efficiency | TechnicalScore |
 | ---: | ---: | ---: | ---: | ---: |
@@ -234,8 +234,8 @@ public evaluator:
 It retains all 25 BM25-success sessions and gains three. State-aware lexical
 variants were rejected because they lost `public_0143`; they are not enabled in
 the selected policy. See the
-[`recovery report`](docs/contextual_retrieval_recovery.md) and
-[`machine-readable selection summary`](docs/results/recovery/contextual_policy_selection.json).
+[`recovery report`](contextual_retrieval_recovery.md) and
+[`machine-readable selection summary`](results/recovery/contextual_policy_selection.json).
 
 ### Historical Issue 2B retrieval comparison
 
@@ -255,8 +255,8 @@ were tested.
 None of these historical Issue 2B modes improved on the fixed baseline. They
 remain useful regression evidence but are not the current default. Scenario
 metrics, raw output, environment details, and interpretation are in
-[`docs/issue_2b_results.md`](docs/issue_2b_results.md) and
-[`docs/results/issue_2b/`](docs/results/issue_2b/).
+[`docs/issue_2b_results.md`](issue_2b_results.md) and
+[`docs/results/issue_2b/`](results/issue_2b/).
 
 ### Remaining downstream work
 
@@ -327,20 +327,20 @@ commit record. Documentation and measurements must remain evidence-backed.
 
 ## Further documentation
 
-- [`docs/architecture.md`](docs/architecture.md): actual runtime architecture,
+- [`docs/architecture.md`](architecture.md): actual runtime architecture,
   standalone components, and precedence rules
-- [`docs/reproduction.md`](docs/reproduction.md): setup, data, cache, baseline,
+- [`docs/reproduction.md`](reproduction.md): setup, data, cache, baseline,
   current evaluation, and results-recording procedure
-- [`docs/conversation_state.md`](docs/conversation_state.md)
-- [`docs/lexical_retrieval.md`](docs/lexical_retrieval.md)
-- [`docs/dense_retrieval.md`](docs/dense_retrieval.md)
-- [`docs/feature_reranking.md`](docs/feature_reranking.md)
-- [`docs/intent_router.md`](docs/intent_router.md)
-- [`docs/fallback_candidates.md`](docs/fallback_candidates.md)
-- [`docs/ambiguity_analysis.md`](docs/ambiguity_analysis.md)
-- [`docs/competition_specification.md`](docs/competition_specification.md)
-- [`docs/agent_api_contract.json`](docs/agent_api_contract.json)
-- [`docs/submission_rules.md`](docs/submission_rules.md)
+- [`docs/conversation_state.md`](conversation_state.md)
+- [`docs/lexical_retrieval.md`](lexical_retrieval.md)
+- [`docs/dense_retrieval.md`](dense_retrieval.md)
+- [`docs/feature_reranking.md`](feature_reranking.md)
+- [`docs/intent_router.md`](intent_router.md)
+- [`docs/fallback_candidates.md`](fallback_candidates.md)
+- [`docs/ambiguity_analysis.md`](ambiguity_analysis.md)
+- [`docs/competition_specification.md`](competition_specification.md)
+- [`docs/agent_api_contract.json`](agent_api_contract.json)
+- [`docs/submission_rules.md`](submission_rules.md)
 
 ## Data and secret policy
 
