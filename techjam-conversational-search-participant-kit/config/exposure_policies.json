@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "policies": [
+    {
+      "policy_id": "exposure.disabled.v1",
+      "enabled": false,
+      "gated_width": 1,
+      "max_gated_turn": 1,
+      "minimum_active_normalized_constraints": 1,
+      "release_on_answered_clarification": true,
+      "eligible_routes": [],
+      "fail_open": true,
+      "fingerprint_sha256": "f92cbd2c2801019d305594f312c283a03930713ae010a0fa1c6a7d385c4e7edf"
+    },
+    {
+      "policy_id": "exposure.constraint-release-cap2.v1",
+      "enabled": true,
+      "gated_width": 1,
+      "max_gated_turn": 2,
+      "minimum_active_normalized_constraints": 2,
+      "release_on_answered_clarification": true,
+      "eligible_routes": [
+        "browsing",
+        "boundary"
+      ],
+      "fail_open": true,
+      "fingerprint_sha256": "ab1462a4c9faf119fad93c87cdb247257d47344de5e3c9de3b82d7ec68ac2aac"
+    },
+    {
+      "policy_id": "exposure.constraint-release-cap1.v1",
+      "enabled": true,
+      "gated_width": 1,
+      "max_gated_turn": 1,
+      "minimum_active_normalized_constraints": 2,
+      "release_on_answered_clarification": true,
+      "eligible_routes": [
+        "browsing",
+        "boundary"
+      ],
+      "fail_open": true,
+      "fingerprint_sha256": "4b1a50bdbdd615980ec13559c4e1b6e73551f0ec052d2b6fb6ca9558d1dc344e"
+    },
+    {
+      "policy_id": "exposure.constraint-release-min3.v1",
+      "enabled": true,
+      "gated_width": 1,
+      "max_gated_turn": 2,
+      "minimum_active_normalized_constraints": 3,
+      "release_on_answered_clarification": true,
+      "eligible_routes": [
+        "browsing",
+        "boundary"
+      ],
+      "fail_open": true,
+      "fingerprint_sha256": "9edd66ec5a79e0f18db16340edded1d5e26bbbd520ed0f3c90944a5a16d46996"
+    }
+  ]
+}

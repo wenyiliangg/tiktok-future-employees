@@ -70,6 +70,12 @@ from .intent_router import IntentRouter, RoutingDecision
 from .lexical_retriever import LexicalRetriever
 from .override_history_policy import override_history_policy_for_retrieval
 from .question_utility import rank_question_candidates
+from .recommendation_exposure import (
+    ExposureDecision,
+    RecommendationExposurePolicy,
+    apply_recommendation_exposure,
+    disabled_exposure_policy,
+)
 from .response_validation import DEFAULT_RECOMMENDATION_MESSAGE, validate_response
 from .route_aware_retrieval import (
     filter_candidates,
@@ -115,6 +121,7 @@ class Agent:
         clarification_composer: Callable[
             [Mapping[str, object], ClarificationPrompt | None], dict[str, object]
         ] = compose_clarification_response,
+        exposure_policy: RecommendationExposurePolicy | None = None,
     ) -> None:
         self.catalog_path = Path(catalog_path)
         self.config = config or HybridRetrievalConfig()
@@ -167,6 +174,7 @@ class Agent:
             or ClarificationController(default_controller_config)
         )
         self._clarification_composer = clarification_composer
+        self._exposure_policy = exposure_policy or disabled_exposure_policy()
         self._known_negative_ids: dict[str, set[str]] = {}
         self._last_recommended_ids: dict[str, tuple[str, ...]] = {}
         self._active_raw_intent: dict[str, str] = {}
@@ -191,6 +199,15 @@ class Agent:
         self._clarification_route_counts: Counter[str] = Counter()
         self._clarification_resolution_counts: Counter[str] = Counter()
         self._clarification_failure_count = 0
+        self._exposure_events: dict[str, list[dict[str, object]]] = {}
+        self._exposure_was_gated: dict[str, bool] = {}
+        self._exposure_activation_count = 0
+        self._exposure_exit_counts: Counter[str] = Counter()
+        self._exposure_activation_turns: Counter[int] = Counter()
+        self._exposure_activation_routes: Counter[str] = Counter()
+        self._exposure_activation_evidence: Counter[str] = Counter()
+        self._exposure_suppressed_recommendations = 0
+        self._exposure_failure_count = 0
 
         self._catalog_ids = self._load_catalog_ids(self.catalog_path)
         self._catalog_view = catalog_view or InMemoryCatalogView.from_jsonl(
@@ -310,6 +327,8 @@ class Agent:
         self._clarification_candidates[session_id] = []
         self._contextual_routes.pop(session_id, None)
         self._clarification_disabled_sessions.discard(session_id)
+        self._exposure_events[session_id] = []
+        self._exposure_was_gated[session_id] = False
         if self._clarification_config.enabled:
             try:
                 self._clarification_controller.reset(session_id)
@@ -330,11 +349,14 @@ class Agent:
 
         try:
             response = self._respond_once(session_id, user_message, turn, top_k)
-            return validate_response(
+            validated = validate_response(
                 response,
                 self._last_candidates.get(session_id, ()),
                 self._catalog_ids,
                 top_k,
+            )
+            return self._apply_exposure_fail_open(
+                validated, session_id=session_id, turn=turn
             )
         except Exception as error:  # noqa: BLE001 - final evaluator boundary
             self._component_failure_counts["unexpected_response"] += 1
@@ -367,6 +389,76 @@ class Agent:
                     self._catalog_ids,
                     top_k,
                 )
+
+    def _apply_exposure_fail_open(
+        self,
+        response: dict[str, object],
+        *,
+        session_id: str,
+        turn: int,
+    ) -> dict[str, object]:
+        """Apply prefix-only exposure after validation, returning P2 on failure."""
+
+        if not self._exposure_policy.enabled:
+            return response
+        try:
+            active_state = self._state.state_for(session_id)
+            clarification_state = self._clarification_controller.state_for(session_id)
+            route = self._contextual_routes.get(session_id, "uncertain")
+            exposed, decision = apply_recommendation_exposure(
+                response,
+                policy=self._exposure_policy,
+                turn=turn,
+                route=route,
+                active_state=active_state,
+                clarification_state=clarification_state,
+            )
+            self._record_exposure_decision(session_id, decision)
+            return exposed
+        except Exception as error:  # noqa: BLE001 - optional exposure boundary
+            self._exposure_failure_count += 1
+            self._component_failure_counts["recommendation_exposure"] += 1
+            LOGGER.warning(
+                "recommendation exposure failed for session %s; returning full P2 response: %s",
+                session_id,
+                error,
+            )
+            return response
+
+    def _record_exposure_decision(
+        self, session_id: str, decision: ExposureDecision
+    ) -> None:
+        previously_gated = self._exposure_was_gated.get(session_id, False)
+        if decision.gated:
+            if not previously_gated:
+                self._exposure_activation_count += 1
+            self._exposure_activation_turns[decision.turn] += 1
+            self._exposure_activation_routes[decision.route] += 1
+            self._exposure_activation_evidence[decision.evidence_level] += 1
+            self._exposure_suppressed_recommendations += (
+                decision.suppressed_recommendation_count
+            )
+        elif previously_gated:
+            self._exposure_exit_counts[decision.reason] += 1
+        self._exposure_was_gated[session_id] = decision.gated
+        self._exposure_events.setdefault(session_id, []).append(
+            {
+                "gated": decision.gated,
+                "reason": decision.reason,
+                "turn": decision.turn,
+                "route": decision.route,
+                "active_constraint_count": decision.active_constraint_count,
+                "answered_clarification": decision.answered_clarification,
+                "evidence_level": decision.evidence_level,
+                "available_recommendation_count": (
+                    decision.available_recommendation_count
+                ),
+                "exposed_recommendation_count": decision.exposed_recommendation_count,
+                "suppressed_recommendation_count": (
+                    decision.suppressed_recommendation_count
+                ),
+            }
+        )
 
     def _respond_once(
         self,
@@ -1232,6 +1324,46 @@ class Agent:
             "analysis_candidate_limit": (
                 self._clarification_config.analysis_candidate_limit
             ),
+        }
+
+    def exposure_diagnostics_snapshot(
+        self, session_id: str | None = None
+    ) -> dict[str, object]:
+        """Return exposure-only diagnostics without affecting runtime decisions."""
+
+        if session_id is not None:
+            return {
+                "policy_id": self._exposure_policy.policy_id,
+                "events": copy.deepcopy(self._exposure_events.get(session_id, [])),
+                "currently_gated": self._exposure_was_gated.get(session_id, False),
+            }
+        affected = sum(
+            any(bool(event.get("gated")) for event in events)
+            for events in self._exposure_events.values()
+        )
+        return {
+            "enabled": self._exposure_policy.enabled,
+            "policy_id": self._exposure_policy.policy_id,
+            "fingerprint_sha256": self._exposure_policy.fingerprint_sha256,
+            "affected_session_count": affected,
+            "activation_count": self._exposure_activation_count,
+            "gated_turn_count": sum(self._exposure_activation_turns.values()),
+            "activation_by_turn": {
+                str(key): value
+                for key, value in sorted(self._exposure_activation_turns.items())
+            },
+            "activation_by_route": dict(
+                sorted(self._exposure_activation_routes.items())
+            ),
+            "activation_by_evidence_level": dict(
+                sorted(self._exposure_activation_evidence.items())
+            ),
+            "exit_counts": dict(sorted(self._exposure_exit_counts.items())),
+            "suppressed_recommendation_count": (
+                self._exposure_suppressed_recommendations
+            ),
+            "currently_gated_session_count": sum(self._exposure_was_gated.values()),
+            "exposure_failure_count": self._exposure_failure_count,
         }
 
     def _require_lexical(self) -> Any:

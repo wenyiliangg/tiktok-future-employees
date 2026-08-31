@@ -24,7 +24,9 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from types import SimpleNamespace
+from typing import cast
 
+from benchmarks.paired_bootstrap import compare as paired_compare
 from starter.agent import Agent
 from starter.clarification_controller import (
     OFFICIAL_ATTRIBUTES,
@@ -33,7 +35,13 @@ from starter.clarification_controller import (
 )
 from starter.clarification_policies import clarification_policy_by_id
 from starter.contextual_retrieval import policy_by_id
+from starter.conversation_state import SessionState
 from starter.hybrid_retrieval import HybridRetrievalConfig, RetrievalMode
+from starter.recommendation_exposure import (
+    RecommendationExposurePolicy,
+    apply_recommendation_exposure,
+    disabled_exposure_policy,
+)
 from starter.selective_clarification import SelectiveClarificationConfig
 
 SEED = 20260830
@@ -357,6 +365,11 @@ def evaluate_shadow(
     correctness: Counter[str] = Counter()
     question_counts: Counter[str] = Counter()
     question_yield: Counter[str] = Counter()
+    target_suppression_positions: Counter[int] = Counter()
+    target_suppression_turns: Counter[int] = Counter()
+    affected_sessions: set[str] = set()
+    zero_result_sessions: set[str] = set()
+    permanently_gated_sessions: set[str] = set()
     transcript_hasher = hashlib.sha256()
     for sample in samples:
         session_id = f"{sample.sample_id}_{sample.template_variant}"
@@ -388,11 +401,31 @@ def evaluate_shadow(
                 ).encode()
             )
             ranked = _ranked(response, catalog_ids)
+            exposure_events = cast(
+                list[dict[str, object]],
+                agent.exposure_diagnostics_snapshot(session_id)["events"],
+            )
+            latest_exposure = exposure_events[-1] if exposure_events else None
+            if isinstance(latest_exposure, Mapping) and latest_exposure.get("gated"):
+                affected_sessions.add(sample.sample_id)
+                full_ranking = [
+                    item.parent_asin for item in agent.last_candidates(session_id)
+                ][:TOP_K]
+                if full_ranking and not ranked:
+                    zero_result_sessions.add(sample.sample_id)
+                if sample.target not in ranked and sample.target in full_ranking[1:]:
+                    position = full_ranking.index(sample.target) + 1
+                    target_suppression_positions[position] += 1
+                    target_suppression_turns[turn] += 1
             if override_applied and sample.target in ranked:
                 first_hit_turn = turn
                 best_rank = ranked.index(sample.target) + 1
                 break
             if turn == MAX_TURNS:
+                if isinstance(latest_exposure, Mapping) and latest_exposure.get(
+                    "gated"
+                ):
+                    permanently_gated_sessions.add(sample.sample_id)
                 break
             ask_attribute = (
                 response.get("ask_attribute") if isinstance(response, Mapping) else None
@@ -447,6 +480,24 @@ def evaluate_shadow(
             )
         },
         "normalized_transcript_sha256": transcript_hasher.hexdigest(),
+        "exposure_diagnostics": {
+            **agent.exposure_diagnostics_snapshot(),
+            "target_suppressed_from_positions_2_to_10_count": sum(
+                target_suppression_positions.values()
+            ),
+            "target_suppression_by_position": {
+                str(key): value
+                for key, value in sorted(target_suppression_positions.items())
+            },
+            "target_suppression_by_turn": {
+                str(key): value
+                for key, value in sorted(target_suppression_turns.items())
+            },
+            "target_affected_session_count": len(affected_sessions),
+            "zero_result_session_count": len(zero_result_sessions),
+            "permanently_gated_session_count": len(permanently_gated_sessions),
+        },
+        "fallback_diagnostics": agent.diagnostics_snapshot(),
         "sessions": sessions,
     }
 
@@ -454,9 +505,13 @@ def evaluate_shadow(
 def metric_summary(sessions: list[dict[str, object]]) -> dict[str, object]:
     count = len(sessions)
     hit_rate = sum(bool(item["hit"]) for item in sessions) / count
-    mrr = statistics.fmean(float(item["reciprocal_rank"]) for item in sessions)
+    mrr = statistics.fmean(
+        float(cast(float, item["reciprocal_rank"])) for item in sessions
+    )
     mttc = statistics.fmean(
-        int(item["first_hit_turn"]) if item["first_hit_turn"] is not None else 11
+        int(cast(int, item["first_hit_turn"]))
+        if item["first_hit_turn"] is not None
+        else 11
         for item in sessions
     )
     efficiency = max(0.0, min(1.0, (11.0 - mttc) / 10.0))
@@ -506,26 +561,55 @@ def question_answerability(samples: list[ShadowSample]) -> dict[str, object]:
 def comparison(
     champion: Mapping[str, object], candidate: Mapping[str, object]
 ) -> dict[str, object]:
-    before = {str(row["sample_id"]): row for row in champion["sessions"]}  # type: ignore[index]
-    after = {str(row["sample_id"]): row for row in candidate["sessions"]}  # type: ignore[index]
-    gained = lost = earlier = later = 0
-    for sample_id in sorted(before):
-        left, right = before[sample_id], after[sample_id]
-        if not left["hit"] and right["hit"]:
-            gained += 1
-        elif left["hit"] and not right["hit"]:
-            lost += 1
-        elif left["hit"] and right["hit"]:
-            earlier += int(right["first_hit_turn"]) < int(left["first_hit_turn"])
-            later += int(right["first_hit_turn"]) > int(left["first_hit_turn"])
+    paired = paired_compare(champion, candidate, seed=SEED, resamples=10_000)
+    counts = paired["counts"]
+    assert isinstance(counts, Mapping)
+    changed_labels = {
+        "gained_hit",
+        "lost_hit",
+        "earlier_hit",
+        "later_hit",
+        "better_rank",
+        "worse_rank",
+    }
     return {
         "technical_score_delta": round(
-            float(candidate["technical_score"]) - float(champion["technical_score"]), 6
+            float(cast(float, candidate["technical_score"]))
+            - float(cast(float, champion["technical_score"])),
+            6,
         ),
-        "gained_hits": gained,
-        "lost_hits": lost,
-        "earlier_shared_hits": earlier,
-        "later_shared_hits": later,
+        "mrr_delta": round(
+            float(cast(float, candidate["mrr"])) - float(cast(float, champion["mrr"])),
+            6,
+        ),
+        "hit_rate_delta": round(
+            float(cast(float, candidate["hit_rate_at_10"]))
+            - float(cast(float, champion["hit_rate_at_10"])),
+            6,
+        ),
+        "mttc_delta": round(
+            float(cast(float, candidate["mttc"]))
+            - float(cast(float, champion["mttc"])),
+            6,
+        ),
+        "efficiency_delta": round(
+            float(cast(float, candidate["efficiency"]))
+            - float(cast(float, champion["efficiency"])),
+            6,
+        ),
+        "gained_hits": int(cast(int, counts.get("gained_hit", 0))),
+        "lost_hits": int(cast(int, counts.get("lost_hit", 0))),
+        "earlier_shared_hits": int(cast(int, counts.get("earlier_hit", 0))),
+        "later_shared_hits": int(cast(int, counts.get("later_hit", 0))),
+        "better_shared_ranks": int(cast(int, counts.get("better_rank", 0))),
+        "worse_shared_ranks": int(cast(int, counts.get("worse_rank", 0))),
+        "affected_session_count": sum(
+            int(cast(int, counts.get(label, 0))) for label in changed_labels
+        ),
+        "scenario_mean_contribution_deltas": paired[
+            "scenario_mean_contribution_deltas"
+        ],
+        "paired_bootstrap": paired["bootstrap_technical_score_delta"],
     }
 
 
@@ -534,7 +618,7 @@ class _FixedRetriever:
         self.values = values
 
     def retrieve(self, *_args: object, **kwargs: object) -> list[object]:
-        limit = int(kwargs.get("top_n", len(self.values)))
+        limit = int(cast(int, kwargs.get("top_n", len(self.values))))
         return [
             SimpleNamespace(parent_asin=value, score=1.0 / rank, rank=rank)
             for rank, value in enumerate(self.values[:limit], start=1)
@@ -615,12 +699,120 @@ def robustness_checks() -> dict[str, bool]:
     }
 
 
+def exposure_robustness_checks(
+    policy: RecommendationExposurePolicy,
+) -> dict[str, bool]:
+    """Target-independent exposure checks over fixed candidates and runtime state."""
+
+    empty_response: dict[str, object] = {
+        "message": "results",
+        "ask_attribute": None,
+        "recommendations": [],
+        "usage": {"prompt_tokens": 0, "completion_tokens": 0},
+    }
+    empty_exposed, empty_decision = apply_recommendation_exposure(
+        empty_response,
+        policy=policy,
+        turn=1,
+        route="browsing",
+        active_state=SessionState(),
+        clarification_state=None,
+    )
+
+    class _UnavailableController:
+        def state_for(self, _session_id: str) -> object:
+            raise RuntimeError("optional controller unavailable")
+
+    with tempfile.TemporaryDirectory() as directory:
+        catalog = Path(directory) / "catalog.jsonl"
+        catalog.write_text(
+            "".join(json.dumps({"parent_asin": value}) + "\n" for value in "ABCD"),
+            encoding="utf-8",
+        )
+        p2 = clarification_policy_by_id("clarification.category-evidence-utility.v1")
+
+        def fixed_agent(
+            exposure: RecommendationExposurePolicy,
+            *,
+            controller: object | None = None,
+        ) -> Agent:
+            return Agent(
+                catalog,
+                config=HybridRetrievalConfig(mode=RetrievalMode.CONTEXTUAL),
+                anchor_retriever=_FixedRetriever(["A", "B", "C", "D"]),
+                dense_retriever=_FixedRetriever([]),
+                router=_FixedRouter(),
+                contextual_policy=policy_by_id("contextual.category-evidence.v1"),
+                clarification_config=p2.clarification,
+                clarification_controller=(
+                    controller
+                    or ClarificationController(
+                        ClarificationControllerConfig(max_questions_per_session=2)
+                    )
+                ),
+                exposure_policy=exposure,
+            )
+
+        active = fixed_agent(policy)
+        active.reset("sparse", {})
+        sparse = active.respond("sparse", "browse items", 1, 4)
+        active.reset("paraphrase", {})
+        paraphrase = active.respond("paraphrase", "look around for products", 1, 4)
+        first_prefix = _ranked(sparse, frozenset("ABCD"))
+        second_prefix = _ranked(paraphrase, frozenset("ABCD"))
+
+        active.reset("reset", {})
+        before_reset = active.respond("reset", "browse items", 1, 4)
+        active.reset("reset", {})
+        after_reset = active.respond("reset", "browse items", 1, 4)
+        reset_events = active.exposure_diagnostics_snapshot("reset")["events"]
+
+        active.reset("cap", {})
+        gated = active.respond("cap", "browse items", 1, 4)
+        released = active.respond("cap", "show me more", 3, 4)
+
+        unavailable = fixed_agent(policy, controller=_UnavailableController())
+        unavailable.reset("optional", {})
+        fail_open = unavailable.respond("optional", "browse items", 1, 4)
+
+        disabled_a = fixed_agent(disabled_exposure_policy())
+        disabled_b = fixed_agent(disabled_exposure_policy())
+        disabled_a.reset("disabled", {})
+        disabled_b.reset("disabled", {})
+        disabled_first = disabled_a.respond("disabled", "browse items", 1, 4)
+        disabled_second = disabled_b.respond("disabled", "browse items", 1, 4)
+
+    return {
+        "empty_query_preserves_zero_results": (
+            empty_exposed == empty_response and not empty_decision.gated
+        ),
+        "sparse_metadata_keeps_rank_one": len(first_prefix) == 1,
+        "paraphrased_wording_is_policy_invariant": (
+            first_prefix == second_prefix and len(second_prefix) == 1
+        ),
+        "missing_optional_component_fails_open": (
+            _ranked(fail_open, frozenset("ABCD")) == ["A", "B", "C", "D"]
+        ),
+        "repeated_reset_is_isolated": (
+            before_reset == after_reset
+            and isinstance(reset_events, list)
+            and len(reset_events) == 1
+        ),
+        "turn_cap_boundary_releases_full_list": (
+            len(_ranked(gated, frozenset("ABCD"))) == 1
+            and len(_ranked(released, frozenset("ABCD"))) == 4
+        ),
+        "disabled_mode_exact_response_parity": disabled_first == disabled_second,
+    }
+
+
 def _agent(
     catalog_path: Path,
     dense_cache_path: Path,
     clarification: SelectiveClarificationConfig,
     controller: ClarificationControllerConfig,
     contextual_policy_id: str = "contextual.feedback-memory.v1",
+    exposure_policy: RecommendationExposurePolicy | None = None,
 ) -> Agent:
     return Agent(
         catalog_path,
@@ -629,6 +821,7 @@ def _agent(
         contextual_policy=policy_by_id(contextual_policy_id),
         clarification_config=clarification,
         clarification_controller=ClarificationController(controller),
+        exposure_policy=exposure_policy or disabled_exposure_policy(),
     )
 
 
