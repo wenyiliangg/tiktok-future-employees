@@ -1,366 +1,353 @@
-# TechJam Conversational E-Commerce Search
-
-This project is a deterministic conversational product-search system for the
-TechJam challenge. Given an anonymized shopper profile and a sequence of
-messages, the agent maintains active preferences and returns up to ten Amazon
-catalog `parent_asin` identifiers per turn. A session succeeds when the hidden
-target appears in the Top 10 within ten turns.
-
-The public development set has 200 sessions across Buying, Browsing, Intent
-Override, and Boundary scenarios. The frozen catalog contains 50,000 products
-from the Amazon Reviews 2023 `Clothing_Shoes_and_Jewelry` category. The
-organizer's additional 800-session set is private and is not in this repository.
-
-## Repository layout
-
-The participant application lives directly at the repository root so setup,
-testing, and evaluation commands work without an extra `cd` step.
-
-| Path | Purpose |
-| --- | --- |
-| `starter/` | Evaluator-facing conversational search agent and runtime components |
-| `evaluator/` | Official local evaluation harness |
-| `config/` | Declarative clarification and exposure policies |
-| `data/` | Public evaluation set plus locally supplied, ignored catalog/cache files |
-| `benchmarks/` | Reproducible diagnostics, ablations, and paired comparisons |
-| `tests/` | Unit and integration tests |
-| `docs/` | Architecture, reproduction notes, and versioned result evidence |
-| `diagnostics/` | Reviewed diagnostic outputs |
-| `dense_retrieval/` | Dense retrieval package |
-| `third_party/` | Clearly isolated upstream source snapshots and their licenses |
-
-The Amazon Reviews 2023 upstream source is preserved under
-`third_party/amazon-reviews-2023/`; it is not part of the evaluator-facing
-runtime. See [`DATA_ATTRIBUTION.md`](DATA_ATTRIBUTION.md) for dataset provenance.
-
-## Current implementation status
-
-The evaluator-facing `Agent` uses exact raw-turn BM25 as its lexical foundation.
-The promoted retrieval foundation remains `contextual.browsing-dense.v1`: it
-rotates products the shopper explicitly rejected, clears that history on intent
-override, and lets dense evidence fill only two unprotected positions on
-Browsing turns. Issue 6A selects `clarification.browsing-only.v1` as the runtime
-default; the retrieval-only policy remains available unchanged as rollback.
-
-| Capability | Status on this branch |
-| --- | --- |
-| Exact weak BM25 | Integrated; protected lexical foundation and explicit `bm25` mode |
-| Multi-turn active state and intent override | Integrated |
-| Known-negative recommendation exclusion | Integrated in the contextual default |
-| Dense retrieval and validated embedding cache | Selective Browsing-only evidence in the contextual default |
-| Field-aware lexical retrieval | Integrated as an explicit experiment; rejected from the selected contextual policy |
-| Fixed reciprocal-rank hybrid fusion | Integrated; optional mode |
-| Hybrid dense-failure fallback to lexical | Integrated |
-| Intent routing | Integrated for selective dense activation; full route-aware mode remains explicit |
-| Boundary/empty-intent fallback candidates | Explicit route-aware mode only; disabled by default |
-| Candidate-pool ambiguity analysis | Integrated behind declarative clarification policy gates |
-| Deterministic feature reranking | Explicit opt-in only; disabled by default |
-| User-facing clarification questions/history | At most one question on eligible runtime-routed Browsing sessions |
-
-See [`docs/contextual_retrieval_recovery.md`](docs/contextual_retrieval_recovery.md)
-for the retrieval promotion evidence,
-[`docs/issue_6a_ablation_tuning.md`](docs/issue_6a_ablation_tuning.md) for the
-final clarification selection, and [`docs/architecture.md`](docs/architecture.md)
-for the component contracts.
-
-## Architecture at a glance
-
-```mermaid
-flowchart LR
-    E[Local evaluator] --> A[Agent]
-    A --> S[Active state + known negatives]
-    A --> B[Exact raw-turn BM25]
-    S --> O[Override clears negatives]
-    S --> I[Buying/Browsing router]
-    I -->|Browsing only| D[Dense MiniLM]
-    B --> R[Protected deterministic ranking]
-    D --> R
-    R --> T[Top-10 recommendations]
-```
-
-Every turn preserves its raw text alongside structured active slots. Current
-turn values override conversation history, which overrides profile-derived
-values. The agent then retrieves with the configured mode:
-
-- **Contextual (default):** exact BM25, explicit negative-feedback rotation,
-  override-safe history, and Browsing-only dense evidence below an eight-item
-  protected BM25 prefix.
-- **BM25:** exact stateless raw-turn BM25 with the official fields and weights.
-- **Anchored:** protected BM25 with vacancy-only structured/dense backfill.
-- **Lexical:** SQLite FTS5 candidate generation with field weights, structured
-  filters, soft boosts, exclusions, and deterministic `parent_asin` ties.
-- **Dense:** normalized `all-MiniLM-L6-v2` embeddings over deterministic catalog
-  text, with cosine-equivalent dot-product ranking.
-- **Hybrid:** lexical and dense candidates combined by weighted reciprocal-rank
-  fusion: `lexical_weight / (rrf_k + lexical_rank) + dense_weight /
-  (rrf_k + dense_rank)`.
-- **Route-aware:** the earlier 3C policy remains available explicitly for
-  diagnostics; Boundary fallback and feature reranking require separate flags.
-- **Reranking:** an opt-in deterministic feature model scores up to 100 retrieved
-  candidates using retrieval evidence plus active category, attribute, price,
-  profile, hard-constraint, and exclusion signals before returning the Top 10.
-
-Contextual and hybrid modes catch dense initialization/query failures and
-continue with lexical candidates. Dense-only mode surfaces dense failures.
-
-## Setup
-
-Python 3.10 or later is recommended. From this directory:
-
-```bash
-python -m venv .venv
-```
-
-Activate the environment:
-
-```bash
-# macOS/Linux
-source .venv/bin/activate
-
-# Windows PowerShell
-.venv\Scripts\Activate.ps1
-```
-
-Install the dependency ranges and run the tests:
-
-```bash
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-python -m unittest discover -s tests -v
-```
-
-`numpy` and `sentence-transformers` are needed for dense/hybrid retrieval.
-Lexical retrieval uses the Python standard library's SQLite build with FTS5.
-
-## Official data acquisition
-
-The repository intentionally commits only `data/public_set.jsonl` (200 labeled
-development sessions). It does **not** commit the 50,000-product catalog, private
-sessions, raw reviews, credentials, or API keys.
-
-The intended distribution is a repository [GitHub Release](https://github.com/wenyiliangg/tiktok-future-employees/releases) containing
-`catalog.jsonl.gz` and `SHA256SUMS`. As verified on **2026-08-29**, this
-repository has no published release, so a fresh user cannot currently download
-the official catalog from GitHub. Obtain the organizer-authorized frozen
-catalog, or use the release when it is published, and do not substitute or
-commit competition data.
-
-1. Download both files from the repository's **Releases** page.
-2. Compare the archive's SHA-256 digest with `SHA256SUMS`.
-3. Decompress it to exactly `data/catalog.jsonl`.
-4. Confirm that it has 50,000 non-empty JSONL rows and a `parent_asin` on every
-   row.
-
-Example checksum commands:
-
-```bash
-# macOS/Linux
-sha256sum catalog.jsonl.gz
-
-# Windows PowerShell
-Get-FileHash catalog.jsonl.gz -Algorithm SHA256
-```
-
-Example cross-platform decompression from the repository directory:
-
-```bash
-python -c "import gzip, pathlib, shutil; src=pathlib.Path('catalog.jsonl.gz'); dst=pathlib.Path('data/catalog.jsonl'); dst.parent.mkdir(exist_ok=True); i=gzip.open(src,'rb'); o=dst.open('wb'); shutil.copyfileobj(i,o); i.close(); o.close()"
-python -c "import json, pathlib; rows=[json.loads(x) for x in pathlib.Path('data/catalog.jsonl').read_text(encoding='utf-8').splitlines() if x.strip()]; assert len(rows)==50000 and all(x.get('parent_asin') for x in rows); print('catalog rows:', len(rows))"
-```
-
-The source attribution and redistribution terms are in
-[`DATA_ATTRIBUTION.md`](DATA_ATTRIBUTION.md). The derived catalog is based on
-the Amazon Reviews 2023 project and joins product metadata by `parent_asin`.
-
-## Generated indexes and `.gitignore`
-
-- Lexical mode builds an in-memory SQLite FTS5 index during `Agent`
-  construction. It creates no persistent index file.
-- Dense and hybrid modes use
-  `data/.dense-retrieval/catalog-minilm.npz`. If the cache is missing, stale, or
-  corrupt, `DenseRetriever.from_catalog` rebuilds it and writes it atomically.
-  Cache metadata validates the catalog hash and identifier order, model name and
-  revision, text-builder/schema versions, row count, vector dimensions, dtype,
-  and normalization.
-- The catalog, dense-cache directory, default `results.json`, `.env`, logs,
-  private/organizer directories, and Python build artifacts are ignored. Small,
-  reviewed result JSON files under `docs/results/` are versioned evidence.
-
-Do not force-add ignored catalog/cache files. Model weights are managed by
-`sentence-transformers` outside this repository and may require network access
-on their first use.
-
-## Run the evaluator
-
-All commands below run from this directory. They use the public set, reset state
-between sessions, simulate at most ten turns, and write aggregate plus
-per-session results.
-
-```bash
-# Selected Issue 6A default: contextual retrieval plus Browsing-only clarification
-python -m evaluator.local_evaluator --catalog data/catalog.jsonl --dataset data/public_set.jsonl --output results.json
-
-# Stable retrieval-only rollback
-python -m evaluator.local_evaluator --catalog data/catalog.jsonl --dataset data/public_set.jsonl --clarification-policy contextual.browsing-dense.v1 --output results.json
-
-# Exact BM25 control
-python -m evaluator.local_evaluator --catalog data/catalog.jsonl --dataset data/public_set.jsonl --retrieval-mode bm25 --output results.json
-
-# Dense mode
-python -m evaluator.local_evaluator --catalog data/catalog.jsonl --dataset data/public_set.jsonl --retrieval-mode dense --dense-cache data/.dense-retrieval/catalog-minilm.npz --output results.json
-
-# Historical fixed hybrid mode
-python -m evaluator.local_evaluator --catalog data/catalog.jsonl --dataset data/public_set.jsonl --retrieval-mode hybrid --lexical-candidates 200 --dense-candidates 200 --final-candidates 10 --lexical-weight 1.0 --dense-weight 1.0 --rrf-k 60 --dense-cache data/.dense-retrieval/catalog-minilm.npz --output results.json
-```
-
-The first dense/hybrid run can spend several minutes building the cache. Later
-runs reuse it. A standalone retrieval benchmark is also available on
-macOS/Linux (the benchmark's process-memory instrumentation imports the Unix
-`resource` module):
-
-```bash
-python -m benchmarks.benchmark_dense_retrieval --catalog data/catalog.jsonl --cache data/.dense-retrieval/catalog-minilm.npz --batch-size 64 --warmup-runs 2 --runs 10
-```
-
-For the historical weak baseline and full reproduction notes, including
-hardware-dependent timing caveats, see
-[`docs/reproduction.md`](docs/reproduction.md).
-
-## Results
-
-### Fixed baseline
-
-These are the frozen weak-BM25 public-set metrics recorded in
-[`docs/baseline_results.json`](docs/baseline_results.json):
-
-| HR@10 | MRR | MTTC | Efficiency | TechnicalScore |
-| ---: | ---: | ---: | ---: | ---: |
-| 0.125 | 0.068034 | 9.81 | 0.119 | 0.106710 |
-
-### Contextual recovery result
-
-The selected policy passed every retention gate and was confirmed with the full
-public evaluator:
-
-| Mode | HR@10 | MRR | MTTC | Efficiency | TechnicalScore |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| Exact BM25 | 0.125 | 0.068034 | 9.810 | 0.1190 | 0.106710 |
-| Contextual Browsing-dense | **0.140** | **0.070423** | **9.780** | **0.1220** | **0.115527** |
-
-It retains all 25 BM25-success sessions and gains three. State-aware lexical
-variants were rejected because they lost `public_0143`; they are not enabled in
-the selected policy. See the
-[`recovery report`](docs/contextual_retrieval_recovery.md) and
-[`machine-readable selection summary`](docs/results/recovery/contextual_policy_selection.json).
-
-### Historical Issue 2B retrieval comparison
-
-These Issue 2B measurements are a preliminary mode ablation, not final tuned
-submission results. They predate the integrated feature reranker. They used the
-same 200 sessions, frozen catalog, active state, candidate sizes 200/200/10, and
-fixed hybrid weights 1.0/1.0 with `rrf_k=60`. No alternative fusion weights
-were tested.
-
-| Mode | HR@10 | MRR | MTTC | Efficiency | TechnicalScore |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| Fixed weak-BM25 baseline | 0.125 | 0.068034 | 9.810 | 0.1190 | 0.106710 |
-| Improved lexical | 0.000 | 0.000000 | 11.000 | 0.0000 | 0.000000 |
-| Dense, compatible cache | 0.025 | 0.008798 | 10.775 | 0.0225 | 0.019639 |
-| Fixed hybrid | 0.020 | 0.007270 | 10.815 | 0.0185 | 0.015881 |
-
-None of these historical Issue 2B modes improved on the fixed baseline. They
-remain useful regression evidence but are not the current default. Scenario
-metrics, raw output, environment details, and interpretation are in
-[`docs/issue_2b_results.md`](docs/issue_2b_results.md) and
-[`docs/results/issue_2b/`](docs/results/issue_2b/).
-
-### Remaining downstream work
-
-Personalization, adaptive orchestration, Issue 6B evaluator-facing hardening,
-and submission evaluation remain separate downstream work.
-
-## Runtime and memory
-
-Recorded before feature-reranker integration on 2026-08-29 on Apple arm64,
-macOS 26.5.2, Python 3.12.2, CPU inference. Times and peak process RSS are
-environment-specific and are not measurements of the current end-to-end agent.
-
-| Mode | Startup (s) | Avg response (ms) | p95 response (ms) | Peak RSS (GB) |
-| --- | ---: | ---: | ---: | ---: |
-| Improved lexical | 15.021 | 31.316 | 80.343 | 1.249 |
-| Dense, compatible cache | 1.092 | 17.685 | 17.163 | 0.830 |
-| Fixed hybrid | 16.124 | 51.666 | 96.407 | 1.579 |
-| Dense, cold cache build | 356.918 | 15.509 | 20.824 | 1.318 |
-
-The cold-build row has the same quality metrics as the compatible-cache dense
-row. Startup includes catalog validation and mode-specific index/cache loading;
-the transformer is lazy-loaded on the first response. This can make average
-dense latency exceed p95 when one model-loading outlier is above the 95th
-percentile.
-
-## Scoring
-
-Only exact `parent_asin` equality is a hit. A miss is assigned turn 11.
+# TechJam2026-ShoppingCopilot
+
+A deterministic, multi-turn shopping agent, 'Your Shopping Bestie' that searches a frozen catalog of
+50,000 Amazon products and returns the ten most likely `parent_asin` values.
+The agent remembers active preferences, handles changed intent and rejected
+recommendations, and asks a useful clarification question when another answer
+is expected to improve retrieval.
+
+The final P5 configuration reaches a **0.733983 TechnicalScore** and **0.870
+HitRate@10** on the 200-session public development set. It uses no hosted model,
+makes no API calls, and reports zero model-token usage.
+
+> [!NOTE]
+> These are public development-set results, not a claim about the organizer's
+> private 800-session set. The exact final result was reproduced twice and is
+> preserved in the repository's result artifacts.
+
+## Final results
+
+| Metric | Final P5 | Exact BM25 baseline |
+| --- | ---: | ---: |
+| HitRate@10 | **0.870000** | 0.125000 |
+| Mean reciprocal rank | **0.519609** | 0.068034 |
+| Mean turns to conversion | **3.845** | 9.810 |
+| Efficiency | **0.7155** | 0.1190 |
+| TechnicalScore | **0.733983** | 0.106710 |
+
+The final score is calculated as:
 
 ```text
 Efficiency = clip((11 - MTTC) / 10, 0, 1)
-TechnicalScore = 0.50 * HR@10 + 0.30 * MRR + 0.20 * Efficiency
+TechnicalScore = 0.50 * HitRate@10 + 0.30 * MRR + 0.20 * Efficiency
 ```
 
-The evaluator also reports scenario metrics and reported token use. The current
-deterministic agent returns zero prompt/completion tokens and calls no LLM.
+Scenario performance on the public set:
 
-## Limitations
+| Scenario | Sessions | HR@10 | MRR | MTTC |
+| --- | ---: | ---: | ---: | ---: |
+| Buying | 80 | 0.9375 | 0.508983 | 2.825 |
+| Browsing | 80 | 0.9500 | 0.610233 | 3.175 |
+| Intent Override | 30 | 0.4667 | 0.329762 | 7.967 |
+| Boundary | 10 | 0.9000 | 0.449167 | 5.000 |
 
-- The official catalog is not currently published in a repository Release, so
-  clean-room evaluation is blocked until an authorized copy is supplied.
-- Current slot extraction uses finite aliases and price patterns. Unsupported
-  feature language can be omitted from the active query; this materially hurt
-  the recorded lexical result.
-- Routing, fallback generation, and ambiguity analysis are not orchestrated by
-  the evaluator-facing agent.
-- The integrated feature reranker has unit and synthetic benchmark coverage but
-  no recorded end-to-end public evaluation yet. The agent still never asks a
-  question and cannot learn unsupported attributes through dialogue.
-- Hybrid uses fixed RRF weights; they have not been tuned or ablated.
-- Dense retrieval requires local model files and a large generated cache. First
-  use may require a model download and several minutes of CPU work.
-- Public-set metrics are development evidence only and may not generalize to
-  the private 800-session evaluation.
+See the [final comparison](docs/results/autonomous_optimization/final_comparison.json)
+and the two frozen P5 runs
+([run 1](docs/results/autonomous_optimization/p5_official_run1.json),
+[run 2](docs/results/autonomous_optimization/p5_official_run2.json))
+for the complete evidence.
 
-## Team contributions
+## User guide
 
-Based on repository commit history through `f9d6689`:
+### 1. Set up the environment
 
-| Contributor | Implemented areas |
+Python 3.12 is recommended and is the version used for the latest local
+verification.
+
+```bash
+# Run from the repository root
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+On Windows PowerShell, activate the environment with:
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+### 2. Provide the catalog
+
+The public session file is included at `data/public_set.jsonl`. The competition
+catalog is intentionally ignored by Git. Place the organizer-authorized file at:
+
+```text
+data/catalog.jsonl
+```
+
+The file must contain 50,000 non-empty JSONL records, each with a unique,
+non-empty `parent_asin`. Validate it before running:
+
+```bash
+python -c "import json,pathlib; p=pathlib.Path('data/catalog.jsonl'); rows=[json.loads(x) for x in p.read_text(encoding='utf-8').splitlines() if x.strip()]; ids=[x.get('parent_asin') for x in rows]; assert len(rows)==50000 and all(ids) and len(set(ids))==50000; print('catalog valid:', len(rows))"
+```
+
+Data origin and redistribution notes are in
+[`DATA_ATTRIBUTION.md`](DATA_ATTRIBUTION.md).
+
+### 3. Try the agent interactively
+
+```bash
+python demo.py
+```
+
+Enter requests such as `I need black running shoes under $100`. Answer the
+agent's clarification naturally, reject the current list with `Those options
+are not quite right`, or test an override with `Actually, ignore that; I need a
+blue rain jacket instead`. Enter `/quit` to end the demo.
+
+The complete presenter walkthrough is in [`DEMO.md`](DEMO.md).
+
+### 4. Reproduce the final score
+
+Run this command from the repository root:
+
+```bash
+python -m evaluator.local_evaluator \
+  --catalog data/catalog.jsonl \
+  --dataset data/public_set.jsonl \
+  --retrieval-mode contextual \
+  --contextual-policy contextual.category-evidence.v1 \
+  --clarification-policy clarification.category-evidence-utility-buying.v1 \
+  --dense-cache data/.dense-retrieval/catalog-minilm.npz \
+  --output results.json
+```
+
+Expected quality metrics are `HR@10=0.87`, `MRR=0.519609`, `MTTC=3.845`, and
+`TechnicalScore=0.733983`. Hardware-dependent runtime and memory figures will
+vary. The non-timing determinism hashes should be:
+
+```text
+normalized response: 0b17cb2037fa6a18580e98b097b8268655d2121855ce8c9cf9f158d1b2a1e486
+session outcome:      654dbb33898ec07a742b88c04129519faf82b3c032a0fa5b7f7888e5df24989e
+```
+
+### 5. Run the test suite
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+The current repository passes 265 tests covering state isolation, intent
+overrides, retrieval, clarification, deterministic ordering, failure fallbacks,
+response validation, and evaluator integration.
+
+## How the product works
+
+The evaluator creates one `Agent`, calls `reset(session_id, user_profile)` at
+the start of every shopping session, and then calls
+`respond(session_id, user_message, turn, top_k)` for up to ten turns. Each
+response contains:
+
+```json
+{
+  "message": "What matters most to you when choosing?",
+  "ask_attribute": "other",
+  "recommendations": [
+    {"parent_asin": "B074GDTLM6"}
+  ],
+  "usage": {
+    "prompt_tokens": 0,
+    "completion_tokens": 0
+  }
+}
+```
+
+Recommendations are ordered best to worst. The central validator removes
+unknown or duplicate identifiers, enforces `top_k`, and preserves only valid
+clarification attributes.
+
+## Architecture
+
+```mermaid
+flowchart TD
+    E["Local evaluator<br/>200 public sessions"] -->|"reset / respond"| A["Agent orchestration"]
+    P["Aggregate user profile"] --> S["Conversation state"]
+    U["Current user turn"] --> S
+    U --> M["Raw evidence ledger"]
+    S --> R["Buying / Browsing / Boundary router"]
+    S --> B["Exact BM25 candidate anchor"]
+    C["50,000-product catalog"] --> B
+    C --> I["Category-evidence index"]
+    M --> K["Category-evidence ranker"]
+    S --> K
+    R --> K
+    B --> K
+    I --> K
+    K -->|"Top 50 analysis pool"| Q["Ambiguity + question utility"]
+    Q --> G["Clarification controller<br/>maximum two questions"]
+    K -->|"Top 10"| V["Response validator"]
+    G --> V
+    A --> S
+    A --> M
+    V --> A
+    A --> E
+```
+
+### Runtime components
+
+| Component | Responsibility |
 | --- | --- |
-| Qingya (`he-qingya`) | Conversation state and active queries (1A), deterministic intent routing (3A), candidate ambiguity analysis (5A), final architecture/reproduction documentation (7A) |
-| Wen Yi Liang (`wenyiliangg`) | Repository/evaluator setup, field-aware lexical retrieval, deterministic Boundary/profile fallback candidates (3B) |
-| Naufal Rayhan (`imnarwhal`) | Starter/catalog setup, dense retrieval and cache (2A), fixed hybrid fusion and integration (2B), deterministic feature reranking (4A) |
+| Conversation state | Maintains category, price, style, color, material, use case, exclusions, and source/strength metadata. Current-turn evidence overrides history, which overrides profile hints. |
+| Evidence ledger | Keeps current and historical raw messages separate. Generic rejection text is not treated as product evidence, and intent overrides archive rather than activate the old request. |
+| BM25 anchor | Supplies deterministic lexical candidates from the visible catalog fields. On negative feedback it reuses the last informative request while excluding already rejected products. |
+| Category-evidence index | Builds label-free category, phrase, rare-token, structured-constraint, popularity, and historical-evidence signals from the catalog. |
+| Cohesive ranker | Scores at most 4,000 candidates, rewards independent supporting signals, penalizes contradictions, and applies stable ASIN tie-breaking. |
+| Intent router | Classifies the observable turn as Buying, Browsing, Boundary, or Uncertain for policy gating. |
+| Question utility | Estimates whether asking `other` or `feature` is answerable and likely to improve hit probability or reciprocal rank after paying a turn cost. |
+| Clarification controller | Asks at most two non-repeated questions, tracks answers/declines, handles override interruption, and never asks on turn ten. |
+| Response validator | Guarantees schema-valid, catalog-valid, unique output and a safe lexical fallback if an optional component fails. |
 
-Contributors should update this table if ownership or naming differs from the
-commit record. Documentation and measurements must remain evidence-backed.
+The promoted P5 path is entirely local and deterministic. Dense and hybrid
+retrievers remain available for ablation, but the final policy sets dense weight
+to zero because they did not improve the measured score.
+
+## Difficulties faced
+
+### Exact product identity is harder than semantic relevance
+
+The evaluator awards a hit only when the hidden product's exact `parent_asin`
+appears in the Top 10. A semantically reasonable substitute still scores as a
+miss. Generic semantic retrieval therefore looked plausible to a person while
+performing poorly on the actual objective.
+
+**Resolution:** preserve exact lexical evidence, then combine category,
+catalog-phrase, rare-token, structured-constraint, popularity, and conjunction
+signals in a deterministic catalog-derived ranker.
+
+### Generic feedback erased the useful query
+
+After an unsuccessful turn the simulator can reply with generic rejection text.
+Running BM25 over that text discards the shopper's last informative request at
+the exact moment the system needs to rotate to new candidates.
+
+**Resolution:** feedback-memory retrieval reuses the last informative request
+only for recognized negative feedback and excludes the previously shown
+products. This single change raised TechnicalScore from `0.117660` to
+`0.305993`.
+
+### Multi-turn intent can change without warning
+
+Intent Override sessions make old preferences actively misleading. Clearing all
+history loses useful identification evidence, while applying old preferences as
+current constraints contradicts the shopper.
+
+**Resolution:** keep current intent authoritative, clear rejected-product state
+on override, and store historical evidence in a separate bounded channel with a
+smaller weight.
+
+### Asking a question costs a turn
+
+Clarification is not automatically beneficial. Repeated, unanswerable, or late
+questions increase MTTC and can reduce the final score even when they sound
+helpful.
+
+**Resolution:** analyze only the bounded candidate pool, model answerability,
+rank questions by expected hit/rank benefit minus turn cost, cap each session at
+two questions, and track answered, declined, pending, and interrupted states.
+
+### Attractive experiments could still regress users
+
+Dense retrieval, equal-weight hybrid fusion, signature heads, and unrestricted
+questions all had reasonable hypotheses, but several reduced measured quality
+or lost previously successful sessions.
+
+**Resolution:** predeclare each experiment, use disjoint-target shadow suites,
+compare outcomes per session, apply paired bootstrap confidence intervals, keep
+explicit rollback policies, and promote only frozen configurations that pass
+correctness and determinism gates.
+
+### Reliability must survive imperfect components
+
+Catalog metadata is sparse, model caches can be absent, and one bad optional
+component must not invalidate a whole session.
+
+**Resolution:** validate caches and policy fingerprints, treat missing metadata
+as unknown rather than contradictory, isolate session state on every reset, and
+fail back to validated BM25 recommendations. The final 200-session run reported
+zero exceptions, invalid responses, invalid ASINs, duplicates, repeated
+questions, or contract violations.
+
+## Implementation path to a better score
+
+The team improved the score through measured, reversible changes rather than a
+single large rewrite:
+
+| Stage | Main implementation | TechnicalScore |
+| --- | --- | ---: |
+| Exact BM25 | Stateless raw-turn lexical baseline | 0.106710 |
+| Hardened contextual base | State, rotation, routing, dense Browsing tail, and safe clarification | 0.117660 |
+| H0 feedback memory | Reuse the last informative request after generic rejection | 0.305993 |
+| H3 override history | Add bounded, subordinate pre-override evidence | 0.331493 |
+| P1 category evidence | Rank with category, phrase, rare-token, structured, popularity, history, and contradiction signals | 0.507985 |
+| P2 question utility | Ask answerability-aware `other`/`feature` questions on Browsing and Boundary routes | 0.554435 |
+| P5 causal confirmation | Extend the frozen question policy to eligible Buying turns and verify all downstream effects | **0.733983** |
+
+The final P5 change gained 39 public-session hits and lost seven relative to P2,
+for a net gain of 32. Its paired TechnicalScore delta was `+0.179548` with a
+fully positive 95% bootstrap interval of `[0.129785253, 0.232346637]`. Two exact
+official runs produced identical quality metrics and non-timing hashes.
+
+Rejected experiments remain documented because they explain important design
+decisions:
+
+- Dense-only retrieval scored `0.019639` and fixed hybrid fusion scored
+  `0.015881` in the historical Issue 2B ablation.
+- H1 open-evidence questions improved the aggregate score but lost seven
+  champion hits and had a confidence interval crossing zero.
+- H2's unique catalog-signature head decreased MRR and was reverted.
+- Confidence-based recommendation exposure failed its shadow gate and remained
+  disabled.
+
+Full experiment evidence is in
+[`docs/autonomous_technicalscore_optimization.md`](docs/autonomous_technicalscore_optimization.md)
+and
+[`docs/results/autonomous_optimization/`](docs/results/autonomous_optimization/).
+
+## Project layout
+
+```text
+.
+├── demo.py                    # Interactive product demo
+├── starter/                   # Agent, state, routing, ranking, questions
+├── evaluator/                 # Local competition evaluator
+├── dense_retrieval/           # Optional MiniLM retriever and cache
+├── benchmarks/                # Ablations and regression diagnostics
+├── config/                    # Fingerprinted policy registries
+├── data/                      # Public set; local catalog goes here
+├── diagnostics/               # Reviewed diagnostic outputs
+├── docs/                      # Design, reproduction, and experiment evidence
+├── tests/                     # Deterministic unit/integration tests
+└── third_party/
+    └── amazon-reviews-2023/   # Upstream source snapshot and license
+```
+
+## Limitations and next steps
+
+- The final numbers are selected on the 200 public sessions and may not
+  generalize to the private set.
+- Intent Override remains the weakest scenario (`0.4667` HR@10) and is the most
+  valuable target for future work.
+- Slot extraction uses finite aliases and price patterns; novel paraphrases can
+  be missed.
+- Product explanations are not generated; the evaluator scores identifiers,
+  not natural-language rationales.
+- Building the in-memory category-evidence index adds startup time and hundreds
+  of MiB of process memory.
+- A clean clone still requires an authorized copy of the frozen catalog.
+
+Promising next improvements are held-out paraphrase testing, stronger
+override-safe evidence reconciliation, memory-efficient index serialization,
+and a user-facing explanation layer that does not alter ranking.
 
 ## Further documentation
 
-- [`docs/architecture.md`](docs/architecture.md): actual runtime architecture,
-  standalone components, and precedence rules
-- [`docs/reproduction.md`](docs/reproduction.md): setup, data, cache, baseline,
-  current evaluation, and results-recording procedure
-- [`docs/conversation_state.md`](docs/conversation_state.md)
-- [`docs/lexical_retrieval.md`](docs/lexical_retrieval.md)
-- [`docs/dense_retrieval.md`](docs/dense_retrieval.md)
-- [`docs/feature_reranking.md`](docs/feature_reranking.md)
-- [`docs/intent_router.md`](docs/intent_router.md)
-- [`docs/fallback_candidates.md`](docs/fallback_candidates.md)
-- [`docs/ambiguity_analysis.md`](docs/ambiguity_analysis.md)
-- [`docs/competition_specification.md`](docs/competition_specification.md)
-- [`docs/agent_api_contract.json`](docs/agent_api_contract.json)
-- [`docs/submission_rules.md`](docs/submission_rules.md)
-
-## Data and secret policy
-
-Never commit competition catalogs, private evaluation sessions, raw source
-reviews, API keys, credentials, generated model/index caches, or organizer-only
-materials. Keep credentials in ignored environment files or the operating
-system's secret store. Review staged files before every push.
+- [Competition specification](docs/competition_specification.md)
+- [System architecture](docs/architecture.md)
+- [Reproduction guide](docs/reproduction.md)
+- [Technical component reference](docs/technical_reference.md)
+- [Agent API contract](docs/agent_api_contract.json)
+- [Data policy](data/README.md)
+- [Submission rules](docs/submission_rules.md)
