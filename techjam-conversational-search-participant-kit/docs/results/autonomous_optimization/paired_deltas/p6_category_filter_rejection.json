@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "record_type": "diagnostic_rejection",
+  "experiment_id": "P6-filter-category-recovery-v1",
+  "parent_champion": "f4992683cff2fe0cb6e4e756edeb361f1f29f6b0",
+  "decision": "rejected_before_candidate_predeclaration_retain_p5",
+  "diagnostic_predeclaration": {
+    "commit": "9229aa68c3696eb02ecf51e521ef3ea5bb993548",
+    "sha256": "bfd2e3ed6132542268e16240ce844a282f5a3d49d5951fedd66311cedc92f78e"
+  },
+  "diagnosis": {
+    "artifact_sha256": "b81c9fd2b16255a903b8213a137c440878a43a214730e58c2ce691fa061aa5b2",
+    "p5_shadow_transcript_sha256": "33f51cc6f6eb7eff627c116ff919b02a7bbb50fe6b24ddaef7efc9a00e693e92",
+    "observer_matches_frozen_p5": true,
+    "residual_session_count": 31,
+    "fully_classified_residual_session_count": 31,
+    "category_c_session_count": 3,
+    "category_c_miss_count": 1,
+    "category_c_below_rank_one_hit_count": 2,
+    "category_c_oracle_technical_score_gain_diagnostic_only": 0.022924,
+    "category_c_conservative_realizable_technical_score_gain": 0.011205,
+    "dominant_category_c_subcause": "bounded category-evidence ordering dropped a lexically retrieved target before the top-50 analysis pool",
+    "dominant_subcause_session_count": 3,
+    "dominant_subcause_metadata_status": "explicit",
+    "dominant_subcause_category_confidence": "high_explicit_match",
+    "dominant_subcause_structured_contradictions": 0
+  },
+  "continuation_gate": {
+    "affected_sessions_at_least_5": false,
+    "conservative_gain_at_least_0_020": false,
+    "one_dominant_coherent_target_independent_subcause": true,
+    "passed": false
+  },
+  "p5_shadow_metrics": {
+    "hit_rate_at_10": 0.921875,
+    "mrr": 0.618961,
+    "mttc": 3.4375,
+    "efficiency": 0.75625,
+    "technical_score": 0.797876
+  },
+  "correctness_counters": {
+    "response_exceptions": 0,
+    "invalid_responses": 0,
+    "invalid_ask_attributes": 0,
+    "invalid_asins": 0,
+    "duplicate_recommendations": 0
+  },
+  "candidate_status": {
+    "p6_mechanism_selected": false,
+    "p6_predeclaration_commit": null,
+    "p6_implementation_commit": null,
+    "p6_shadow_comparison": null,
+    "official_run_authorized": false
+  },
+  "rejection_reason": "Category C no longer meets either frozen continuation threshold after P5: three affected sessions is below five, and the +0.011205 conservative ceiling is below +0.020. The larger out-of-scope residual family was not selected because switching mechanisms is forbidden.",
+  "final_champion": "f4992683cff2fe0cb6e4e756edeb361f1f29f6b0",
+  "p6_named_rollback": "f4992683cff2fe0cb6e4e756edeb361f1f29f6b0",
+  "secondary_rollback": "7ba0a7c769954d758e1c6db6e70cde3cac214bb5",
+  "official_run_budget": {
+    "used_before": 10,
+    "consumed_by_p6": 0,
+    "used_after": 10,
+    "remaining": 2
+  },
+  "timestamps": {
+    "rejected_utc": "2026-08-31T10:30:09Z"
+  }
+}

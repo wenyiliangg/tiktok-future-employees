@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "campaign_status": "running_final_p6_attempt",
+  "campaign_status": "complete_p5_final_packaging",
   "campaign_base_commit": "c57dfce8f7aeb44cb366ab3a90c11e9ac613cf07",
-  "campaign_branch": "experiment/p5-clarification-confirmation",
+  "campaign_branch": "experiment/p6-filter-category-recovery",
   "champion_commit": "f4992683cff2fe0cb6e4e756edeb361f1f29f6b0",
   "rollback_commit": "7ba0a7c769954d758e1c6db6e70cde3cac214bb5",
   "champion_configuration": {
@@ -52,9 +52,11 @@
   "champion_session_hash": "654dbb33898ec07a742b88c04129519faf82b3c032a0fa5b7f7888e5df24989e",
   "current_experiment_id": "P6-filter-category-recovery-v1",
   "current_hypothesis": "A coherent subset of P5 residuals may be caused by missing or uncertain category/filter evidence being treated as a contradiction after bounded retrieval.",
-  "current_stage": "P6A_category_c_diagnostic_predeclared_before_residual_inspection",
+  "current_stage": "P6_rejected_at_diagnostic_gate_retain_P5",
   "experiment_start_commit": "e6550afd1f0368314db8461faa6ffca5cedf7464",
-  "experiment_commits": [],
+  "experiment_commits": [
+    "9229aa68c3696eb02ecf51e521ef3ea5bb993548"
+  ],
   "completed_hypotheses": [
     "H0-feedback-memory-bm25",
     "H1-open-evidence-questions-v1",
@@ -64,7 +66,8 @@
     "P2-answerability-utility-questions-v1",
     "P3-bounded-confidence-exposure-v1",
     "P4-buying-route-utility-clarification-v1",
-    "P5-prospective-causal-clarification-confirmation-v1"
+    "P5-prospective-causal-clarification-confirmation-v1",
+    "P6-filter-category-recovery-v1"
   ],
   "retained_hypotheses": [
     "H0-feedback-memory-bm25",
@@ -77,7 +80,8 @@
     "H1-open-evidence-questions-v1",
     "H2-catalog-signature-index-v1",
     "P3-bounded-confidence-exposure-v1",
-    "P4-buying-route-utility-clarification-v1"
+    "P4-buying-route-utility-clarification-v1",
+    "P6-filter-category-recovery-v1"
   ],
   "superseded_hypotheses": [
     "H4-dual-evidence-conjunction-v1"
@@ -88,8 +92,8 @@
   "official_runs_remaining": 2,
   "fixed_seed": 20260830,
   "run_start_utc": "2026-08-30T14:44:51Z",
-  "last_checkpoint_utc": "2026-08-31T09:49:56Z",
+  "last_checkpoint_utc": "2026-08-31T10:30:09Z",
   "pause_reason": null,
-  "stop_reason": null,
-  "next_action": "Run the frozen P6A category-C residual diagnosis on stored P5 shadow evidence without invoking the official evaluator, then continue only if the predeclared opportunity gate passes."
+  "stop_reason": "P6 category C failed the frozen diagnostic continuation gate before candidate selection; P5 remains final champion and no further optimization family is permitted.",
+  "next_action": "Package the final submission from e6550afd1f0368314db8461faa6ffca5cedf7464 with runtime behavior fixed at f4992683cff2fe0cb6e4e756edeb361f1f29f6b0; use the two remaining official runs only for final packaged-submission verification."
 }

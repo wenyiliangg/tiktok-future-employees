@@ -1,0 +1,3178 @@
+{
+  "category_c_continuation_gate": {
+    "affected_sessions_at_least_5": false,
+    "conservative_gain_at_least_0_020": false,
+    "threshold_met": false
+  },
+  "correctness_counters": {
+    "duplicate_recommendations": 0,
+    "invalid_asins": 0,
+    "invalid_ask_attributes": 0,
+    "invalid_responses": 0,
+    "response_exceptions": 0
+  },
+  "diagnosis": {
+    "assigned_session_count": 31,
+    "assignment_is_exhaustive_and_exclusive": true,
+    "categories": {
+      "A": {
+        "below_rank_one_hit_count": 1,
+        "conservative_realizable_technical_score_gain": 0.002188,
+        "earliest_recovery_turn_distribution": {
+          "3": 1
+        },
+        "mean_first_hit_turn_for_hits": 10.0,
+        "mean_terminal_rank_for_hits": 2.0,
+        "miss_count": 0,
+        "observable_route_counts": {
+          "buying": 1
+        },
+        "oracle_technical_score_gain": 0.004531,
+        "pool_session_presence": {
+          "dense": 0,
+          "filtered": 1,
+          "fused": 0,
+          "lexical": 1,
+          "published": 1,
+          "reranked": 1
+        },
+        "question_attribute_counts": {
+          "feature": 1,
+          "other": 1
+        },
+        "question_count_distribution": {
+          "2": 1
+        },
+        "representative_generic_pattern": "A disclosed structured value is absent or stale in active state.",
+        "scenario_counts": {
+          "boundary": 1
+        },
+        "session_count": 1,
+        "terminal_rank_distribution": {
+          "2": 1
+        }
+      },
+      "B": {
+        "below_rank_one_hit_count": 0,
+        "conservative_realizable_technical_score_gain": 0.0,
+        "earliest_recovery_turn_distribution": {},
+        "mean_first_hit_turn_for_hits": null,
+        "mean_terminal_rank_for_hits": null,
+        "miss_count": 0,
+        "observable_route_counts": {},
+        "oracle_technical_score_gain": 0.0,
+        "pool_session_presence": {
+          "dense": 0,
+          "filtered": 0,
+          "fused": 0,
+          "lexical": 0,
+          "published": 0,
+          "reranked": 0
+        },
+        "question_attribute_counts": {},
+        "question_count_distribution": {},
+        "representative_generic_pattern": "Useful disclosed catalog text does not admit the target to any bounded generation pool.",
+        "scenario_counts": {},
+        "session_count": 0,
+        "terminal_rank_distribution": {}
+      },
+      "C": {
+        "below_rank_one_hit_count": 2,
+        "conservative_realizable_technical_score_gain": 0.011205,
+        "earliest_recovery_turn_distribution": {
+          "1": 2,
+          "3": 1
+        },
+        "mean_first_hit_turn_for_hits": 3.5,
+        "mean_terminal_rank_for_hits": 4.5,
+        "miss_count": 1,
+        "observable_route_counts": {
+          "buying": 2,
+          "uncertain": 1
+        },
+        "oracle_technical_score_gain": 0.022924,
+        "pool_session_presence": {
+          "dense": 0,
+          "filtered": 3,
+          "fused": 1,
+          "lexical": 3,
+          "published": 2,
+          "reranked": 3
+        },
+        "question_attribute_counts": {
+          "feature": 2,
+          "other": 2
+        },
+        "question_count_distribution": {
+          "0": 1,
+          "2": 2
+        },
+        "representative_generic_pattern": "The target is generated but loses eligibility or receives an unsupported contradiction/category treatment.",
+        "scenario_counts": {
+          "browsing": 1,
+          "buying": 2
+        },
+        "session_count": 3,
+        "terminal_rank_distribution": {
+          "2": 1,
+          "7": 1
+        }
+      },
+      "D": {
+        "below_rank_one_hit_count": 12,
+        "conservative_realizable_technical_score_gain": 0.01612,
+        "earliest_recovery_turn_distribution": {
+          "1": 1,
+          "2": 3,
+          "3": 7,
+          "4": 1
+        },
+        "mean_first_hit_turn_for_hits": 3.333333,
+        "mean_terminal_rank_for_hits": 5.666667,
+        "miss_count": 0,
+        "observable_route_counts": {
+          "boundary": 3,
+          "buying": 8,
+          "uncertain": 2
+        },
+        "oracle_technical_score_gain": 0.046257,
+        "pool_session_presence": {
+          "dense": 0,
+          "filtered": 12,
+          "fused": 4,
+          "lexical": 9,
+          "published": 12,
+          "reranked": 12
+        },
+        "question_attribute_counts": {
+          "feature": 6,
+          "other": 8
+        },
+        "question_count_distribution": {
+          "0": 4,
+          "1": 2,
+          "2": 6
+        },
+        "representative_generic_pattern": "The target has higher disclosed-constraint coverage than at least one product above it.",
+        "scenario_counts": {
+          "boundary": 4,
+          "browsing": 2,
+          "buying": 2,
+          "intent_override": 4
+        },
+        "session_count": 12,
+        "terminal_rank_distribution": {
+          "2": 1,
+          "3": 2,
+          "4": 2,
+          "5": 1,
+          "6": 2,
+          "7": 1,
+          "9": 2,
+          "10": 1
+        }
+      },
+      "E": {
+        "below_rank_one_hit_count": 11,
+        "conservative_realizable_technical_score_gain": 0.003743,
+        "earliest_recovery_turn_distribution": {
+          "1": 6,
+          "3": 5
+        },
+        "mean_first_hit_turn_for_hits": 2.272727,
+        "mean_terminal_rank_for_hits": 5.272727,
+        "miss_count": 0,
+        "observable_route_counts": {
+          "boundary": 5,
+          "buying": 6
+        },
+        "oracle_technical_score_gain": 0.039661,
+        "pool_session_presence": {
+          "dense": 0,
+          "filtered": 11,
+          "fused": 5,
+          "lexical": 8,
+          "published": 11,
+          "reranked": 11
+        },
+        "question_attribute_counts": {
+          "feature": 6,
+          "other": 6
+        },
+        "question_count_distribution": {
+          "0": 2,
+          "1": 6,
+          "2": 3
+        },
+        "representative_generic_pattern": "Available dialogue evidence leaves the target coverage-tied with products above it.",
+        "scenario_counts": {
+          "boundary": 5,
+          "browsing": 1,
+          "buying": 3,
+          "intent_override": 2
+        },
+        "session_count": 11,
+        "terminal_rank_distribution": {
+          "2": 2,
+          "3": 2,
+          "4": 1,
+          "5": 2,
+          "6": 1,
+          "9": 2,
+          "10": 1
+        }
+      },
+      "F": {
+        "below_rank_one_hit_count": 0,
+        "conservative_realizable_technical_score_gain": 0.058906,
+        "earliest_recovery_turn_distribution": {
+          "2": 4
+        },
+        "mean_first_hit_turn_for_hits": null,
+        "mean_terminal_rank_for_hits": null,
+        "miss_count": 4,
+        "observable_route_counts": {
+          "buying": 4
+        },
+        "oracle_technical_score_gain": 0.06125,
+        "pool_session_presence": {
+          "dense": 0,
+          "filtered": 4,
+          "fused": 0,
+          "lexical": 0,
+          "published": 0,
+          "reranked": 0
+        },
+        "question_attribute_counts": {},
+        "question_count_distribution": {
+          "0": 4
+        },
+        "representative_generic_pattern": "A still-hidden catalog attribute is needed to distinguish the target and was not elicited.",
+        "scenario_counts": {
+          "intent_override": 4
+        },
+        "session_count": 4,
+        "terminal_rank_distribution": {}
+      },
+      "G": {
+        "below_rank_one_hit_count": 0,
+        "conservative_realizable_technical_score_gain": 0.0,
+        "earliest_recovery_turn_distribution": {},
+        "mean_first_hit_turn_for_hits": null,
+        "mean_terminal_rank_for_hits": null,
+        "miss_count": 0,
+        "observable_route_counts": {},
+        "oracle_technical_score_gain": 0.0,
+        "pool_session_presence": {
+          "dense": 0,
+          "filtered": 0,
+          "fused": 0,
+          "lexical": 0,
+          "published": 0,
+          "reranked": 0
+        },
+        "question_attribute_counts": {},
+        "question_count_distribution": {},
+        "representative_generic_pattern": "Override evidence becomes usable only after the override turn.",
+        "scenario_counts": {},
+        "session_count": 0,
+        "terminal_rank_distribution": {}
+      },
+      "H": {
+        "below_rank_one_hit_count": 0,
+        "conservative_realizable_technical_score_gain": 0.0,
+        "earliest_recovery_turn_distribution": {},
+        "mean_first_hit_turn_for_hits": null,
+        "mean_terminal_rank_for_hits": null,
+        "miss_count": 0,
+        "observable_route_counts": {},
+        "oracle_technical_score_gain": 0.0,
+        "pool_session_presence": {
+          "dense": 0,
+          "filtered": 0,
+          "fused": 0,
+          "lexical": 0,
+          "published": 0,
+          "reranked": 0
+        },
+        "question_attribute_counts": {},
+        "question_count_distribution": {},
+        "representative_generic_pattern": "Bounded traces do not establish a supported primary cause.",
+        "scenario_counts": {},
+        "session_count": 0,
+        "terminal_rank_distribution": {}
+      }
+    },
+    "residual_session_count": 31,
+    "selected_category": "F",
+    "selection_threshold_met": true,
+    "session_assignments": [
+      {
+        "category": "D",
+        "conservative_gain_contribution": 0.24,
+        "conservative_rank": 1,
+        "conservative_turn": 3,
+        "earliest_recovery_turn": 3,
+        "observable_routes": [
+          "buying"
+        ],
+        "observed": {
+          "hit": true,
+          "rank": 5,
+          "turn": 3
+        },
+        "oracle_gain_contribution": 0.24,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 1,
+          "fused": 1,
+          "lexical": 1,
+          "published": 1,
+          "reranked": 1
+        },
+        "question_attributes": [],
+        "question_count": 0,
+        "sample_id": "shadow_0003",
+        "scenario_type": "intent_override"
+      },
+      {
+        "category": "D",
+        "conservative_gain_contribution": 0.20000000000000007,
+        "conservative_rank": 1,
+        "conservative_turn": 2,
+        "earliest_recovery_turn": 2,
+        "observable_routes": [
+          "buying"
+        ],
+        "observed": {
+          "hit": true,
+          "rank": 3,
+          "turn": 2
+        },
+        "oracle_gain_contribution": 0.20000000000000007,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 1,
+          "fused": 0,
+          "lexical": 1,
+          "published": 1,
+          "reranked": 1
+        },
+        "question_attributes": [
+          "other",
+          "feature"
+        ],
+        "question_count": 2,
+        "sample_id": "shadow_0006",
+        "scenario_type": "browsing"
+      },
+      {
+        "category": "A",
+        "conservative_gain_contribution": 0.14,
+        "conservative_rank": 2,
+        "conservative_turn": 3,
+        "earliest_recovery_turn": 3,
+        "observable_routes": [
+          "buying"
+        ],
+        "observed": {
+          "hit": true,
+          "rank": 2,
+          "turn": 10
+        },
+        "oracle_gain_contribution": 0.29000000000000004,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 10,
+          "fused": 0,
+          "lexical": 8,
+          "published": 1,
+          "reranked": 5
+        },
+        "question_attributes": [
+          "feature",
+          "other"
+        ],
+        "question_count": 2,
+        "sample_id": "shadow_0008",
+        "scenario_type": "boundary"
+      },
+      {
+        "category": "F",
+        "conservative_gain_contribution": 0.9800000000000001,
+        "conservative_rank": 1,
+        "conservative_turn": 2,
+        "earliest_recovery_turn": 2,
+        "observable_routes": [
+          "buying"
+        ],
+        "observed": {
+          "hit": false,
+          "rank": null,
+          "turn": null
+        },
+        "oracle_gain_contribution": 0.9800000000000001,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 8,
+          "fused": 0,
+          "lexical": 0,
+          "published": 0,
+          "reranked": 0
+        },
+        "question_attributes": [],
+        "question_count": 0,
+        "sample_id": "shadow_0011",
+        "scenario_type": "intent_override"
+      },
+      {
+        "category": "F",
+        "conservative_gain_contribution": 0.8300000000000001,
+        "conservative_rank": 2,
+        "conservative_turn": 2,
+        "earliest_recovery_turn": 2,
+        "observable_routes": [
+          "buying"
+        ],
+        "observed": {
+          "hit": false,
+          "rank": null,
+          "turn": null
+        },
+        "oracle_gain_contribution": 0.9800000000000001,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 8,
+          "fused": 0,
+          "lexical": 0,
+          "published": 0,
+          "reranked": 0
+        },
+        "question_attributes": [],
+        "question_count": 0,
+        "sample_id": "shadow_0015",
+        "scenario_type": "intent_override"
+      },
+      {
+        "category": "E",
+        "conservative_gain_contribution": 0.0,
+        "conservative_rank": 10,
+        "conservative_turn": 3,
+        "earliest_recovery_turn": 3,
+        "observable_routes": [
+          "buying"
+        ],
+        "observed": {
+          "hit": true,
+          "rank": 5,
+          "turn": 4
+        },
+        "oracle_gain_contribution": 0.26,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 4,
+          "fused": 0,
+          "lexical": 0,
+          "published": 1,
+          "reranked": 2
+        },
+        "question_attributes": [
+          "feature",
+          "other"
+        ],
+        "question_count": 2,
+        "sample_id": "shadow_0016",
+        "scenario_type": "boundary"
+      },
+      {
+        "category": "D",
+        "conservative_gain_contribution": 0.0033333333333334103,
+        "conservative_rank": 9,
+        "conservative_turn": 1,
+        "earliest_recovery_turn": 1,
+        "observable_routes": [
+          "buying"
+        ],
+        "observed": {
+          "hit": true,
+          "rank": 10,
+          "turn": 1
+        },
+        "oracle_gain_contribution": 0.27,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 1,
+          "fused": 0,
+          "lexical": 1,
+          "published": 1,
+          "reranked": 1
+        },
+        "question_attributes": [
+          "other"
+        ],
+        "question_count": 1,
+        "sample_id": "shadow_0017",
+        "scenario_type": "buying"
+      },
+      {
+        "category": "E",
+        "conservative_gain_contribution": 0.0,
+        "conservative_rank": 10,
+        "conservative_turn": 3,
+        "earliest_recovery_turn": 3,
+        "observable_routes": [
+          "buying"
+        ],
+        "observed": {
+          "hit": true,
+          "rank": 6,
+          "turn": 4
+        },
+        "oracle_gain_contribution": 0.27,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 2,
+          "fused": 0,
+          "lexical": 2,
+          "published": 1,
+          "reranked": 2
+        },
+        "question_attributes": [],
+        "question_count": 0,
+        "sample_id": "shadow_0019",
+        "scenario_type": "intent_override"
+      },
+      {
+        "category": "D",
+        "conservative_gain_contribution": 0.0,
+        "conservative_rank": 10,
+        "conservative_turn": 3,
+        "earliest_recovery_turn": 3,
+        "observable_routes": [
+          "buying"
+        ],
+        "observed": {
+          "hit": true,
+          "rank": 3,
+          "turn": 4
+        },
+        "oracle_gain_contribution": 0.22000000000000008,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 4,
+          "fused": 0,
+          "lexical": 0,
+          "published": 1,
+          "reranked": 2
+        },
+        "question_attributes": [
+          "feature",
+          "other"
+        ],
+        "question_count": 2,
+        "sample_id": "shadow_0020",
+        "scenario_type": "boundary"
+      },
+      {
+        "category": "E",
+        "conservative_gain_contribution": 0.0,
+        "conservative_rank": 3,
+        "conservative_turn": 3,
+        "earliest_recovery_turn": 3,
+        "observable_routes": [
+          "buying"
+        ],
+        "observed": {
+          "hit": true,
+          "rank": 3,
+          "turn": 3
+        },
+        "oracle_gain_contribution": 0.20000000000000007,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 3,
+          "fused": 0,
+          "lexical": 0,
+          "published": 1,
+          "reranked": 1
+        },
+        "question_attributes": [
+          "other",
+          "feature"
+        ],
+        "question_count": 2,
+        "sample_id": "shadow_0024",
+        "scenario_type": "boundary"
+      },
+      {
+        "category": "C",
+        "conservative_gain_contribution": 0.047142857142857264,
+        "conservative_rank": 10,
+        "conservative_turn": 2,
+        "earliest_recovery_turn": 1,
+        "observable_routes": [
+          "uncertain"
+        ],
+        "observed": {
+          "hit": true,
+          "rank": 7,
+          "turn": 5
+        },
+        "oracle_gain_contribution": 0.3371428571428572,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 5,
+          "fused": 0,
+          "lexical": 5,
+          "published": 1,
+          "reranked": 4
+        },
+        "question_attributes": [],
+        "question_count": 0,
+        "sample_id": "shadow_0025",
+        "scenario_type": "buying"
+      },
+      {
+        "category": "C",
+        "conservative_gain_contribution": 0.0,
+        "conservative_rank": 10,
+        "conservative_turn": 2,
+        "earliest_recovery_turn": 1,
+        "observable_routes": [
+          "buying"
+        ],
+        "observed": {
+          "hit": true,
+          "rank": 2,
+          "turn": 2
+        },
+        "oracle_gain_contribution": 0.16999999999999993,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 2,
+          "fused": 1,
+          "lexical": 2,
+          "published": 1,
+          "reranked": 1
+        },
+        "question_attributes": [
+          "feature",
+          "other"
+        ],
+        "question_count": 2,
+        "sample_id": "shadow_0029",
+        "scenario_type": "buying"
+      },
+      {
+        "category": "F",
+        "conservative_gain_contribution": 0.9800000000000001,
+        "conservative_rank": 1,
+        "conservative_turn": 2,
+        "earliest_recovery_turn": 2,
+        "observable_routes": [
+          "buying"
+        ],
+        "observed": {
+          "hit": false,
+          "rank": null,
+          "turn": null
+        },
+        "oracle_gain_contribution": 0.9800000000000001,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 8,
+          "fused": 0,
+          "lexical": 0,
+          "published": 0,
+          "reranked": 0
+        },
+        "question_attributes": [],
+        "question_count": 0,
+        "sample_id": "shadow_0031",
+        "scenario_type": "intent_override"
+      },
+      {
+        "category": "D",
+        "conservative_gain_contribution": 0.0071428571428572285,
+        "conservative_rank": 6,
+        "conservative_turn": 3,
+        "earliest_recovery_turn": 3,
+        "observable_routes": [
+          "buying"
+        ],
+        "observed": {
+          "hit": true,
+          "rank": 7,
+          "turn": 3
+        },
+        "oracle_gain_contribution": 0.25714285714285723,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 3,
+          "fused": 0,
+          "lexical": 1,
+          "published": 1,
+          "reranked": 3
+        },
+        "question_attributes": [
+          "feature",
+          "other"
+        ],
+        "question_count": 2,
+        "sample_id": "shadow_0032",
+        "scenario_type": "boundary"
+      },
+      {
+        "category": "C",
+        "conservative_gain_contribution": 0.67,
+        "conservative_rank": 10,
+        "conservative_turn": 4,
+        "earliest_recovery_turn": 3,
+        "observable_routes": [
+          "buying"
+        ],
+        "observed": {
+          "hit": false,
+          "rank": null,
+          "turn": null
+        },
+        "oracle_gain_contribution": 0.9600000000000001,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 8,
+          "fused": 0,
+          "lexical": 8,
+          "published": 0,
+          "reranked": 2
+        },
+        "question_attributes": [
+          "feature",
+          "other"
+        ],
+        "question_count": 2,
+        "sample_id": "shadow_0034",
+        "scenario_type": "browsing"
+      },
+      {
+        "category": "D",
+        "conservative_gain_contribution": 0.01666666666666672,
+        "conservative_rank": 10,
+        "conservative_turn": 4,
+        "earliest_recovery_turn": 4,
+        "observable_routes": [
+          "boundary"
+        ],
+        "observed": {
+          "hit": true,
+          "rank": 9,
+          "turn": 5
+        },
+        "oracle_gain_contribution": 0.28666666666666674,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 5,
+          "fused": 3,
+          "lexical": 3,
+          "published": 1,
+          "reranked": 3
+        },
+        "question_attributes": [
+          "other",
+          "feature"
+        ],
+        "question_count": 2,
+        "sample_id": "shadow_0036",
+        "scenario_type": "boundary"
+      },
+      {
+        "category": "E",
+        "conservative_gain_contribution": 0.0,
+        "conservative_rank": 3,
+        "conservative_turn": 1,
+        "earliest_recovery_turn": 1,
+        "observable_routes": [
+          "boundary"
+        ],
+        "observed": {
+          "hit": true,
+          "rank": 3,
+          "turn": 1
+        },
+        "oracle_gain_contribution": 0.19999999999999996,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 1,
+          "fused": 1,
+          "lexical": 1,
+          "published": 1,
+          "reranked": 1
+        },
+        "question_attributes": [
+          "other"
+        ],
+        "question_count": 1,
+        "sample_id": "shadow_0037",
+        "scenario_type": "buying"
+      },
+      {
+        "category": "E",
+        "conservative_gain_contribution": 0.014999999999999902,
+        "conservative_rank": 4,
+        "conservative_turn": 1,
+        "earliest_recovery_turn": 1,
+        "observable_routes": [
+          "boundary"
+        ],
+        "observed": {
+          "hit": true,
+          "rank": 5,
+          "turn": 1
+        },
+        "oracle_gain_contribution": 0.24,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 1,
+          "fused": 0,
+          "lexical": 1,
+          "published": 1,
+          "reranked": 1
+        },
+        "question_attributes": [
+          "feature"
+        ],
+        "question_count": 1,
+        "sample_id": "shadow_0038",
+        "scenario_type": "browsing"
+      },
+      {
+        "category": "D",
+        "conservative_gain_contribution": 0.09500000000000008,
+        "conservative_rank": 2,
+        "conservative_turn": 3,
+        "earliest_recovery_turn": 3,
+        "observable_routes": [
+          "uncertain"
+        ],
+        "observed": {
+          "hit": true,
+          "rank": 4,
+          "turn": 4
+        },
+        "oracle_gain_contribution": 0.2450000000000001,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 2,
+          "fused": 2,
+          "lexical": 2,
+          "published": 1,
+          "reranked": 2
+        },
+        "question_attributes": [],
+        "question_count": 0,
+        "sample_id": "shadow_0039",
+        "scenario_type": "intent_override"
+      },
+      {
+        "category": "D",
+        "conservative_gain_contribution": 0.0,
+        "conservative_rank": 9,
+        "conservative_turn": 3,
+        "earliest_recovery_turn": 3,
+        "observable_routes": [
+          "boundary"
+        ],
+        "observed": {
+          "hit": true,
+          "rank": 4,
+          "turn": 4
+        },
+        "oracle_gain_contribution": 0.2450000000000001,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 4,
+          "fused": 0,
+          "lexical": 0,
+          "published": 1,
+          "reranked": 2
+        },
+        "question_attributes": [
+          "other",
+          "feature"
+        ],
+        "question_count": 2,
+        "sample_id": "shadow_0040",
+        "scenario_type": "boundary"
+      },
+      {
+        "category": "E",
+        "conservative_gain_contribution": 0.036666666666666736,
+        "conservative_rank": 10,
+        "conservative_turn": 3,
+        "earliest_recovery_turn": 3,
+        "observable_routes": [
+          "buying"
+        ],
+        "observed": {
+          "hit": true,
+          "rank": 9,
+          "turn": 5
+        },
+        "oracle_gain_contribution": 0.30666666666666675,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 3,
+          "fused": 0,
+          "lexical": 0,
+          "published": 1,
+          "reranked": 3
+        },
+        "question_attributes": [],
+        "question_count": 0,
+        "sample_id": "shadow_0043",
+        "scenario_type": "intent_override"
+      },
+      {
+        "category": "E",
+        "conservative_gain_contribution": 0.0,
+        "conservative_rank": 9,
+        "conservative_turn": 1,
+        "earliest_recovery_turn": 1,
+        "observable_routes": [
+          "buying"
+        ],
+        "observed": {
+          "hit": true,
+          "rank": 9,
+          "turn": 1
+        },
+        "oracle_gain_contribution": 0.2666666666666666,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 1,
+          "fused": 0,
+          "lexical": 1,
+          "published": 1,
+          "reranked": 1
+        },
+        "question_attributes": [
+          "feature"
+        ],
+        "question_count": 1,
+        "sample_id": "shadow_0044",
+        "scenario_type": "boundary"
+      },
+      {
+        "category": "E",
+        "conservative_gain_contribution": 0.1499999999999999,
+        "conservative_rank": 1,
+        "conservative_turn": 1,
+        "earliest_recovery_turn": 1,
+        "observable_routes": [
+          "boundary"
+        ],
+        "observed": {
+          "hit": true,
+          "rank": 2,
+          "turn": 1
+        },
+        "oracle_gain_contribution": 0.1499999999999999,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 1,
+          "fused": 1,
+          "lexical": 1,
+          "published": 1,
+          "reranked": 1
+        },
+        "question_attributes": [
+          "feature"
+        ],
+        "question_count": 1,
+        "sample_id": "shadow_0045",
+        "scenario_type": "buying"
+      },
+      {
+        "category": "D",
+        "conservative_gain_contribution": 0.05999999999999994,
+        "conservative_rank": 10,
+        "conservative_turn": 3,
+        "earliest_recovery_turn": 3,
+        "observable_routes": [
+          "buying"
+        ],
+        "observed": {
+          "hit": true,
+          "rank": 6,
+          "turn": 7
+        },
+        "oracle_gain_contribution": 0.32999999999999996,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 5,
+          "fused": 0,
+          "lexical": 5,
+          "published": 1,
+          "reranked": 5
+        },
+        "question_attributes": [],
+        "question_count": 0,
+        "sample_id": "shadow_0047",
+        "scenario_type": "intent_override"
+      },
+      {
+        "category": "E",
+        "conservative_gain_contribution": 0.0,
+        "conservative_rank": 2,
+        "conservative_turn": 3,
+        "earliest_recovery_turn": 3,
+        "observable_routes": [
+          "boundary"
+        ],
+        "observed": {
+          "hit": true,
+          "rank": 2,
+          "turn": 3
+        },
+        "oracle_gain_contribution": 0.15000000000000002,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 3,
+          "fused": 1,
+          "lexical": 1,
+          "published": 1,
+          "reranked": 1
+        },
+        "question_attributes": [
+          "other",
+          "feature"
+        ],
+        "question_count": 2,
+        "sample_id": "shadow_0048",
+        "scenario_type": "boundary"
+      },
+      {
+        "category": "E",
+        "conservative_gain_contribution": 0.025000000000000133,
+        "conservative_rank": 3,
+        "conservative_turn": 1,
+        "earliest_recovery_turn": 1,
+        "observable_routes": [
+          "buying"
+        ],
+        "observed": {
+          "hit": true,
+          "rank": 4,
+          "turn": 1
+        },
+        "oracle_gain_contribution": 0.2250000000000001,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 1,
+          "fused": 1,
+          "lexical": 1,
+          "published": 1,
+          "reranked": 1
+        },
+        "question_attributes": [
+          "other"
+        ],
+        "question_count": 1,
+        "sample_id": "shadow_0049",
+        "scenario_type": "buying"
+      },
+      {
+        "category": "E",
+        "conservative_gain_contribution": 0.0128571428571429,
+        "conservative_rank": 7,
+        "conservative_turn": 1,
+        "earliest_recovery_turn": 1,
+        "observable_routes": [
+          "boundary"
+        ],
+        "observed": {
+          "hit": true,
+          "rank": 10,
+          "turn": 1
+        },
+        "oracle_gain_contribution": 0.27,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 1,
+          "fused": 1,
+          "lexical": 1,
+          "published": 1,
+          "reranked": 1
+        },
+        "question_attributes": [
+          "other"
+        ],
+        "question_count": 1,
+        "sample_id": "shadow_0052",
+        "scenario_type": "boundary"
+      },
+      {
+        "category": "F",
+        "conservative_gain_contribution": 0.9800000000000001,
+        "conservative_rank": 1,
+        "conservative_turn": 2,
+        "earliest_recovery_turn": 2,
+        "observable_routes": [
+          "buying"
+        ],
+        "observed": {
+          "hit": false,
+          "rank": null,
+          "turn": null
+        },
+        "oracle_gain_contribution": 0.9800000000000001,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 8,
+          "fused": 0,
+          "lexical": 0,
+          "published": 0,
+          "reranked": 0
+        },
+        "question_attributes": [],
+        "question_count": 0,
+        "sample_id": "shadow_0055",
+        "scenario_type": "intent_override"
+      },
+      {
+        "category": "D",
+        "conservative_gain_contribution": 0.00952380952380949,
+        "conservative_rank": 7,
+        "conservative_turn": 2,
+        "earliest_recovery_turn": 2,
+        "observable_routes": [
+          "buying",
+          "uncertain"
+        ],
+        "observed": {
+          "hit": true,
+          "rank": 9,
+          "turn": 2
+        },
+        "oracle_gain_contribution": 0.2666666666666667,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 2,
+          "fused": 0,
+          "lexical": 1,
+          "published": 1,
+          "reranked": 2
+        },
+        "question_attributes": [
+          "other"
+        ],
+        "question_count": 1,
+        "sample_id": "shadow_0057",
+        "scenario_type": "buying"
+      },
+      {
+        "category": "D",
+        "conservative_gain_contribution": 0.15000000000000002,
+        "conservative_rank": 1,
+        "conservative_turn": 2,
+        "earliest_recovery_turn": 2,
+        "observable_routes": [
+          "boundary"
+        ],
+        "observed": {
+          "hit": true,
+          "rank": 2,
+          "turn": 2
+        },
+        "oracle_gain_contribution": 0.15000000000000002,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 2,
+          "fused": 2,
+          "lexical": 2,
+          "published": 1,
+          "reranked": 2
+        },
+        "question_attributes": [
+          "other",
+          "feature"
+        ],
+        "question_count": 2,
+        "sample_id": "shadow_0062",
+        "scenario_type": "browsing"
+      },
+      {
+        "category": "D",
+        "conservative_gain_contribution": 0.25,
+        "conservative_rank": 1,
+        "conservative_turn": 3,
+        "earliest_recovery_turn": 3,
+        "observable_routes": [
+          "buying"
+        ],
+        "observed": {
+          "hit": true,
+          "rank": 6,
+          "turn": 3
+        },
+        "oracle_gain_contribution": 0.25,
+        "oracle_rank": 1,
+        "pool_presence": {
+          "dense": 0,
+          "filtered": 1,
+          "fused": 0,
+          "lexical": 0,
+          "published": 1,
+          "reranked": 1
+        },
+        "question_attributes": [],
+        "question_count": 0,
+        "sample_id": "shadow_0063",
+        "scenario_type": "intent_override"
+      }
+    ]
+  },
+  "diagnosis_id": "P6A-p5-category-filter-residual-diagnosis-v1",
+  "inputs": {
+    "p3_exposure_enabled": false,
+    "p5_clarification_policy": "clarification.category-evidence-utility-buying.v1",
+    "p5_contextual_policy": "contextual.category-evidence.v1",
+    "public_target_overlap": 0,
+    "sample_count": 64,
+    "target_selection_sha256": "431d63ad07e902b5e65db068cb584fd3089df0390e4213a8dbf8f686d467be80"
+  },
+  "official_runs_consumed": 0,
+  "official_runs_remaining": 2,
+  "p5_shadow_metrics": {
+    "efficiency": 0.75625,
+    "hit_rate_at_10": 0.921875,
+    "mrr": 0.618961,
+    "mttc": 3.4375,
+    "sample_count": 64,
+    "technical_score": 0.797876
+  },
+  "p6_scope_decision": {
+    "category_c_selected": false,
+    "decision": "reject_p6_retain_p5_package_immediately",
+    "out_of_scope_categories_not_selected": true
+  },
+  "predeclaration_commit": "9229aa68c3696eb02ecf51e521ef3ea5bb993548",
+  "residual_details": [
+    {
+      "assigned_category": "D",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "uncertain_or_no_explicit_match",
+      "conservative_realizable_gain_contribution": 0.24,
+      "exact_filter_or_penalty": "disclosed-constraint coverage underweighted below weaker candidates",
+      "observed": {
+        "hit": true,
+        "rank": 5,
+        "turn": 3
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.24,
+      "raw_current_message_lexical_support": true,
+      "sample_id": "shadow_0003",
+      "scenario_type": "intent_override",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 76,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 1
+        },
+        {
+          "filtered": 1,
+          "final": 4,
+          "fused": null,
+          "lexical": 103,
+          "reranked": 4,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 2
+        },
+        {
+          "filtered": 1,
+          "final": 5,
+          "fused": 1,
+          "lexical": 13,
+          "reranked": 5,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 3
+        }
+      ]
+    },
+    {
+      "assigned_category": "D",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.20000000000000007,
+      "exact_filter_or_penalty": "disclosed-constraint coverage underweighted below weaker candidates",
+      "observed": {
+        "hit": true,
+        "rank": 3,
+        "turn": 2
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.20000000000000007,
+      "raw_current_message_lexical_support": true,
+      "sample_id": "shadow_0006",
+      "scenario_type": "browsing",
+      "stage_trace": [
+        {
+          "filtered": null,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": null,
+          "turn": 1
+        },
+        {
+          "filtered": 1,
+          "final": 3,
+          "fused": null,
+          "lexical": 119,
+          "reranked": 3,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 2
+        }
+      ]
+    },
+    {
+      "assigned_category": "A",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.14,
+      "exact_filter_or_penalty": "disclosed structured evidence missing or stale in active state",
+      "observed": {
+        "hit": true,
+        "rank": 2,
+        "turn": 10
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.29000000000000004,
+      "raw_current_message_lexical_support": true,
+      "sample_id": "shadow_0008",
+      "scenario_type": "boundary",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 1
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 2
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 99,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 3
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 99,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 4
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 99,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 5
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 99,
+          "reranked": 42,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 6
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 99,
+          "reranked": 32,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 7
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 99,
+          "reranked": 22,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 8
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 99,
+          "reranked": 12,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 9
+        },
+        {
+          "filtered": 1,
+          "final": 2,
+          "fused": null,
+          "lexical": 99,
+          "reranked": 2,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 10
+        }
+      ]
+    },
+    {
+      "assigned_category": "F",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.9800000000000001,
+      "exact_filter_or_penalty": "insufficient disclosed dialogue information",
+      "observed": {
+        "hit": false,
+        "rank": null,
+        "turn": null
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.9800000000000001,
+      "raw_current_message_lexical_support": true,
+      "sample_id": "shadow_0011",
+      "scenario_type": "intent_override",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": 1,
+          "fused": 1,
+          "lexical": 1,
+          "reranked": 1,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 1
+        },
+        {
+          "filtered": 1,
+          "final": 1,
+          "fused": null,
+          "lexical": null,
+          "reranked": 1,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 2
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 3
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 4
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 5
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 6
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 7
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 8
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 9
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 10
+        }
+      ]
+    },
+    {
+      "assigned_category": "F",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.8300000000000001,
+      "exact_filter_or_penalty": "insufficient disclosed dialogue information",
+      "observed": {
+        "hit": false,
+        "rank": null,
+        "turn": null
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.9800000000000001,
+      "raw_current_message_lexical_support": true,
+      "sample_id": "shadow_0015",
+      "scenario_type": "intent_override",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": 1,
+          "fused": 1,
+          "lexical": 1,
+          "reranked": 1,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 1
+        },
+        {
+          "filtered": 1,
+          "final": 2,
+          "fused": 3,
+          "lexical": 3,
+          "reranked": 2,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 2
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 3
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 4
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 5
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 6
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 7
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 8
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 9
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 10
+        }
+      ]
+    },
+    {
+      "assigned_category": "E",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.0,
+      "exact_filter_or_penalty": "coverage tie resolved by existing deterministic prior",
+      "observed": {
+        "hit": true,
+        "rank": 5,
+        "turn": 4
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.26,
+      "raw_current_message_lexical_support": false,
+      "sample_id": "shadow_0016",
+      "scenario_type": "boundary",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 1
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 2
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": 15,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 3
+        },
+        {
+          "filtered": 1,
+          "final": 5,
+          "fused": null,
+          "lexical": null,
+          "reranked": 5,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 4
+        }
+      ]
+    },
+    {
+      "assigned_category": "D",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.0033333333333334103,
+      "exact_filter_or_penalty": "disclosed-constraint coverage underweighted below weaker candidates",
+      "observed": {
+        "hit": true,
+        "rank": 10,
+        "turn": 1
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.27,
+      "raw_current_message_lexical_support": true,
+      "sample_id": "shadow_0017",
+      "scenario_type": "buying",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": 10,
+          "fused": null,
+          "lexical": 75,
+          "reranked": 10,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "assigned_category": "E",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.0,
+      "exact_filter_or_penalty": "coverage tie resolved by existing deterministic prior",
+      "observed": {
+        "hit": true,
+        "rank": 6,
+        "turn": 4
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.27,
+      "raw_current_message_lexical_support": true,
+      "sample_id": "shadow_0019",
+      "scenario_type": "intent_override",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": 1,
+          "fused": 1,
+          "lexical": 1,
+          "reranked": 1,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 1
+        },
+        {
+          "filtered": 1,
+          "final": 1,
+          "fused": null,
+          "lexical": 64,
+          "reranked": 1,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 2
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 63,
+          "reranked": 16,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 3
+        },
+        {
+          "filtered": 1,
+          "final": 6,
+          "fused": null,
+          "lexical": 63,
+          "reranked": 6,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 4
+        }
+      ]
+    },
+    {
+      "assigned_category": "D",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.0,
+      "exact_filter_or_penalty": "disclosed-constraint coverage underweighted below weaker candidates",
+      "observed": {
+        "hit": true,
+        "rank": 3,
+        "turn": 4
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.22000000000000008,
+      "raw_current_message_lexical_support": false,
+      "sample_id": "shadow_0020",
+      "scenario_type": "boundary",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 1
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 2
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": 13,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 3
+        },
+        {
+          "filtered": 1,
+          "final": 3,
+          "fused": null,
+          "lexical": null,
+          "reranked": 3,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 4
+        }
+      ]
+    },
+    {
+      "assigned_category": "E",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.0,
+      "exact_filter_or_penalty": "coverage tie resolved by existing deterministic prior",
+      "observed": {
+        "hit": true,
+        "rank": 3,
+        "turn": 3
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.20000000000000007,
+      "raw_current_message_lexical_support": false,
+      "sample_id": "shadow_0024",
+      "scenario_type": "boundary",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 1
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 2
+        },
+        {
+          "filtered": 1,
+          "final": 3,
+          "fused": null,
+          "lexical": null,
+          "reranked": 3,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 3
+        }
+      ]
+    },
+    {
+      "assigned_category": "C",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.047142857142857264,
+      "exact_filter_or_penalty": "bounded category-evidence ordering dropped the lexical target before the top-50 analysis pool",
+      "observed": {
+        "hit": true,
+        "rank": 7,
+        "turn": 5
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.3371428571428572,
+      "raw_current_message_lexical_support": true,
+      "sample_id": "shadow_0025",
+      "scenario_type": "buying",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 187,
+          "reranked": null,
+          "route": "uncertain",
+          "target_contradictions": 0,
+          "turn": 1
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 187,
+          "reranked": 37,
+          "route": "uncertain",
+          "target_contradictions": 0,
+          "turn": 2
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 187,
+          "reranked": 27,
+          "route": "uncertain",
+          "target_contradictions": 0,
+          "turn": 3
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 187,
+          "reranked": 17,
+          "route": "uncertain",
+          "target_contradictions": 0,
+          "turn": 4
+        },
+        {
+          "filtered": 1,
+          "final": 7,
+          "fused": null,
+          "lexical": 187,
+          "reranked": 7,
+          "route": "uncertain",
+          "target_contradictions": 0,
+          "turn": 5
+        }
+      ]
+    },
+    {
+      "assigned_category": "C",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.0,
+      "exact_filter_or_penalty": "bounded category-evidence ordering dropped the lexical target before the top-50 analysis pool",
+      "observed": {
+        "hit": true,
+        "rank": 2,
+        "turn": 2
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.16999999999999993,
+      "raw_current_message_lexical_support": true,
+      "sample_id": "shadow_0029",
+      "scenario_type": "buying",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 75,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 1
+        },
+        {
+          "filtered": 1,
+          "final": 2,
+          "fused": 15,
+          "lexical": 15,
+          "reranked": 2,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 2
+        }
+      ]
+    },
+    {
+      "assigned_category": "F",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.9800000000000001,
+      "exact_filter_or_penalty": "insufficient disclosed dialogue information",
+      "observed": {
+        "hit": false,
+        "rank": null,
+        "turn": null
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.9800000000000001,
+      "raw_current_message_lexical_support": true,
+      "sample_id": "shadow_0031",
+      "scenario_type": "intent_override",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": 1,
+          "fused": 1,
+          "lexical": 1,
+          "reranked": 1,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 1
+        },
+        {
+          "filtered": 1,
+          "final": 1,
+          "fused": null,
+          "lexical": null,
+          "reranked": 1,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 2
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 3
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 4
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 5
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 6
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 7
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 8
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 9
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 10
+        }
+      ]
+    },
+    {
+      "assigned_category": "D",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.0071428571428572285,
+      "exact_filter_or_penalty": "disclosed-constraint coverage underweighted below weaker candidates",
+      "observed": {
+        "hit": true,
+        "rank": 7,
+        "turn": 3
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.25714285714285723,
+      "raw_current_message_lexical_support": true,
+      "sample_id": "shadow_0032",
+      "scenario_type": "boundary",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 72,
+          "reranked": 22,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 1
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": 18,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 2
+        },
+        {
+          "filtered": 1,
+          "final": 7,
+          "fused": null,
+          "lexical": null,
+          "reranked": 7,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 3
+        }
+      ]
+    },
+    {
+      "assigned_category": "C",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.67,
+      "exact_filter_or_penalty": "bounded category-evidence ordering dropped the lexical target before the top-50 analysis pool",
+      "observed": {
+        "hit": false,
+        "rank": null,
+        "turn": null
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.9600000000000001,
+      "raw_current_message_lexical_support": true,
+      "sample_id": "shadow_0034",
+      "scenario_type": "browsing",
+      "stage_trace": [
+        {
+          "filtered": null,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": null,
+          "turn": 1
+        },
+        {
+          "filtered": null,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": null,
+          "turn": 2
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 69,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 3
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 69,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 4
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 69,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 5
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 69,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 6
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 69,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 7
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 69,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 8
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 69,
+          "reranked": 37,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 9
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 69,
+          "reranked": 27,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 10
+        }
+      ]
+    },
+    {
+      "assigned_category": "D",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.01666666666666672,
+      "exact_filter_or_penalty": "disclosed-constraint coverage underweighted below weaker candidates",
+      "observed": {
+        "hit": true,
+        "rank": 9,
+        "turn": 5
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.28666666666666674,
+      "raw_current_message_lexical_support": true,
+      "sample_id": "shadow_0036",
+      "scenario_type": "boundary",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "boundary",
+          "target_contradictions": 0,
+          "turn": 1
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "boundary",
+          "target_contradictions": 0,
+          "turn": 2
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": 40,
+          "lexical": 40,
+          "reranked": 29,
+          "route": "boundary",
+          "target_contradictions": 0,
+          "turn": 3
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": 38,
+          "lexical": 40,
+          "reranked": 19,
+          "route": "boundary",
+          "target_contradictions": 0,
+          "turn": 4
+        },
+        {
+          "filtered": 1,
+          "final": 9,
+          "fused": 34,
+          "lexical": 40,
+          "reranked": 9,
+          "route": "boundary",
+          "target_contradictions": 0,
+          "turn": 5
+        }
+      ]
+    },
+    {
+      "assigned_category": "E",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.0,
+      "exact_filter_or_penalty": "coverage tie resolved by existing deterministic prior",
+      "observed": {
+        "hit": true,
+        "rank": 3,
+        "turn": 1
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.19999999999999996,
+      "raw_current_message_lexical_support": true,
+      "sample_id": "shadow_0037",
+      "scenario_type": "buying",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": 3,
+          "fused": 2,
+          "lexical": 2,
+          "reranked": 3,
+          "route": "boundary",
+          "target_contradictions": 0,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "assigned_category": "E",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.014999999999999902,
+      "exact_filter_or_penalty": "coverage tie resolved by existing deterministic prior",
+      "observed": {
+        "hit": true,
+        "rank": 5,
+        "turn": 1
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.24,
+      "raw_current_message_lexical_support": true,
+      "sample_id": "shadow_0038",
+      "scenario_type": "browsing",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": 5,
+          "fused": null,
+          "lexical": 109,
+          "reranked": 5,
+          "route": "boundary",
+          "target_contradictions": 0,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "assigned_category": "D",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.09500000000000008,
+      "exact_filter_or_penalty": "disclosed-constraint coverage underweighted below weaker candidates",
+      "observed": {
+        "hit": true,
+        "rank": 4,
+        "turn": 4
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.2450000000000001,
+      "raw_current_message_lexical_support": true,
+      "sample_id": "shadow_0039",
+      "scenario_type": "intent_override",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": 1,
+          "fused": 1,
+          "lexical": 1,
+          "reranked": 1,
+          "route": "uncertain",
+          "target_contradictions": 0,
+          "turn": 1
+        },
+        {
+          "filtered": null,
+          "final": null,
+          "fused": null,
+          "lexical": 1,
+          "reranked": null,
+          "route": "uncertain",
+          "target_contradictions": null,
+          "turn": 2
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": 2,
+          "lexical": 28,
+          "reranked": 14,
+          "route": "uncertain",
+          "target_contradictions": 0,
+          "turn": 3
+        },
+        {
+          "filtered": 1,
+          "final": 4,
+          "fused": 2,
+          "lexical": 28,
+          "reranked": 4,
+          "route": "uncertain",
+          "target_contradictions": 0,
+          "turn": 4
+        }
+      ]
+    },
+    {
+      "assigned_category": "D",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.0,
+      "exact_filter_or_penalty": "disclosed-constraint coverage underweighted below weaker candidates",
+      "observed": {
+        "hit": true,
+        "rank": 4,
+        "turn": 4
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.2450000000000001,
+      "raw_current_message_lexical_support": false,
+      "sample_id": "shadow_0040",
+      "scenario_type": "boundary",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "boundary",
+          "target_contradictions": 0,
+          "turn": 1
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "boundary",
+          "target_contradictions": 0,
+          "turn": 2
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": 14,
+          "route": "boundary",
+          "target_contradictions": 0,
+          "turn": 3
+        },
+        {
+          "filtered": 1,
+          "final": 4,
+          "fused": null,
+          "lexical": null,
+          "reranked": 4,
+          "route": "boundary",
+          "target_contradictions": 0,
+          "turn": 4
+        }
+      ]
+    },
+    {
+      "assigned_category": "E",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.036666666666666736,
+      "exact_filter_or_penalty": "coverage tie resolved by existing deterministic prior",
+      "observed": {
+        "hit": true,
+        "rank": 9,
+        "turn": 5
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.30666666666666675,
+      "raw_current_message_lexical_support": true,
+      "sample_id": "shadow_0043",
+      "scenario_type": "intent_override",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 78,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 1
+        },
+        {
+          "filtered": 1,
+          "final": 3,
+          "fused": null,
+          "lexical": null,
+          "reranked": 3,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 2
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": 29,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 3
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": 19,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 4
+        },
+        {
+          "filtered": 1,
+          "final": 9,
+          "fused": null,
+          "lexical": null,
+          "reranked": 9,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 5
+        }
+      ]
+    },
+    {
+      "assigned_category": "E",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.0,
+      "exact_filter_or_penalty": "coverage tie resolved by existing deterministic prior",
+      "observed": {
+        "hit": true,
+        "rank": 9,
+        "turn": 1
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.2666666666666666,
+      "raw_current_message_lexical_support": true,
+      "sample_id": "shadow_0044",
+      "scenario_type": "boundary",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": 9,
+          "fused": null,
+          "lexical": 149,
+          "reranked": 9,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "assigned_category": "E",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.1499999999999999,
+      "exact_filter_or_penalty": "coverage tie resolved by existing deterministic prior",
+      "observed": {
+        "hit": true,
+        "rank": 2,
+        "turn": 1
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.1499999999999999,
+      "raw_current_message_lexical_support": true,
+      "sample_id": "shadow_0045",
+      "scenario_type": "buying",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": 2,
+          "fused": 2,
+          "lexical": 2,
+          "reranked": 2,
+          "route": "boundary",
+          "target_contradictions": 0,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "assigned_category": "D",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.05999999999999994,
+      "exact_filter_or_penalty": "disclosed-constraint coverage underweighted below weaker candidates",
+      "observed": {
+        "hit": true,
+        "rank": 6,
+        "turn": 7
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.32999999999999996,
+      "raw_current_message_lexical_support": true,
+      "sample_id": "shadow_0047",
+      "scenario_type": "intent_override",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 166,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 1
+        },
+        {
+          "filtered": 1,
+          "final": 4,
+          "fused": null,
+          "lexical": 122,
+          "reranked": 4,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 2
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 189,
+          "reranked": 46,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 3
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 189,
+          "reranked": 36,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 4
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 189,
+          "reranked": 26,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 5
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 189,
+          "reranked": 16,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 6
+        },
+        {
+          "filtered": 1,
+          "final": 6,
+          "fused": null,
+          "lexical": 189,
+          "reranked": 6,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 7
+        }
+      ]
+    },
+    {
+      "assigned_category": "E",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.0,
+      "exact_filter_or_penalty": "coverage tie resolved by existing deterministic prior",
+      "observed": {
+        "hit": true,
+        "rank": 2,
+        "turn": 3
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.15000000000000002,
+      "raw_current_message_lexical_support": true,
+      "sample_id": "shadow_0048",
+      "scenario_type": "boundary",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "boundary",
+          "target_contradictions": 0,
+          "turn": 1
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "boundary",
+          "target_contradictions": 0,
+          "turn": 2
+        },
+        {
+          "filtered": 1,
+          "final": 2,
+          "fused": 3,
+          "lexical": 3,
+          "reranked": 2,
+          "route": "boundary",
+          "target_contradictions": 0,
+          "turn": 3
+        }
+      ]
+    },
+    {
+      "assigned_category": "E",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.025000000000000133,
+      "exact_filter_or_penalty": "coverage tie resolved by existing deterministic prior",
+      "observed": {
+        "hit": true,
+        "rank": 4,
+        "turn": 1
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.2250000000000001,
+      "raw_current_message_lexical_support": true,
+      "sample_id": "shadow_0049",
+      "scenario_type": "buying",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": 4,
+          "fused": 2,
+          "lexical": 2,
+          "reranked": 4,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "assigned_category": "E",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.0128571428571429,
+      "exact_filter_or_penalty": "coverage tie resolved by existing deterministic prior",
+      "observed": {
+        "hit": true,
+        "rank": 10,
+        "turn": 1
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.27,
+      "raw_current_message_lexical_support": true,
+      "sample_id": "shadow_0052",
+      "scenario_type": "boundary",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": 10,
+          "fused": 20,
+          "lexical": 20,
+          "reranked": 10,
+          "route": "boundary",
+          "target_contradictions": 0,
+          "turn": 1
+        }
+      ]
+    },
+    {
+      "assigned_category": "F",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.9800000000000001,
+      "exact_filter_or_penalty": "insufficient disclosed dialogue information",
+      "observed": {
+        "hit": false,
+        "rank": null,
+        "turn": null
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.9800000000000001,
+      "raw_current_message_lexical_support": true,
+      "sample_id": "shadow_0055",
+      "scenario_type": "intent_override",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": 1,
+          "fused": 1,
+          "lexical": 1,
+          "reranked": 1,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 1
+        },
+        {
+          "filtered": 1,
+          "final": 1,
+          "fused": null,
+          "lexical": null,
+          "reranked": 1,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 2
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 3
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 4
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 5
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 6
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 7
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 8
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 9
+        },
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": null,
+          "reranked": null,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 10
+        }
+      ]
+    },
+    {
+      "assigned_category": "D",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.00952380952380949,
+      "exact_filter_or_penalty": "disclosed-constraint coverage underweighted below weaker candidates",
+      "observed": {
+        "hit": true,
+        "rank": 9,
+        "turn": 2
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.2666666666666667,
+      "raw_current_message_lexical_support": true,
+      "sample_id": "shadow_0057",
+      "scenario_type": "buying",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": null,
+          "lexical": 55,
+          "reranked": 19,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 1
+        },
+        {
+          "filtered": 1,
+          "final": 9,
+          "fused": null,
+          "lexical": null,
+          "reranked": 9,
+          "route": "uncertain",
+          "target_contradictions": 0,
+          "turn": 2
+        }
+      ]
+    },
+    {
+      "assigned_category": "D",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.15000000000000002,
+      "exact_filter_or_penalty": "disclosed-constraint coverage underweighted below weaker candidates",
+      "observed": {
+        "hit": true,
+        "rank": 2,
+        "turn": 2
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.15000000000000002,
+      "raw_current_message_lexical_support": true,
+      "sample_id": "shadow_0062",
+      "scenario_type": "browsing",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": null,
+          "fused": 16,
+          "lexical": 16,
+          "reranked": 26,
+          "route": "boundary",
+          "target_contradictions": 0,
+          "turn": 1
+        },
+        {
+          "filtered": 1,
+          "final": 2,
+          "fused": 3,
+          "lexical": 3,
+          "reranked": 2,
+          "route": "boundary",
+          "target_contradictions": 0,
+          "turn": 2
+        }
+      ]
+    },
+    {
+      "assigned_category": "D",
+      "catalog_metadata_status": "explicit",
+      "category_confidence": "high_explicit_match",
+      "conservative_realizable_gain_contribution": 0.25,
+      "exact_filter_or_penalty": "disclosed-constraint coverage underweighted below weaker candidates",
+      "observed": {
+        "hit": true,
+        "rank": 6,
+        "turn": 3
+      },
+      "oracle_gain_contribution_diagnostic_only": 0.25,
+      "raw_current_message_lexical_support": true,
+      "sample_id": "shadow_0063",
+      "scenario_type": "intent_override",
+      "stage_trace": [
+        {
+          "filtered": 1,
+          "final": 1,
+          "fused": 1,
+          "lexical": 1,
+          "reranked": 1,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 1
+        },
+        {
+          "filtered": 1,
+          "final": 1,
+          "fused": 21,
+          "lexical": 21,
+          "reranked": 1,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 2
+        },
+        {
+          "filtered": 1,
+          "final": 6,
+          "fused": null,
+          "lexical": null,
+          "reranked": 6,
+          "route": "buying",
+          "target_contradictions": 0,
+          "turn": 3
+        }
+      ]
+    }
+  ],
+  "schema_version": 1,
+  "seed": 20260830,
+  "trace_integrity": {
+    "baseline_matches_checkpoint": true,
+    "baseline_transcript_sha256": "33f51cc6f6eb7eff627c116ff919b02a7bbb50fe6b24ddaef7efc9a00e693e92",
+    "expected_p5_transcript_sha256": "33f51cc6f6eb7eff627c116ff919b02a7bbb50fe6b24ddaef7efc9a00e693e92",
+    "observed_trace_transcript_sha256": "33f51cc6f6eb7eff627c116ff919b02a7bbb50fe6b24ddaef7efc9a00e693e92",
+    "observer_matches_baseline": true
+  }
+}

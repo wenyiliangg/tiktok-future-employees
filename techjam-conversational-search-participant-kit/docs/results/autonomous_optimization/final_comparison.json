@@ -134,6 +134,14 @@
       "shadow_delta_vs_p2": 0.218248,
       "official_runs_consumed": 0,
       "reason": "Historically rejected under its frozen route-local attribution gate because downstream mediated route transitions were treated as attribution failures; the verdict was not changed by P5."
+    },
+    {
+      "experiment_id": "P6-filter-category-recovery-v1",
+      "candidate_commit": null,
+      "category_c_session_count": 3,
+      "conservative_realizable_technical_score_gain": 0.011205,
+      "official_runs_consumed": 0,
+      "reason": "Rejected before candidate selection because category C failed both predeclared continuation thresholds after P5; no alternative mechanism was attempted."
     }
   ],
   "external_reference": {
@@ -143,12 +151,12 @@
   },
   "official_runs_used": 10,
   "official_runs_remaining": 2,
-  "stop_reason": "P5 promoted after deterministic confirmation; reserve the final two official runs for submission verification.",
+  "stop_reason": "P6 failed its frozen diagnostic continuation gate; P5 is the final champion and the remaining two runs are reserved for packaged-submission verification.",
   "resumed_after_h2_utc": "2026-08-30T12:59:34Z",
   "limitations": [
     "The selected score is measured on the official public set and is not a private-set claim.",
     "The verified 0.963323 reference score is not paired with our sessions and its source is not used after the sanitization barrier.",
     "Non-public shadow suites reduce but do not eliminate public-set selection and distribution-shift risk."
   ],
-  "last_updated_utc": "2026-08-31T09:49:56Z"
+  "last_updated_utc": "2026-08-31T10:30:09Z"
 }
