@@ -48,11 +48,13 @@
   },
   "champion_response_hash": "921cbfe879262cae0c5332db632920544bb0b90c562ae91cf450a7252617e7f5",
   "champion_session_hash": "9513a906150178fc4ae5e829129cfd50b699c98b1f040d641dae91bb40847deb",
-  "current_experiment_id": "P4A-p2-residual-causal-diagnosis-v1",
-  "current_hypothesis": "The largest conservative, target-independent residual P2 failure category can justify exactly one independent non-exposure P4 mechanism.",
-  "current_stage": "P4A_residual_diagnosis_predeclared_before_target_aware_analysis",
+  "current_experiment_id": "P4-buying-route-utility-clarification-v1",
+  "current_hypothesis": "Adding only the runtime-observable buying route to P2's unchanged expected-utility clarification eligibility will recover missing dialogue evidence in the selected F residual category.",
+  "current_stage": "P4B_category_F_selected_candidate_predeclared_before_implementation",
   "experiment_start_commit": "13c9fc58967f51a33bd5e5c88ab9568d527cca88",
-  "experiment_commits": [],
+  "experiment_commits": [
+    "1363ad838261a7fc74e202e38e822e150ec26b3f"
+  ],
   "completed_hypotheses": [
     "H0-feedback-memory-bm25",
     "H1-open-evidence-questions-v1",
@@ -82,8 +84,8 @@
   "official_runs_remaining": 4,
   "fixed_seed": 20260830,
   "run_start_utc": "2026-08-30T14:44:51Z",
-  "last_checkpoint_utc": "2026-08-31T04:58:53Z",
+  "last_checkpoint_utc": "2026-08-31T05:13:59Z",
   "pause_reason": null,
   "stop_reason": null,
-  "next_action": "Commit the frozen P4A diagnosis contract, then run observational target-aware diagnosis over the existing 64-session non-public shadow protocol. Preserve P2, keep P3 disabled, and consume zero official runs."
+  "next_action": "Commit the P4 residual diagnosis and frozen buying-route clarification predeclaration, implement only the declarative route addition, add focused tests, and freeze the implementation before one target-aware P4 shadow evaluation."
 }
