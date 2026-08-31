@@ -96,7 +96,7 @@
     "catalog-wide runtime scans"
   ],
   "expected_affected_population": {
-    "primary": "Sessions that P2 routes as buying, have at least eight bounded analysis candidates, pass the unchanged expected-reduction/utility gates, and have fewer than two prior questions.",
+    "primary": "Sessions that P2 routes as buying, have at least four bounded analysis candidates under utility_min_candidates, produce a positive expected-utility question under the unchanged P2 utility calculation, and have fewer than two prior questions.",
     "diagnostic_support": "All 14 selected F residual sessions were observably routed as buying and asked zero P2 questions; nine recovered under the conservative one-answer diagnostic replay.",
     "expected_shadow_scenarios": [
       "browsing",
@@ -140,7 +140,7 @@
     "disabled_exact_p2_parity_required": true,
     "deterministic_transcript_and_session_hashes_required": true,
     "paraphrase_and_target_independent_robustness_required": true,
-    "mechanism_attribution_required": "Every changed response must occur in a runtime-observable buying-route session at a turn where the unchanged P2 clarification gates admit a question."
+    "mechanism_attribution_required": "Every changed response must occur in a runtime-observable buying-route session with at least four bounded analysis candidates at a turn where the unchanged P2 utility calculation and controller admit a question."
   },
   "unacceptable_scenario_regression": "Any scenario hit-rate loss, any lost P2 hit, or a TechnicalScore decrease greater than 0.005 in a nonselected scenario. Selected F scenarios must improve in aggregate by at least 0.015.",
   "rejection_rule": "Reject P4 without tuning if any success, regression, correctness, determinism, disabled-parity, robustness, or attribution gate fails. Retain P2 and do not evaluate another P4 mechanism in this invocation.",
