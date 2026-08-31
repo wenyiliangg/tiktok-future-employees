@@ -1,6 +1,6 @@
 # TechJam2026-ShoppingCopilot
 
-A deterministic, multi-turn shopping agent that searches a frozen catalog of
+A deterministic, multi-turn shopping agent, 'Your Shopping Bestie' that searches a frozen catalog of
 50,000 Amazon products and returns the ten most likely `parent_asin` values.
 The agent remembers active preferences, handles changed intent and rejected
 recommendations, and asks a useful clarification question when another answer
