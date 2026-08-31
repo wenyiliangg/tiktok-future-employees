@@ -1,0 +1,219 @@
+{
+  "schema_version": 1,
+  "record_type": "proxy_experiment_predeclaration",
+  "experiment_id": "P8-proxy-clarification-fallback-v1",
+  "parent_champion": "f4992683cff2fe0cb6e4e756edeb361f1f29f6b0",
+  "starting_checkpoint": "f18f169e4e1fa112009f1c4128e195b341273b4a",
+  "decision": "frozen_before_proxy_generation_answerability_derivation_or_outcomes",
+  "causal_hypothesis": "A target-independent one-time clarification fallback can acquire missing information when P5 returns recommendations without a useful question after repeated negative feedback, while preserving P5 retrieval, ranking, routing, state, recommendations, usage, and existing questions.",
+  "selected_residual_family": {
+    "id": "F",
+    "label": "remaining insufficient dialogue",
+    "p7_shadow_miss_count": 4,
+    "diagnostic_oracle_technical_score_ceiling": 0.06125,
+    "conservative_realizable_technical_score_ceiling": 0.058906,
+    "restriction": "The four diagnosed sessions are supporting aggregate evidence only and may not appear in runtime logic or proxy selection."
+  },
+  "documentation_limit": {
+    "known": "Official participant documentation states that the public set has 200 sessions across Buying, Browsing, Intent Override, and Boundary, the frozen catalog has 50,000 Clothing/Shoes/Jewelry products, and the organizer has an additional private 800-session set.",
+    "unknown": "The documentation does not specify private target category, popularity, or scenario proportions, nor a target sampling algorithm.",
+    "consequence": "Neither proxy distribution is described as the actual private distribution. Development and confirmation are catalog-stratified transfer proxies; the third set is explicitly a uniform-target stress test."
+  },
+  "proxy_sets": {
+    "common_eligibility": [
+      "valid catalog parent_asin",
+      "not present in data/public_set.jsonl ground-truth targets",
+      "official evaluator intent_card and materialize_hidden_fields helpers execute without exception",
+      "no target identity is emitted outside benchmark-local generation; artifacts retain only aggregate counts and hashes"
+    ],
+    "development": {
+      "sample_count": 400,
+      "seed": 2026083101,
+      "scenario_assignment": "Sort selected targets by SHA-256(seed, parent_asin), then assign exactly 100 each in the repeating order boundary, browsing, buying, intent_override.",
+      "selection": "Stratify the eligible catalog by official coarse_category and catalog-wide popularity quartile, where popularity is log1p(max(0,rating_number)); allocate 400 slots proportional to stratum sizes using largest remainders with deterministic stratum-name ties; within each stratum choose the lowest SHA-256(seed,parent_asin); fill any unavailable allocation globally by the same hash order.",
+      "availability": "Generated only after this predeclaration commit."
+    },
+    "confirmation": {
+      "sample_count": 400,
+      "seed": 2026083102,
+      "scenario_assignment": "Same balanced deterministic assignment as development.",
+      "selection": "Apply the identical catalog-stratified allocation after excluding public and development targets; use the confirmation seed for within-stratum ordering.",
+      "availability": "Target identities and outcomes remain untouched until one frozen development variant qualifies."
+    },
+    "uniform_stress": {
+      "sample_count": 400,
+      "seed": 2026083103,
+      "scenario_assignment": "Same balanced deterministic assignment as development.",
+      "selection": "After excluding public, development, and confirmation targets, choose the lowest SHA-256(seed,parent_asin) over the entire eligible pool without category or popularity stratification.",
+      "interpretation": "A hash-uniform eligible-catalog stress test, not a private-score estimate.",
+      "availability": "Not evaluated unless confirmation gates pass."
+    },
+    "disjointness_proof": "Record public/development/confirmation/stress set intersections, per-set target-selection SHA-256, combined target-selection SHA-256, category counts, popularity-quartile counts, and scenario counts. Every required intersection must be zero."
+  },
+  "answerability_derivation": {
+    "seed": 2026083100,
+    "catalog_scope": "Traverse all 50,000 official catalog products in parent_asin order; no public outcomes or session labels are consulted.",
+    "official_helpers": [
+      "evaluator.local_evaluator.intent_card",
+      "evaluator.local_evaluator.classify_constraint",
+      "evaluator.local_evaluator.coarse_category",
+      "starter.ambiguity_analysis.AmbiguityAnalyzer.attribute_statistics"
+    ],
+    "answerability_rate": "For each official ask_attribute, fraction of catalog intent cards for which official customer_reply would return at least one undisclosed matching hard/soft constraint. For other, any nonempty constraint list is answerable.",
+    "constraint_yield": "Mean min(2, matching constraint count) over all products and separately over answerable products, matching official customer_reply's two-constraint cap.",
+    "runtime_attribute_candidates": [
+      "budget",
+      "color",
+      "material",
+      "style",
+      "use_case",
+      "feature"
+    ],
+    "excluded_attributes": "Exclude attributes with zero answerability or no existing bounded-catalog ambiguity statistic. Category and brand are expected to be excluded because official customer_reply does not materialize them as hard/soft constraints; size is excluded unless both positive simulator answerability and an existing bounded ambiguity statistic are available without changing P5.",
+    "ambiguity_threshold": "Group the full catalog by official coarse_category, sort each group by SHA-256(derivation seed,parent_asin), partition into nonoverlapping blocks of 50 (discard blocks below four), compute each block's maximum positive expected_reduction over retained runtime attributes, then take the median and floor to three decimals. This single derived threshold is shared by A and B.",
+    "rounding": "Answerability rates and mean yields use round-half-even to six decimals; the ambiguity threshold is floored to three decimals. Runtime constants must exactly match the artifact under this rule.",
+    "rejection": "Reject Variant B if these aggregates cannot be derived without public outcomes or if no targeted attribute retains positive answerability and bounded ambiguity support."
+  },
+  "shared_fallback": {
+    "policy_ids": {
+      "disabled": "clarification-fallback.disabled.v1",
+      "variant_A": "clarification-fallback.open-once.v1",
+      "variant_B": "clarification-fallback.catalog-utility-once.v1"
+    },
+    "eligibility": [
+      "P5 has already produced the turn response and ask_attribute is null",
+      "turn is 3 through 9 inclusive",
+      "the current runtime-observable message matches P5's existing finite negative-feedback expression",
+      "the existing bounded P5 analysis pool has at least four candidates",
+      "the session has not used a P8 fallback",
+      "the P5 clarification controller has no pending question and has not exhausted its existing two-question cap",
+      "the selected attribute is not asked, answered, declined, pending, or already known",
+      "at least one unresolved retained attribute has expected_reduction at or above the catalog-derived ambiguity threshold"
+    ],
+    "intervention": "Attach exactly one existing schema-valid clarification prompt while deep-preserving P5 recommendations, recommendation order, scores, usage, and all unrelated response fields.",
+    "session_cap": 1,
+    "failure_behavior": "Any missing catalog record, malformed metadata, invalid statistic, controller refusal, or exception returns the exact unmodified P5 response and records a diagnostic failure; it never scans the full catalog at response time.",
+    "disabled_behavior": "The disabled policy must be byte-for-byte and hash-identical to P5."
+  },
+  "variants": {
+    "A": {
+      "label": "one-time open fallback",
+      "selection": "If shared eligibility passes and other is neither known nor present in any controller history set, request other using the existing prompt template.",
+      "configuration": "No target-derived weight or threshold beyond the shared catalog-derived ambiguity threshold."
+    },
+    "B": {
+      "label": "one-time expected-utility attribute fallback",
+      "selection": "For each retained unanswered attribute, compute answerability_rate * mean_constraint_yield_when_answerable * current bounded-pool expected_reduction; choose the strictly highest positive score with alphabetical attribute tie-break, mapping price ambiguity to budget. Require that attribute's expected_reduction to meet the shared threshold.",
+      "configuration": "Use only the rounded catalog-wide answerability/yield constants from the derivation artifact; no additive weights, public outcomes, or session-specific constants."
+    }
+  },
+  "development_protocol": {
+    "policies": [
+      "exact P5 / fallback disabled",
+      "Variant A",
+      "Variant B"
+    ],
+    "paired_bootstrap": {
+      "seed": 2026083191,
+      "resamples": 20000,
+      "confidence_level": 0.975,
+      "multiplicity_note": "Two candidate variants require the selected variant's two-sided 97.5% interval and probability-positive threshold 0.9875."
+    },
+    "selection_gates": {
+      "minimum_technical_score_delta": 0.015,
+      "paired_interval_lower_must_exceed": 0.0,
+      "minimum_probability_positive": 0.9875,
+      "hit_rate_nondecrease": true,
+      "minimum_net_hit_gain": 1,
+      "maximum_scenario_technical_score_regression": 0.005,
+      "mttc_nonworsening": true,
+      "zero_repeated_questions_correctness_or_reliability_failures": true,
+      "missing_information_attribution_required": true,
+      "target_session_identifier_independence_required": true,
+      "safe_resources_required": true
+    },
+    "selection_rule": "Select the qualifying variant with the larger paired TechnicalScore delta; tie-break by fewer fallback questions, then A before B. If neither qualifies, reject P8 immediately. Do not tune either variant after outcomes.",
+    "determinism": "Record hashes for all runs. Repeat only a provisionally qualifying variant and exact P5 before selection; any mismatch rejects P8."
+  },
+  "confirmation_protocol": {
+    "paired_bootstrap": {
+      "seed": 2026083192,
+      "resamples": 10000,
+      "confidence_level": 0.95
+    },
+    "gates": {
+      "minimum_technical_score_delta": 0.01,
+      "paired_interval_lower_must_exceed": 0.0,
+      "minimum_probability_positive": 0.975,
+      "hit_rate_nondecrease": true,
+      "minimum_net_hit_gain": 1,
+      "maximum_scenario_technical_score_regression": 0.005,
+      "mttc_nonworsening": true,
+      "zero_correctness_or_reliability_failures": true,
+      "missing_information_attribution_required": true,
+      "maximum_paraphrase_technical_score_regression_vs_unperturbed": 0.005
+    },
+    "paraphrase_replay": "On the same confirmation targets, deterministically apply only case and terminal punctuation/em-dash perturbations to official helper-generated user messages; preserve hidden cards, customer answers, scenarios, and target selection.",
+    "uniform_stress_rejection": "Reject for mechanism reversal defined as TechnicalScore delta <= -0.010, HR@10 delta < -0.020, or any scenario TechnicalScore delta < -0.020. Smaller losses are reported as stress limitations."
+  },
+  "public_shadow_protocol": {
+    "suite": "Existing 64-session public-target-disjoint participant shadow protocol, seed 20260830; exactly one selected P8 candidate and exact P5.",
+    "gates": {
+      "minimum_technical_score_delta": 0.015,
+      "paired_interval_lower_must_exceed": 0.0,
+      "minimum_probability_positive": 0.975,
+      "hit_rate_nondecrease": true,
+      "minimum_net_hit_gain": 1,
+      "maximum_scenario_technical_score_regression": 0.005,
+      "disabled_exact_p5_parity": true,
+      "missing_information_attribution_required": true,
+      "maximum_correctness_or_reliability_failures": 0
+    }
+  },
+  "official_protocol": {
+    "run_1": "Only after all prior gates pass: verify evaluator/public fingerprints and isolated runtime diff, then run untouched evaluator once. Require +0.015 TechnicalScore, positive 95% CI, probability positive >=0.975, HR nondecrease, positive net hits, scenario regression no worse than -0.005, MTTC nonworsening, attribution, and zero failures.",
+    "run_2": "Only after run 1 passes: repeat the identical frozen candidate and require identical non-timing metrics, normalized responses, questions, recommendations, usage, failure counters, response hash, and session hash.",
+    "budget_before": 2,
+    "maximum_consumed": 2
+  },
+  "resource_limits": {
+    "peak_process_rss_mib": 2048,
+    "p95_response_latency_ms": "no more than max(1000, 2 * same-set P5 p95)",
+    "maximum_single_policy_proxy_wall_minutes": 60,
+    "response_time_full_catalog_scan": false
+  },
+  "allowed_runtime_inputs": [
+    "turn number",
+    "current user message",
+    "existing P5 response",
+    "existing bounded P5 candidates and catalog metadata",
+    "existing active state and clarification-controller snapshot",
+    "catalog-derived aggregate answerability/yield constants",
+    "selected declarative fallback policy"
+  ],
+  "forbidden_runtime_inputs_or_changes": [
+    "public or proxy target IDs, aliases, labels, outcomes, or lookup tables",
+    "session IDs as decision features",
+    "hidden scenario labels or future turns",
+    "reference checkout, snapshots, constants, control flow, or artifacts",
+    "P5 retrieval, ranking, filtering, routing, state semantics, existing question policy, recommendation width, P3, or P7",
+    "official evaluator, public set, simulator, metric, target labels, or stopping behavior"
+  ],
+  "risk_and_transfer": {
+    "public_overfitting_risk": "P5 and residual-family motivation include public-development evidence, so P8 selection is prohibited from consulting public shadow until both independent proxies pass; runtime constants come only from catalog-wide aggregates.",
+    "private_transfer_hypothesis": "Missing-information acquisition conditioned on bounded candidate ambiguity and explicit negative feedback should transfer across catalog targets because it uses official simulator answerability and no target identity; distribution mismatch remains unquantified.",
+    "primary_risks": [
+      "extra turn cost without useful answer",
+      "fallback before an intent override",
+      "sparse metadata producing false ambiguity",
+      "proxy/private distribution mismatch",
+      "controller-channel exhaustion or repeated questions"
+    ]
+  },
+  "stop_rule": "Stop immediately at the first frozen phase gate failure, restore exact P5 runtime, consume no unauthorized official run, package P5, and do not begin P9.",
+  "official_runs_consumed": 0,
+  "official_runs_remaining": 2,
+  "timestamps": {
+    "predeclared_utc": "2026-08-31T13:19:09Z"
+  }
+}

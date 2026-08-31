@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "campaign_status": "completed_p7_rejected_p5_packaged",
+  "campaign_status": "running_final_p8_proxy_first_attempt",
   "campaign_base_commit": "c57dfce8f7aeb44cb366ab3a90c11e9ac613cf07",
-  "campaign_branch": "experiment/p7-final-residual",
+  "campaign_branch": "experiment/p8-proxy-clarification-fallback",
   "champion_commit": "f4992683cff2fe0cb6e4e756edeb361f1f29f6b0",
   "rollback_commit": "7ba0a7c769954d758e1c6db6e70cde3cac214bb5",
   "champion_configuration": {
@@ -50,15 +50,11 @@
   },
   "champion_response_hash": "0b17cb2037fa6a18580e98b097b8268655d2121855ce8c9cf9f158d1b2a1e486",
   "champion_session_hash": "654dbb33898ec07a742b88c04129519faf82b3c032a0fa5b7f7888e5df24989e",
-  "current_experiment_id": "P7-constraint-coverage-ordering-v1",
-  "current_hypothesis": "One remaining non-category-C causal family may admit a single target-independent correction with substantial shadow and transfer evidence.",
-  "current_stage": "P7_shadow_rejected_campaign_complete_no_P8",
-  "experiment_start_commit": "a8ef5e943cb641c895e585a139bee16361fdc331",
-  "experiment_commits": [
-    "7618dfa8859f30d86fa9207a96fbce968767a732",
-    "9de9913fbf9d65db7755737ad93697bdcb94bce6",
-    "5084d36a1544d6517167162e9ef3b60787c369ce"
-  ],
+  "current_experiment_id": "P8-proxy-clarification-fallback-v1",
+  "current_hypothesis": "A catalog-derived one-time fallback question can acquire missing information on under-specified negative-feedback turns where P5 emits no useful question.",
+  "current_stage": "P8A_proxy_and_variant_predeclaration_frozen_before_generation",
+  "experiment_start_commit": "f18f169e4e1fa112009f1c4128e195b341273b4a",
+  "experiment_commits": [],
   "completed_hypotheses": [
     "H0-feedback-memory-bm25",
     "H1-open-evidence-questions-v1",
@@ -90,14 +86,14 @@
   "superseded_hypotheses": [
     "H4-dual-evidence-conjunction-v1"
   ],
-  "consecutive_rejections": 1,
+  "consecutive_rejections": 0,
   "consecutive_small_improvements": 0,
   "official_runs_used": 10,
   "official_runs_remaining": 2,
   "fixed_seed": 20260830,
   "run_start_utc": "2026-08-30T14:44:51Z",
-  "last_checkpoint_utc": "2026-08-31T12:26:00Z",
+  "last_checkpoint_utc": "2026-08-31T13:19:09Z",
   "pause_reason": null,
-  "stop_reason": "P7 failed five frozen shadow promotion gates. P5 remains the final champion, no official run was consumed, and P8 is forbidden.",
-  "next_action": "Use the packaged P5 default for submission; do not run another optimization experiment in this campaign."
+  "stop_reason": null,
+  "next_action": "Derive catalog-wide answerability and the shared ambiguity threshold without generating or evaluating proxy sessions."
 }
