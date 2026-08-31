@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "campaign_status": "paused_for_final_submission_verification",
+  "campaign_status": "running_final_p6_attempt",
   "campaign_base_commit": "c57dfce8f7aeb44cb366ab3a90c11e9ac613cf07",
   "campaign_branch": "experiment/p5-clarification-confirmation",
   "champion_commit": "f4992683cff2fe0cb6e4e756edeb361f1f29f6b0",
@@ -50,15 +50,11 @@
   },
   "champion_response_hash": "0b17cb2037fa6a18580e98b097b8268655d2121855ce8c9cf9f158d1b2a1e486",
   "champion_session_hash": "654dbb33898ec07a742b88c04129519faf82b3c032a0fa5b7f7888e5df24989e",
-  "current_experiment_id": "P5-prospective-causal-clarification-confirmation-v1",
-  "current_hypothesis": "The frozen P4 buying-route clarification behavior has a large target-independent benefit whose downstream effects are causally mediated by a qualifying first-divergence clarification.",
-  "current_stage": "P5_promoted_official_deterministically_confirmed",
-  "experiment_start_commit": "48391a76332c222084304b061d947ea51169f2a3",
-  "experiment_commits": [
-    "322d7dda1af22f880143ca3bf84a9f13558f3708",
-    "744465a303fe0361aae30568197d094fdcdf1676",
-    "f4992683cff2fe0cb6e4e756edeb361f1f29f6b0"
-  ],
+  "current_experiment_id": "P6-filter-category-recovery-v1",
+  "current_hypothesis": "A coherent subset of P5 residuals may be caused by missing or uncertain category/filter evidence being treated as a contradiction after bounded retrieval.",
+  "current_stage": "P6A_category_c_diagnostic_predeclared_before_residual_inspection",
+  "experiment_start_commit": "e6550afd1f0368314db8461faa6ffca5cedf7464",
+  "experiment_commits": [],
   "completed_hypotheses": [
     "H0-feedback-memory-bm25",
     "H1-open-evidence-questions-v1",
@@ -93,7 +89,7 @@
   "fixed_seed": 20260830,
   "run_start_utc": "2026-08-30T14:44:51Z",
   "last_checkpoint_utc": "2026-08-31T09:49:56Z",
-  "pause_reason": "P5 promoted after two deterministic official runs; two official runs are reserved for final submission verification.",
-  "stop_reason": "The authorized P5 confirmation is complete; no further experiment is permitted in this invocation.",
-  "next_action": "Prepare the final submission from f4992683cff2fe0cb6e4e756edeb361f1f29f6b0 without changing behavior, then use the two reserved official runs only for final submission verification."
+  "pause_reason": null,
+  "stop_reason": null,
+  "next_action": "Run the frozen P6A category-C residual diagnosis on stored P5 shadow evidence without invoking the official evaluator, then continue only if the predeclared opportunity gate passes."
 }

@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "record_type": "diagnostic_predeclaration",
+  "diagnosis_id": "P6A-p5-category-filter-residual-diagnosis-v1",
+  "parent_champion": "f4992683cff2fe0cb6e4e756edeb361f1f29f6b0",
+  "campaign_checkpoint": "e6550afd1f0368314db8461faa6ffca5cedf7464",
+  "decision": "frozen_before_target_aware_residual_inspection",
+  "purpose": "Determine whether one coherent target-independent category or filter correction remains after P5, without invoking the official evaluator or altering P5 behavior.",
+  "stored_inputs": {
+    "p5_official_run1_sha256": "583e87ae4296e6bcb894f48f6a2baad1dc384cf335b1031d81d5b29b95ae23f8",
+    "p5_shadow_lineage_sha256": "d9e7333014d2ccf23e33e9b5a8d65464a7705b00d19f5e42ec911c56716b9570",
+    "catalog_sha256": "da979b05a68af864cb0dcf9ee6a81c010c7e66a57978ad286c7a2e005fc69a67",
+    "public_set_sha256": "857259f7a438e6188ac63e18995b6ff4489bfcfc4a716a798b9a2aa0ee8f7579"
+  },
+  "residual_population": "Every P5 miss and every P5 hit below rank one in the stored 64-session non-public shadow protocol; official outcomes may be summarized only after the diagnosis is frozen and are not runtime inputs.",
+  "category_c_definition": {
+    "required_conditions": [
+      "The target was present in the protected lexical or bounded fused candidate stage.",
+      "Disclosed runtime evidence was compatible with the target.",
+      "The target was subsequently removed or materially penalized by category, metadata, price, or hard-constraint handling.",
+      "The removal or penalty was caused by missing, uncertain, incorrectly normalized, or overly strict catalog or state evidence.",
+      "The failure is repairable through one general target-independent policy."
+    ],
+    "not_category_c": [
+      "The target was absent from all bounded retrieval stages.",
+      "The target genuinely contradicted explicit high-confidence current requirements.",
+      "The target only lost to stronger compatible evidence without a filter or unsupported contradiction.",
+      "Recovery would require a target identifier, session identifier, future turn, hidden label, full-catalog response-time scan, or invented candidate."
+    ]
+  },
+  "per_session_observations": [
+    "target presence and rank in raw current-message lexical, contextual fused, category-evidence candidate, contradiction-filtered, reranked, and final pools",
+    "the exact filter, contradiction, category normalization, metadata, price, or hard-constraint decision responsible",
+    "catalog metadata status as explicit, missing, ambiguous, malformed, or contradictory",
+    "category confidence as explicit high-confidence or uncertain",
+    "raw current-message lexical support",
+    "scenario, turn, final rank, oracle contribution, and conservative realizable contribution"
+  ],
+  "diagnostic_only_oracle": {
+    "method": "Move a qualifying target to its best defensible bounded-stage rank without changing any other session.",
+    "may_select_runtime_behavior": false
+  },
+  "conservative_realizable_ceiling": {
+    "method": "For one coherent sub-cause only, reinstate or remove an unsupported penalty while preserving explicit contradictions and the existing bounded candidate set.",
+    "must_not_assume_rank_one": true
+  },
+  "continuation_gate": {
+    "minimum_affected_residual_sessions": 5,
+    "alternative_minimum_conservative_technical_score_gain": 0.02,
+    "one_dominant_coherent_target_independent_subcause_required": true
+  },
+  "selection_rule": "Select at most one correction family matching the largest conservative realizable category-C sub-cause. If the continuation gate fails, retain P5 and stop without selecting another mechanism.",
+  "forbidden_runtime_inputs": [
+    "session identifiers",
+    "target ASINs or aliases",
+    "public-set labels",
+    "future turns",
+    "hidden scenarios",
+    "benchmark lookup tables",
+    "full-catalog response-time scans",
+    "reference or competitor artifacts"
+  ],
+  "official_runs_consumed": 0,
+  "official_runs_remaining": 2,
+  "seed": 20260830,
+  "timestamps": {
+    "predeclared_utc": "2026-08-31T10:19:17Z"
+  }
+}
