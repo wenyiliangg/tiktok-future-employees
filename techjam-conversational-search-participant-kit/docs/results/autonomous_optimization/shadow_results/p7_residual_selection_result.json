@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "record_type": "diagnostic_selection_result",
+  "diagnosis_id": "P7A-p5-final-residual-selection-v1",
+  "selection_predeclaration_commit": "7618dfa8859f30d86fa9207a96fbce968767a732",
+  "source_diagnosis": {
+    "path": "docs/results/autonomous_optimization/shadow_results/p6_category_filter_diagnosis.json",
+    "sha256": "b81c9fd2b16255a903b8213a137c440878a43a214730e58c2ce691fa061aa5b2",
+    "residual_sessions": 31,
+    "assignment_exhaustive_and_exclusive": true,
+    "observer_matches_frozen_p5": true,
+    "p5_shadow_transcript_sha256": "33f51cc6f6eb7eff627c116ff919b02a7bbb50fe6b24ddaef7efc9a00e693e92"
+  },
+  "eligibility": {
+    "D": {
+      "label": "constraint-ranking defect",
+      "session_count": 12,
+      "scenario_counts": {
+        "boundary": 4,
+        "browsing": 2,
+        "buying": 2,
+        "intent_override": 4
+      },
+      "miss_count": 0,
+      "below_rank_one_hit_count": 12,
+      "oracle_technical_score_gain_diagnostic_only": 0.046257,
+      "conservative_realizable_technical_score_gain": 0.01612,
+      "coherent_single_target_independent_mechanism": true,
+      "minimum_session_count_passed": true,
+      "minimum_conservative_ceiling_passed": true,
+      "qualifies": true
+    },
+    "E": {
+      "label": "saturated evidence tie",
+      "session_count": 11,
+      "oracle_technical_score_gain_diagnostic_only": 0.039661,
+      "conservative_realizable_technical_score_gain": 0.003743,
+      "coherent_single_target_independent_mechanism": false,
+      "minimum_session_count_passed": true,
+      "minimum_conservative_ceiling_passed": false,
+      "qualifies": false
+    },
+    "F": {
+      "label": "remaining insufficient dialogue",
+      "session_count": 4,
+      "oracle_technical_score_gain_diagnostic_only": 0.06125,
+      "conservative_realizable_technical_score_gain": 0.058906,
+      "coherent_single_target_independent_mechanism": true,
+      "minimum_session_count_passed": false,
+      "minimum_conservative_ceiling_passed": true,
+      "qualifies": false
+    },
+    "G": {
+      "label": "state or override timing",
+      "session_count": 0,
+      "oracle_technical_score_gain_diagnostic_only": 0.0,
+      "conservative_realizable_technical_score_gain": 0.0,
+      "coherent_single_target_independent_mechanism": false,
+      "minimum_session_count_passed": false,
+      "minimum_conservative_ceiling_passed": false,
+      "qualifies": false
+    }
+  },
+  "selected_family": "D",
+  "selection_reason": "D is the qualifying family with the largest conservative realizable ceiling. F has a larger ceiling but is ineligible because it affects only four sessions; E fails the +0.015 ceiling; G affects no sessions.",
+  "no_family_switch_after_failure": true,
+  "official_runs_consumed": 0,
+  "official_runs_remaining": 2,
+  "timestamps": {
+    "selected_utc": "2026-08-31T12:08:00Z"
+  }
+}

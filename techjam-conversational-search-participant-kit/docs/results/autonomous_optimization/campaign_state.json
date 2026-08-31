@@ -52,9 +52,11 @@
   "champion_session_hash": "654dbb33898ec07a742b88c04129519faf82b3c032a0fa5b7f7888e5df24989e",
   "current_experiment_id": "P7-final-residual-v1",
   "current_hypothesis": "One remaining non-category-C causal family may admit a single target-independent correction with substantial shadow and transfer evidence.",
-  "current_stage": "P7A_residual_selection_predeclared_before_complete_breakdown",
+  "current_stage": "P7B_family_D_selected_mechanism_predeclared_before_implementation",
   "experiment_start_commit": "a8ef5e943cb641c895e585a139bee16361fdc331",
-  "experiment_commits": [],
+  "experiment_commits": [
+    "7618dfa8859f30d86fa9207a96fbce968767a732"
+  ],
   "completed_hypotheses": [
     "H0-feedback-memory-bm25",
     "H1-open-evidence-questions-v1",
@@ -90,8 +92,8 @@
   "official_runs_remaining": 2,
   "fixed_seed": 20260830,
   "run_start_utc": "2026-08-30T14:44:51Z",
-  "last_checkpoint_utc": "2026-08-31T10:30:09Z",
+  "last_checkpoint_utc": "2026-08-31T12:08:00Z",
   "pause_reason": null,
   "stop_reason": null,
-  "next_action": "Reopen the stored participant-generated P6 diagnosis, complete the frozen D/E/F/G aggregate selection, and continue with at most one qualifying P7 family."
+  "next_action": "Implement and freeze the single predeclared stable monotonic disclosed-constraint coverage mechanism, then run the exact P5 disabled-parity and P7 shadow gates."
 }
