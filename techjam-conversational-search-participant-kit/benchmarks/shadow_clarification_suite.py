@@ -826,6 +826,7 @@ def _agent(
     controller: ClarificationControllerConfig,
     contextual_policy_id: str = "contextual.feedback-memory.v1",
     exposure_policy: RecommendationExposurePolicy | None = None,
+    monotonic_constraint_coverage: bool | None = None,
 ) -> Agent:
     return Agent(
         catalog_path,
@@ -835,6 +836,7 @@ def _agent(
         clarification_config=clarification,
         clarification_controller=ClarificationController(controller),
         exposure_policy=exposure_policy or disabled_exposure_policy(),
+        monotonic_constraint_coverage=monotonic_constraint_coverage,
     )
 
 

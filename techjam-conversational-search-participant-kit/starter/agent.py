@@ -85,6 +85,7 @@ from .route_aware_retrieval import (
 from .selective_clarification import SelectiveClarificationConfig
 
 LOGGER = logging.getLogger(__name__)
+SELECTED_MONOTONIC_CONSTRAINT_COVERAGE = True
 NEGATIVE_FEEDBACK_RE = re.compile(
     r"\b(?:not quite right|not right|none of (?:these|those)|do not like|don't like|not what i)\b",
     re.IGNORECASE,
@@ -122,6 +123,7 @@ class Agent:
             [Mapping[str, object], ClarificationPrompt | None], dict[str, object]
         ] = compose_clarification_response,
         exposure_policy: RecommendationExposurePolicy | None = None,
+        monotonic_constraint_coverage: bool | None = None,
     ) -> None:
         self.catalog_path = Path(catalog_path)
         self.config = config or HybridRetrievalConfig()
@@ -143,7 +145,12 @@ class Agent:
             self._contextual_policy.policy_id
         )
         self._category_evidence_policy = category_evidence_policy_for_retrieval(
-            self._contextual_policy.policy_id
+            self._contextual_policy.policy_id,
+            monotonic_constraint_coverage=(
+                SELECTED_MONOTONIC_CONSTRAINT_COVERAGE
+                if monotonic_constraint_coverage is None
+                else monotonic_constraint_coverage
+            ),
         )
         self._evidence_messages = EvidenceMessageStore()
         if (

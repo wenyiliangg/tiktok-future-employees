@@ -133,6 +133,7 @@ class CategoryEvidencePolicy:
     use_structured: bool = True
     use_popularity: bool = True
     use_conjunction: bool = True
+    monotonic_constraint_coverage: bool = False
     category_candidate_limit: int = 1600
     total_candidate_limit: int = 4000
     weak_evidence_anchor_floor: int = 6
@@ -158,6 +159,7 @@ class CategoryEvidencePolicy:
             "use_structured",
             "use_popularity",
             "use_conjunction",
+            "monotonic_constraint_coverage",
         ):
             if not isinstance(getattr(self, name), bool):
                 raise TypeError(f"{name} must be boolean")
@@ -195,12 +197,19 @@ class CategoryEvidencePolicy:
 
 def category_evidence_policy_for_retrieval(
     retrieval_policy_id: str,
+    *,
+    monotonic_constraint_coverage: bool = False,
 ) -> CategoryEvidencePolicy:
     if retrieval_policy_id == "contextual.category-evidence.v1":
         return CategoryEvidencePolicy(
-            policy_id="category-evidence.cohesive.v1",
+            policy_id=(
+                "category-evidence.constraint-coverage.v1"
+                if monotonic_constraint_coverage
+                else "category-evidence.cohesive.v1"
+            ),
             retrieval_policy_id=retrieval_policy_id,
             enabled=True,
+            monotonic_constraint_coverage=monotonic_constraint_coverage,
         )
     return CategoryEvidencePolicy(
         policy_id="category-evidence.disabled.v1",
@@ -587,7 +596,7 @@ class CategoryEvidenceIndex:
 
         structured_constraints, structured_exclusions = self._structured_evidence(query)
 
-        ranked: list[tuple[float, int, float, Candidate]] = []
+        ranked: list[tuple[float, int, float, int, int, Candidate]] = []
         for doc_id in candidate_docs:
             parent_asin = self.ids[doc_id]
             if parent_asin in known_negative_ids:
@@ -622,6 +631,13 @@ class CategoryEvidenceIndex:
                 )
             else:
                 structured, checked, contradictions = 0.0, 0, 0
+            structured_matches = int(round(structured * checked))
+            phrase_matches = sum(
+                doc_id in self.phrase_docs[phrase] for phrase in current_phrases
+            )
+            coverage_count = (
+                int(category_match) + structured_matches + phrase_matches
+            )
             independent = sum(
                 (
                     current_phrase > 0.0,
@@ -679,12 +695,37 @@ class CategoryEvidenceIndex:
                     "history": history_component,
                     "conjunction": float(conjunction),
                     "contradictions": float(contradictions),
+                    "constraint_coverage": float(coverage_count),
                 },
             )
             anchor_rank = anchor.rank if anchor is not None else 2**31 - 1
-            ranked.append((score, anchor_rank, prior, candidate))
+            ranked.append(
+                (
+                    score,
+                    anchor_rank,
+                    prior,
+                    coverage_count,
+                    contradictions,
+                    candidate,
+                )
+            )
 
-        ranked.sort(key=lambda item: (-item[0], item[1], -item[2], item[3].parent_asin))
+        ranked.sort(key=lambda item: (-item[0], item[1], -item[2], item[-1].parent_asin))
+        if self.policy.monotonic_constraint_coverage:
+            # P7 is deliberately bounded to the same list P5 would return.  A
+            # stable adjacent move is allowed only for strict extra coverage
+            # with no additional explicit contradiction.  This preserves the
+            # complete P5 ordering for ties and incomparable pairs.
+            boundary = min(limit, len(ranked))
+            for right in range(1, boundary):
+                position = right
+                while position > 0:
+                    previous = ranked[position - 1]
+                    current = ranked[position]
+                    if current[3] <= previous[3] or current[4] > previous[4]:
+                        break
+                    ranked[position - 1], ranked[position] = current, previous
+                    position -= 1
         ordered = [item[-1] for item in ranked]
         price = query.price
         maximum_specific_document_frequency = max(

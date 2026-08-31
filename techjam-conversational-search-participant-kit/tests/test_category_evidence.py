@@ -6,6 +6,7 @@ from starter.category_evidence import (
     EvidenceMessageStore,
     catalog_statistics,
     category_recovery_statistics,
+    category_evidence_policy_for_retrieval,
 )
 from starter.conversation_state import Constraint, SearchQuery
 from starter.hybrid_retrieval import Candidate
@@ -69,6 +70,21 @@ def _policy(**changes: object) -> CategoryEvidencePolicy:
     return CategoryEvidencePolicy(**values)
 
 
+def test_monotonic_constraint_coverage_is_opt_in() -> None:
+    p5 = category_evidence_policy_for_retrieval(
+        "contextual.category-evidence.v1"
+    )
+    p7 = category_evidence_policy_for_retrieval(
+        "contextual.category-evidence.v1",
+        monotonic_constraint_coverage=True,
+    )
+
+    assert not p5.monotonic_constraint_coverage
+    assert p5.policy_id == "category-evidence.cohesive.v1"
+    assert p7.monotonic_constraint_coverage
+    assert p7.policy_id == "category-evidence.constraint-coverage.v1"
+
+
 def _query(category: str = "shoes running", material: str | None = None) -> SearchQuery:
     return SearchQuery(
         text=category,
@@ -125,6 +141,40 @@ def test_current_structured_evidence_dominates_history_and_prior() -> None:
     assert ranked[0].parent_asin == "A"
     by_id = {candidate.parent_asin: candidate for candidate in ranked}
     assert by_id["B"].component_scores["contradictions"] >= 1
+
+
+def test_monotonic_coverage_promotes_only_strictly_better_coverage() -> None:
+    neutral_weights = {
+        "phrase_weight": 0.0,
+        "rare_weight": 0.0,
+        "structured_weight": 0.0,
+        "category_weight": 0.0,
+        "anchor_weight": 0.0,
+        "popularity_weight": 1.0,
+        "history_weight": 0.0,
+        "conjunction_weight": 0.0,
+        "contradiction_penalty": 0.0,
+        "weak_evidence_anchor_floor": 0,
+    }
+    arguments = {
+        "query": _query(material="nylon"),
+        "current_text": "Shoes Running nylon",
+        "historical_text": "",
+        "base_results": (),
+        "history_results": (),
+        "catalog": _Catalog(),
+        "known_negative_ids": set(),
+        "limit": 3,
+    }
+    p5 = CategoryEvidenceIndex(PRODUCTS, _policy(**neutral_weights))
+    p7 = CategoryEvidenceIndex(
+        PRODUCTS,
+        _policy(monotonic_constraint_coverage=True, **neutral_weights),
+    )
+
+    assert p5.rank(**arguments)[0].parent_asin == "B"
+    assert p7.rank(**arguments)[0].parent_asin == "A"
+    assert p7.rank(**arguments)[0].component_scores["constraint_coverage"] == 2.0
 
 
 def test_known_negative_is_not_returned() -> None:
